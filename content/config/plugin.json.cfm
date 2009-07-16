@@ -12,5 +12,8 @@
 		"version": "0.1.0"
 	},
 	"navigation": [
-	]
+	],
+	"factory": {
+		"url": "cf-compendium.inc.resource.utility.url"
+	}
 }
