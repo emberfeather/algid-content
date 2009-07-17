@@ -14,15 +14,16 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 		<title>Poseidon Content Plugin</title>
-		<link rel="stylesheet" href="style/frontAdmin.css" type="text/css"/>
+		
+		<!--- TODO Check if the user is logged in --->
+		<link rel="stylesheet" href="plugins/admin/style/front.css" type="text/css"/>
 	</head>
 	<body>
-		What now?
-		
-		<!--- TODO Remove --->
-		<cfdump var="#application#" />
+		We are getting somewhere!
 		
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-		<script type="text/javascript" src="script/frontAdmin.js"></script>
+		
+		<!--- TODO Check if the user is logged in --->
+		<script type="text/javascript" src="plugins/admin/script/front.js"></script>
 	</body>
 </html>
