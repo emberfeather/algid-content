@@ -17,6 +17,8 @@
 		"url": "cf-compendium.inc.resource.utility.url"
 	},
 	"admin": {
-		"title": "Content"
+		"title": "Content",
+		"navigation": [
+		]
 	}
 }
