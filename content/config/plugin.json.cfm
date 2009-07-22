@@ -1,6 +1,7 @@
 {
 	"factory": {
-		"url": "cf-compendium.inc.resource.utility.url"
+		"url": "cf-compendium.inc.resource.utility.url",
+		"template": "cf-compendium.inc.resource.structure.template"
 	},
 	"key": "content",
 	"i18n": {
