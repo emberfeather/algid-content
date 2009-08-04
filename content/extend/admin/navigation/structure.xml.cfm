@@ -1,4 +1,4 @@
 <navigation>
-	<content>
+	<content position="main">
 	</content>
 </navigation>
