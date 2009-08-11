@@ -11,8 +11,8 @@
 		]
 	},
 	"prerequisites": {
-		"tagger": "0.1.0",
-		"user": "0.1.0"
+		"tagger": "0.1.000",
+		"user": "0.1.000"
 	},
-	"version": "0.1.0"
+	"version": "0.1.000"
 }
