@@ -1,6 +1,6 @@
 <cfsilent>
 	<!--- Create URL object from the factory --->
-	<cfset theURL = application.managers.factory.getURL(CGI.QUERY_STRING) />
+	<cfset theURL = application.managers.transient.getURL(CGI.QUERY_STRING) />
 	
 	<!--- TODO Find actual location --->
 	
