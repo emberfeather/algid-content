@@ -1,30 +1,32 @@
 <cfsilent>
-	<!--- Create URL object from the factory --->
+	<cfset profiler = application.managers.transient.getProfiler(application.settings.environment NEQ 'production') />
+	
+	<cfset profiler.start('startup') />
+	
+	<!--- Create URL object from the transient --->
 	<cfset theURL = application.managers.transient.getURL(CGI.QUERY_STRING) />
 	
 	<!--- TODO Find actual location --->
 	
-	<!--- TODO Process request --->
-	
 	<!--- TODO Create template object --->
 	
-	<!--- TODO Include Template File --->
+	<cfset profiler.stop('startup') />
+	
+	<cfset profiler.start('process') />
+	
+	<!--- TODO Process request --->
+	
+	<cfset profiler.stop('process') />
+	
+	<cfset profiler.start('content') />
+	
+	<!--- TODO Include Content --->
+	
+	<cfset profiler.stop('content') />
+	
+	<cfset profiler.start('template') />
 </cfsilent>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-		<title>Poseidon Content Plugin</title>
-		
-		<!--- TODO Check if the user is logged in --->
-		<link rel="stylesheet" href="plugins/admin/style/front.css" type="text/css"/>
-	</head>
-	<body>
-		We are getting somewhere!
-		
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-		
-		<!--- TODO Check if the user is logged in --->
-		<script type="text/javascript" src="plugins/admin/script/front.js"></script>
-	</body>
-</html>
+
+<!--- TODO Include Template File --->
+
+<cfset profiler.stop('template') />
