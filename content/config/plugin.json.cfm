@@ -1,5 +1,5 @@
 {
-	"factory": {
+	"transient": {
 		"url": "cf-compendium.inc.resource.utility.url",
 		"template": "cf-compendium.inc.resource.structure.template"
 	},
