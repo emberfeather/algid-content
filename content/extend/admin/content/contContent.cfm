@@ -1,7 +1,17 @@
-<p>
-	On this page we could probably put a list of recent pages changed and who changed them?
-</p>
+<h3>Expired Pages</h3>
 
 <p>
-	Maybe even pull in some statistics from the analytics for the site...?
+	List of pages that have expired and need to be reviewed and updated...
+</p>
+
+<h3>Recent Changes</h3>
+
+<p>
+	List of recent pages updated and who updated them...
+</p>
+
+<h3>Statistics</h3>
+
+<p>
+	Statistics about the number of pages, users making changes, average page age, etc.
 </p>
