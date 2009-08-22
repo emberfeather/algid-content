@@ -11,6 +11,7 @@
 		]
 	},
 	"prerequisites": {
+		"algid": "0.1.000",
 		"tagger": "0.1.000",
 		"user": "0.1.000"
 	},
