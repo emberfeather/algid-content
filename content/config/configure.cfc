@@ -322,6 +322,7 @@
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
 				"updatedBy" integer NOT NULL,
 				"updatedOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"expiresOn" timestamp without time zone,
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "content_content_PK" PRIMARY KEY ("contentID"),
 				CONSTRAINT "content_domainID_FK" FOREIGN KEY ("domainID")
@@ -659,6 +660,7 @@
 			(
 				"pathID" integer NOT NULL,
 				"tagID" integer NOT NULL,
+				"isRecursive" bit(1) DEFAULT B'0'::"bit",
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
 				CONSTRAINT "bPath2Tag_PK" PRIMARY KEY ("pathID", "tagID"),
 				CONSTRAINT "bPath2Tag_pathID_FK" FOREIGN KEY ("pathID")

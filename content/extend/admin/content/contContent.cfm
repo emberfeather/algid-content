@@ -1,6 +1,7 @@
 <cfset viewContent = createObject('component', 'plugins.content.inc.view.viewContent').init(theURL) />
 
 <cfset filter = {
+		domain = CGI.SERVER_NAME
 	} />
 
 <cfset contents = servContent.getContents( filter ) />
@@ -11,11 +12,20 @@
 	<cfoutput>#viewContent.list( contents, filter )#</cfoutput>
 </cfif>
 
-<h3>Recent Changes</h3>
+<cfset filter = {
+		domain = CGI.SERVER_NAME,
+		limit = 7,
+		orderBy = 'updatedOn',
+		orderSort = 'desc'
+	} />
 
-<p>
-	List of recent pages updated and who updated them...
-</p>
+<cfset contents = servContent.getContents( filter ) />
+
+<cfif contents.recordCount>
+	<h3>Recent Changes</h3>
+	
+	<cfoutput>#viewContent.list( contents, filter )#</cfoutput>
+</cfif>
 
 <h3>Statistics</h3>
 
