@@ -1,8 +1,15 @@
-<h3>Expired Pages</h3>
+<cfset viewContent = createObject('component', 'plugins.content.inc.view.viewContent').init(theURL) />
 
-<p>
-	List of pages that have expired and need to be reviewed and updated...
-</p>
+<cfset filter = {
+	} />
+
+<cfset contents = servContent.getContents( filter ) />
+
+<cfif contents.recordCount>
+	<h3>Expired Content</h3>
+	
+	<cfoutput>#viewContent.list( contents, filter )#</cfoutput>
+</cfif>
 
 <h3>Recent Changes</h3>
 

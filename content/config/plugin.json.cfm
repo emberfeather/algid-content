@@ -1,7 +1,7 @@
 {
 	"transient": {
 		"url": "cf-compendium.inc.resource.utility.url",
-		"template": "cf-compendium.inc.resource.structure.template"
+		"template": "algid.inc.resource.structure.template"
 	},
 	"key": "content",
 	"i18n": {
