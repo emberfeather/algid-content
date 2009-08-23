@@ -9,11 +9,11 @@
 			"en_US"
 		]
 	},
-	"key": "content",
+	"key": "@project.key@",
 	"prerequisites": {
-		"algid": "0.1.000",
-		"tagger": "0.1.000",
-		"user": "0.1.000"
+		"algid": "@prerequisites.algid@",
+		"tagger": "@prerequisites.tagger@",
+		"user": "@prerequisites.user@"
 	},
-	"version": "0.1.000"
+	"version": "@project.version@"
 }
