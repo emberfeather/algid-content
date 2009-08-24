@@ -1,7 +1,9 @@
 {
-	"transient": {
-		"url": "cf-compendium.inc.resource.utility.url",
-		"template": "algid.inc.resource.structure.template"
+	"application": {
+		"transient": {
+			"url": "cf-compendium.inc.resource.utility.url",
+			"template": "algid.inc.resource.structure.template"
+		}
 	},
 	"i18n": {
 		"locales": [
