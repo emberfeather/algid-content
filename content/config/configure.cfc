@@ -227,7 +227,7 @@
 				theme character varying(50) NOT NULL,
 				directory character varying(50) NOT NULL,
 				levels smallint NOT NULL DEFAULT 1,
-				"isPublic" bit(1) NOT NULL DEFAULT B'1'::"bit",
+				"isPublic" boolean NOT NULL DEFAULT true,
 				CONSTRAINT "theme_themeID_PK" PRIMARY KEY ("themeID")
 			)
 			WITH (OIDS=FALSE);
@@ -268,7 +268,7 @@
 				"themeID" integer NOT NULL,
 				attribute character varying(100) NOT NULL,
 				"key" character varying(25) NOT NULL,
-				"hasCustom" bit(1) NOT NULL DEFAULT B'1'::"bit",
+				"hasCustom" boolean NOT NULL DEFAULT true,
 				CONSTRAINT "attribute_PK" PRIMARY KEY ("attributeID"),
 				CONSTRAINT "attribute_themeID_FK" FOREIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
@@ -407,7 +407,7 @@
 				"level" smallint NOT NULL,
 				navigation character varying(50) NOT NULL,
 				"themeID" integer NOT NULL,
-				"allowGroups" bit(1) NOT NULL DEFAULT B'1'::"bit",
+				"allowGroups" boolean NOT NULL DEFAULT true,
 				CONSTRAINT "navigation_PK" PRIMARY KEY ("navigationID"),
 				CONSTRAINT "navigation_themeID_FK" FOREIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
@@ -493,8 +493,8 @@
 				resource character varying(155) NOT NULL,
 				file character varying(255) NOT NULL,
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
-				"isDeprecated" bit(1) NOT NULL DEFAULT B'0'::"bit",
-				"isPublic" bit(1) NOT NULL DEFAULT B'0'::"bit",
+				"isDeprecated" boolean NOT NULL DEFAULT false,
+				"isPublic" boolean NOT NULL DEFAULT false,
 				CONSTRAINT "resource_resourceID_PK" PRIMARY KEY ("resourceID")
 			)
 			WITH (OIDS=FALSE);
@@ -660,7 +660,7 @@
 			(
 				"pathID" integer NOT NULL,
 				"tagID" integer NOT NULL,
-				"isRecursive" bit(1) DEFAULT B'0'::"bit",
+				"isRecursive" boolean NOT NULL DEFAULT false,
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
 				CONSTRAINT "bPath2Tag_PK" PRIMARY KEY ("pathID", "tagID"),
 				CONSTRAINT "bPath2Tag_pathID_FK" FOREIGN KEY ("pathID")
