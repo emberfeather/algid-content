@@ -1,5 +1,5 @@
 {
-	"application": {
+	"applicationManagers": {
 		"transient": {
 			"url": "cf-compendium.inc.resource.utility.url",
 			"template": "algid.inc.resource.structure.template"
