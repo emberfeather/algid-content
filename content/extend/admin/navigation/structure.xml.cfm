@@ -1,7 +1,7 @@
 <navigation>
 	<content position="main">
-		<browse position="secondary"/>
-		<add position="secondary"/>
+		<browse position="action"/>
+		<add position="action"/>
 		<edit/>
 		<archive/>
 	</content>
