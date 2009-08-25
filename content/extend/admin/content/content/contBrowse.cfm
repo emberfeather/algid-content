@@ -1,4 +1,4 @@
-<cfset viewContent = createObject('component', 'plugins.content.inc.view.viewContent').init(theURL) />
+<cfset viewContent = application.managers.transient.getViewContentForContent(theURL) />
 
 <cfset filter = {
 		domain = CGI.SERVER_NAME,

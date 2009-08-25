@@ -1,8 +1,10 @@
 {
 	"applicationManagers": {
 		"transient": {
-			"url": "cf-compendium.inc.resource.utility.url",
-			"template": "algid.inc.resource.structure.template"
+			"urlForContent": "cf-compendium.inc.resource.utility.url",
+			"servContentForContent": "plugins.content.inc.service.servContent",
+			"templateForContent": "algid.inc.resource.structure.template",
+			"viewContentForContent": "plugins.content.inc.view.viewContent"
 		}
 	},
 	"i18n": {
