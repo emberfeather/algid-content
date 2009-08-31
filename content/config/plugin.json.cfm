@@ -15,9 +15,9 @@
 	},
 	"key": "content",
 	"prerequisites": {
-		"algid": "0.1.001",
-		"tagger": "0.1.001",
-		"user": "0.1.001"
+		"algid": "0.1.1",
+		"tagger": "0.1.1",
+		"user": "0.1.1"
 	},
-	"version": "0.1.001"
+	"version": "0.1.1"
 }
