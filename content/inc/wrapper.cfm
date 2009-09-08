@@ -1,10 +1,10 @@
 <cfsilent>
-	<cfset profiler = application.managers.transient.getProfiler(application.settings.environment NEQ 'production') />
+	<cfset profiler = application.factories.transient.getProfiler(application.settings.environment NEQ 'production') />
 	
 	<cfset profiler.start('startup') />
 	
 	<!--- Create URL object from the transient --->
-	<cfset theURL = application.managers.transient.getURLForContent(CGI.QUERY_STRING) />
+	<cfset theURL = application.factories.transient.getURLForContent(CGI.QUERY_STRING) />
 	
 	<!--- TODO Find actual location --->
 	
