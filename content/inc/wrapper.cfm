@@ -4,7 +4,7 @@
 	<cfset profiler.start('startup') />
 	
 	<!--- Create URL object from the transient --->
-	<cfset theURL = application.managers.transient.getURL(CGI.QUERY_STRING) />
+	<cfset theURL = application.managers.transient.getURLForContent(CGI.QUERY_STRING) />
 	
 	<!--- TODO Find actual location --->
 	
