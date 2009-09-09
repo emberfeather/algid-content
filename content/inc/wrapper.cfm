@@ -1,5 +1,5 @@
 <cfsilent>
-	<cfset profiler = application.factories.transient.getProfiler(application.settings.environment NEQ 'production') />
+	<cfset profiler = application.factories.transient.getProfiler(application.app.getEnvironment() NEQ 'production') />
 	
 	<cfset profiler.start('startup') />
 	
