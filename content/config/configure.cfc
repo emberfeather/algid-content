@@ -18,6 +18,20 @@
 				</cfdefaultcase>
 			</cfswitch>
 		</cfif>
+		
+		<!--- => 0.1.0 --->
+		<cfif versions.compareVersions(arguments.installedVersion, '0.1.1') LT 0>
+			<!--- Setup the Database --->
+			<cfswitch expression="#variables.datasource.type#">
+				<cfcase value="PostgreSQL">
+					<cfset postgreSQL0_1_1() />
+				</cfcase>
+				<cfdefaultcase>
+					<!--- TODO Remove this thow when a later version supports more database types  --->
+					<cfthrow message="Database Type Not Supported" detail="The #variables.datasource.type# database type is not currently supported" />
+				</cfdefaultcase>
+			</cfswitch>
+		</cfif>
 	</cffunction>
 	
 	<!---
@@ -781,6 +795,58 @@
 		
 		<cfquery datasource="#variables.datasource.name#">
 			COMMENT ON TABLE "#variables.datasource.prefix#content"."bTheme2Domain" IS 'Bridge for typing the theme to domains.';
+		</cfquery>
+	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.1
+	--->
+	<cffunction name="postgreSQL0_1_1" access="public" returntype="void" output="false">
+		<!---
+			SEQUENCES
+		--->
+		
+		<!--- Attribute Option Sequence --->
+		<cfquery datasource="#variables.datasource.name#">
+			CREATE SEQUENCE "#variables.datasource.prefix#content"."host_hostID_seq"
+				INCREMENT 1
+				MINVALUE 1
+				MAXVALUE 9223372036854775807
+				START 1
+				CACHE 1;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."host_hostID_seq" OWNER TO #variables.datasource.owner#;
+		</cfquery>
+		
+		<!---
+			TABLES
+		--->
+		
+		<!--- Host Table --->
+		<cfquery datasource="#variables.datasource.name#">
+			CREATE TABLE "#variables.datasource.prefix#content"."host"
+			(
+				"hostID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."host_hostID_seq"'::regclass),
+				"domainID" integer NOT NULL,
+				hostname character varying(255) NOT NULL,
+				"hasSSL" boolean NOT NULL DEFAULT false,
+				CONSTRAINT "host_PK" PRIMARY KEY ("hostID"),
+				CONSTRAINT "host_domainID_FK" FOREIGN KEY ("domainID")
+					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
+					ON UPDATE CASCADE ON DELETE CASCADE,
+				CONSTRAINT "host_hostname_U" UNIQUE (hostname)
+			)
+			WITH (OIDS=FALSE);
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."host" OWNER TO #variables.datasource.owner#;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			COMMENT ON TABLE "#variables.datasource.prefix#content"."host" IS 'Hosts assigned to a domain.';
 		</cfquery>
 	</cffunction>
 </cfcomponent>
