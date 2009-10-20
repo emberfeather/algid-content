@@ -1,1 +1,1 @@
-<cfset servContent = application.factories.transient.getServContentForContent(application.app.getDSUpdate(), i18n, SESSION.locale) />
+<cfset servContent = application.factories.transient.getServContentForContent(application.app.getDSUpdate(), transport) />

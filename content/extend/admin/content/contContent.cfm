@@ -1,4 +1,4 @@
-<cfset viewContent = application.factories.transient.getViewContentForContent(theURL) />
+<cfset viewContent = application.factories.transient.getViewContentForContent( transport ) />
 
 <cfset filter = {
 		domain = CGI.SERVER_NAME
@@ -7,7 +7,7 @@
 <cfset contents = servContent.getContents( filter ) />
 
 <cfif contents.recordCount>
-	<cfoutput>#viewContent.list( contents, filter )#</cfoutput>
+	<cfoutput>#viewContent.list( contents )#</cfoutput>
 </cfif>
 
 <cfset filter = {
@@ -20,7 +20,7 @@
 <cfset contents = servContent.getContents( filter ) />
 
 <cfif contents.recordCount>
-	<cfoutput>#viewContent.list( contents, filter )#</cfoutput>
+	<cfoutput>#viewContent.list( contents )#</cfoutput>
 </cfif>
 
 <p>

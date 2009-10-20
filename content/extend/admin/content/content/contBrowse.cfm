@@ -1,4 +1,4 @@
-<cfset viewContent = application.factories.transient.getViewContentForContent(theURL) />
+<cfset viewContent = application.factories.transient.getViewContentForContent( transport ) />
 
 <cfset filter = {
 		domain = CGI.SERVER_NAME,
@@ -8,4 +8,4 @@
 <!--- TODO Tree-based navigation --->
 <cfset contents = servContent.getContents( filter ) />
 
-<cfoutput>#viewContent.list( contents, filter )#</cfoutput>
+<cfoutput>#viewContent.list( contents )#</cfoutput>
