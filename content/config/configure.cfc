@@ -221,6 +221,7 @@
 				"domainID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."domain_domainID_seq"'::regclass),
 				"domain" character varying(150) NOT NULL,
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"archivedOn" timestamp without time zone,
 				CONSTRAINT "domain_domainID_PK" PRIMARY KEY ("domainID")
 			)
 			WITH (OIDS=FALSE);
@@ -244,6 +245,7 @@
 				directory character varying(50) NOT NULL,
 				levels smallint NOT NULL DEFAULT 1,
 				"isPublic" boolean NOT NULL DEFAULT true,
+				"archivedOn" timestamp without time zone,
 				CONSTRAINT "theme_themeID_PK" PRIMARY KEY ("themeID")
 			)
 			WITH (OIDS=FALSE);
@@ -336,7 +338,6 @@
 				title character varying(255) NOT NULL,
 				"content" text NOT NULL,
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
-				"updatedBy" integer NOT NULL,
 				"updatedOn" timestamp without time zone NOT NULL DEFAULT now(),
 				"expiresOn" timestamp without time zone,
 				"archivedOn" timestamp without time zone,
@@ -346,10 +347,7 @@
 					ON UPDATE CASCADE ON DELETE CASCADE,
 				CONSTRAINT "content_typeID_FK" FOREIGN KEY ("typeID")
 					REFERENCES "#variables.datasource.prefix#content"."type" ("typeID") MATCH SIMPLE
-					ON UPDATE NO ACTION ON DELETE NO ACTION,
-				CONSTRAINT "content_updatedBy_FK" FOREIGN KEY ("updatedBy")
-					REFERENCES "#variables.datasource.prefix#user"."user" ("userID") MATCH SIMPLE
-					ON UPDATE RESTRICT ON DELETE RESTRICT
+					ON UPDATE NO ACTION ON DELETE NO ACTION
 			)
 			WITH (OIDS=FALSE);
 		</cfquery>
@@ -367,18 +365,14 @@
 			CREATE TABLE "#variables.datasource.prefix#content".draft
 			(
 				"contentID" integer NOT NULL,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
 				draft text NOT NULL,
 				"publishOn" timestamp without time zone,
-				"updatedBy" integer NOT NULL,
+				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
 				"updatedOn" timestamp without time zone NOT NULL DEFAULT now(),
 				CONSTRAINT "draft_PK" PRIMARY KEY ("contentID", "createdOn"),
 				CONSTRAINT "draft_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
-					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "draft_updatedBy_FJ" FOREIGN KEY ("updatedBy")
-					REFERENCES "#variables.datasource.prefix#user"."user" ("userID") MATCH SIMPLE
-					ON UPDATE RESTRICT ON DELETE RESTRICT
+					ON UPDATE CASCADE ON DELETE CASCADE
 			)
 			WITH (OIDS=FALSE);
 		</cfquery>
