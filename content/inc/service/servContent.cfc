@@ -1,4 +1,25 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
+	<cffunction name="deleteContent" access="public" returntype="component" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="content" type="component" required="true" />
+		
+		<cfset var eventLog = '' />
+		
+		<!--- Get the event log from the transport --->
+		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		
+		<cfset eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content. ' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+	</cffunction>
+	
+	<cffunction name="getContent" access="public" returntype="component" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="contentID" type="numeric" required="true" />
+		
+		<cfset var content = '' />
+		
+		
+	</cffunction>
+	
 	<cffunction name="getContents" access="public" returntype="query" output="false">
 		<cfargument name="filter" type="struct" default="#{}#" />
 		
@@ -48,5 +69,36 @@
 		</cfquery>
 		
 		<cfreturn results />
+	</cffunction>
+	
+	<cffunction name="publishContent" access="public" returntype="void" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="content" type="component" required="true" />
+		
+		<cfset var eventLog = '' />
+		
+		<!--- Get the event log from the transport --->
+		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		
+		<!--- TODO Check if publishing the content --->
+		<cfset eventLog.logEvent('content', 'contentPublish', 'Published the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+	</cffunction>
+	
+	<cffunction name="setContent" access="public" returntype="void" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="content" type="component" required="true" />
+		
+		<cfset var eventLog = '' />
+		
+		<!--- Get the event log from the transport --->
+		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		
+		<cfif arguments.content.getContentID()>
+			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+		<cfelse>
+			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+		</cfif>
+		
+		<!--- TODO Check if publishing the content --->
 	</cffunction>
 </cfcomponent>
