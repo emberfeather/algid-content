@@ -2,10 +2,11 @@
 	"applicationSingletons": {
 	},
 	"applicationTransients": {
-		"urlForContent": "cf-compendium.inc.resource.utility.url",
+		"modContentForContent": "plugins.content.inc.model.modContent",
 		"servContentForContent": "plugins.content.inc.service.servContent",
 		"templateForContent": "algid.inc.resource.structure.template",
-		"viewContentForContent": "plugins.content.inc.view.viewContent"
+		"viewContentForContent": "plugins.content.inc.view.viewContent",
+		"urlForContent": "cf-compendium.inc.resource.utility.url"
 	},
 	"i18n": {
 		"locales": [
