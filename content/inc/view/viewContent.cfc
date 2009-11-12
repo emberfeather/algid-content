@@ -1,4 +1,38 @@
 <cfcomponent extends="algid.inc.resource.base.view" output="false">
+	<cffunction name="add" access="public" returntype="string" output="false">
+		<cfargument name="request" type="struct" default="#{}#" />
+		
+		<cfset var theForm = '' />
+		<cfset var theURL = '' />
+		
+		<cfset theURL = variables.transport.theRequest.managers.singleton.getUrl() />
+		<cfset theForm = variables.transport.theApplication.factories.transient.getFormStandard('addContent') />
+		
+		<cfset theForm.addElement('text', {
+				name = "title",
+				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : '' )
+			}) />
+		
+		<cfreturn theForm.toHTML(theURL.get()) />
+	</cffunction>
+	
+	<cffunction name="edit" access="public" returntype="string" output="false">
+		<cfargument name="content" type="component" required="true" />
+		<cfargument name="request" type="struct" default="#{}#" />
+		
+		<cfset var html = '' />
+		
+		<cfsavecontent variable="html">
+			<cfoutput>
+				<p>
+					Form for editing content (#arguments.content.getContentID()#).
+				</p>
+			</cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn html />
+	</cffunction>
+	
 	<cffunction name="filterActive" access="public" returntype="string" output="false">
 		<cfargument name="filter" type="struct" default="#{}#" />
 		
@@ -9,7 +43,7 @@
 		<cfset filterActive = variables.transport.theApplication.factories.transient.getFilterActive(variables.transport.theApplication.managers.singleton.getI18N()) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset filterActive.addI18NBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset filterActive.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<cfreturn filterActive.toHTML(arguments.filter, variables.transport.theRequest.managers.singleton.getURL(), 'search') />
 	</cffunction>
@@ -24,7 +58,7 @@
 		<cfset filter = variables.transport.theApplication.factories.transient.getFilterVertical(variables.transport.theApplication.managers.singleton.getI18N()) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset filter.addI18NBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset filter.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<!--- Search --->
 		<cfset filter.addFilter('search') />
@@ -44,7 +78,7 @@
 		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.locale) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset datagrid.addI18NBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<cfset datagrid.addColumn({
 				key = 'path',

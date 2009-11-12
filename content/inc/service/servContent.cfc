@@ -16,8 +16,24 @@
 		<cfargument name="contentID" type="numeric" required="true" />
 		
 		<cfset var content = '' />
+		<cfset var i18n = '' />
+		<cfset var result = '' />
 		
+		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		
+		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, variables.transport.locale ) />
+		
+		<cfquery name="result" datasource="#variables.datasource.name#">
+			SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
+			FROM "#variables.datasource.prefix#content"."content"
+			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.contentID#" />
+			
+			<!--- TODO Check for user permissions --->
+		</cfquery>
+		
+		<cfset content.deserialize(result) />
+		
+		<cfreturn content />
 	</cffunction>
 	
 	<cffunction name="getContents" access="public" returntype="query" output="false">

@@ -1,3 +1,5 @@
-<p>
-	Standard form here to edit the data.
-</p>
+<cfset viewContent = application.factories.transient.getViewContentForContent( transport ) />
+
+<cfoutput>
+	#viewContent.add()#
+</cfoutput>
