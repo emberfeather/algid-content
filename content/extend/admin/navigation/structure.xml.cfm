@@ -5,4 +5,12 @@
 		<edit/>
 		<archive/>
 	</content>
+	<admin>
+		<domain position="main">
+			<list position="action"/>
+			<add position="action"/>
+			<edit/>
+			<archive/>
+		</domain>
+	</admin>
 </navigation>

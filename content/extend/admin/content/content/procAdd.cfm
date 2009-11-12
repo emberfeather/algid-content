@@ -1,0 +1,1 @@
+<cfset servDomain = application.factories.transient.getServDomainForContent(application.app.getDSUpdate(), transport) />

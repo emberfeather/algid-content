@@ -8,6 +8,10 @@
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
+		<!--- TODO Check user Permissions --->
+		
+		<!--- TODO Archive the content --->
+		
 		<cfset eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content. ' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
 	</cffunction>
 	
@@ -28,7 +32,7 @@
 			FROM "#variables.datasource.prefix#content"."content"
 			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.contentID#" />
 			
-			<!--- TODO Check for user permissions --->
+			<!--- TODO Check for user connection --->
 		</cfquery>
 		
 		<cfset content.deserialize(result) />
@@ -96,6 +100,8 @@
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
+		<!--- TODO Check for user permission --->
+		
 		<!--- TODO Check if publishing the content --->
 		<cfset eventLog.logEvent('content', 'contentPublish', 'Published the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
 	</cffunction>
@@ -108,6 +114,8 @@
 		
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		
+		<!--- TODO Check user permissions --->
 		
 		<cfif arguments.content.getContentID()>
 			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />

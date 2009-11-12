@@ -1,6 +1,5 @@
 <cfcomponent extends="algid.inc.resource.base.view" output="false">
 	<cffunction name="add" access="public" returntype="string" output="false">
-		<cfargument name="domains" type="query" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var i18n = '' />
@@ -9,36 +8,22 @@
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset theURL = variables.transport.theRequest.managers.singleton.getUrl() />
-		<cfset theForm = variables.transport.theApplication.factories.transient.getFormStandard('addContent', i18n) />
+		<cfset theForm = variables.transport.theApplication.factories.transient.getFormStandard('addDomain', i18n) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewDomain') />
 		
 		<cfset theForm.addElement('text', {
-				name = "title",
-				label = "title",
-				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : '' )
-			}) />
-			
-		
-		<!--- Select --->
-		<cfset element = {
-				name = "domainID",
+				name = "domain",
 				label = "domain",
-				options = variables.transport.theApplication.factories.transient.getOptions()
-			} />
-		
-		<cfloop query="arguments.domains">
-			<cfset element.options.addOption(arguments.domains.domain, arguments.domains.domainID) />
-		</cfloop>
-		
-		<cfset theForm.addElement('select', element) />
+				value = ( structKeyExists(arguments.request, 'domain') ? arguments.request.title : '' )
+			}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
 	</cffunction>
 	
 	<cffunction name="edit" access="public" returntype="string" output="false">
-		<cfargument name="content" type="component" required="true" />
+		<cfargument name="domain" type="component" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var html = '' />
@@ -46,7 +31,7 @@
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<p>
-					Form for editing content (#arguments.content.getContentID()#).
+					Form for editing domain (#arguments.domain.getDomainID()#).
 				</p>
 			</cfoutput>
 		</cfsavecontent>
@@ -64,7 +49,7 @@
 		<cfset filterActive = variables.transport.theApplication.factories.transient.getFilterActive(variables.transport.theApplication.managers.singleton.getI18N()) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset filterActive.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset filterActive.addBundle('plugins/content/i18n/inc/view', 'viewDomain') />
 		
 		<cfreturn filterActive.toHTML(arguments.filter, variables.transport.theRequest.managers.singleton.getURL(), 'search') />
 	</cffunction>
@@ -79,7 +64,7 @@
 		<cfset filter = variables.transport.theApplication.factories.transient.getFilterVertical(variables.transport.theApplication.managers.singleton.getI18N()) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset filter.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset filter.addBundle('plugins/content/i18n/inc/view', 'viewDomain') />
 		
 		<!--- Search --->
 		<cfset filter.addFilter('search') />
@@ -99,7 +84,7 @@
 		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.locale) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewDomain') />
 		
 		<cfset datagrid.addColumn({
 				key = 'path',
