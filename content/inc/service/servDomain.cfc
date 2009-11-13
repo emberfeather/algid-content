@@ -33,7 +33,9 @@
 			WHERE "domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domainID#" />
 		</cfquery>
 		
-		<cfset domain.deserialize(result) />
+		<cfif result.recordCount>
+			<cfset domain.deserialize(result) />
+		</cfif>
 		
 		<cfreturn domain />
 	</cffunction>
@@ -54,6 +56,12 @@
 			SELECT "domainID", "domain", "createdOn", "archivedOn"
 			FROM "#variables.datasource.prefix#content"."domain"
 			WHERE 1=1
+			
+			<cfif structKeyExists(arguments.filter, 'search') AND arguments.filter.search NEQ ''>
+				AND (
+					"domain" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+				)
+			</cfif>
 			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
@@ -79,16 +87,36 @@
 		<cfargument name="domain" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
+		<cfset var results = '' />
 		
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
 		<!--- TODO Check user permissions --->
 		
-		<cfif arguments.domain.getDomainID()>
-			<cfset eventLog.logEvent('content', 'domainUpdate', 'Updated the ''' & arguments.domain.getDomain() & ''' domain.' & arguments.domain.getDomainID(), arguments.currUser.getUserID()) />
-		<cfelse>
-			<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain.' & arguments.domain.getDomainID(), arguments.currUser.getUserID()) />
-		</cfif>
+		<cftransaction>
+			<cfif arguments.domain.getDomainID()>
+				<cfquery datasource="#variables.datasource.name#" result="results">
+					UPDATE "#variables.datasource.prefix#content"."domain"
+					SET
+						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+					WHERE
+						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
+				</cfquery>
+				
+				<cfset eventLog.logEvent('content', 'domainUpdate', 'Updated the ''' & arguments.domain.getDomain() & ''' domain. (' & arguments.domain.getDomainID() & ')', arguments.currUser.getUserID()) />
+			<cfelse>
+				<cfquery datasource="#variables.datasource.name#" result="results">
+					INSERT INTO "#variables.datasource.prefix#content"."domain"
+					(
+						"domain"
+					) VALUES (
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+					)
+				</cfquery>
+				
+				<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain. (' & arguments.domain.getDomainID() & ')', arguments.currUser.getUserID()) />
+			</cfif>
+		</cftransaction>
 	</cffunction>
 </cfcomponent>

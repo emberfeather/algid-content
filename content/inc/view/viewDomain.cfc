@@ -1,5 +1,6 @@
 <cfcomponent extends="algid.inc.resource.base.view" output="false">
-	<cffunction name="add" access="public" returntype="string" output="false">
+	<cffunction name="edit" access="public" returntype="string" output="false">
+		<cfargument name="domain" type="component" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var i18n = '' />
@@ -16,27 +17,10 @@
 		<cfset theForm.addElement('text', {
 				name = "domain",
 				label = "domain",
-				value = ( structKeyExists(arguments.request, 'domain') ? arguments.request.title : '' )
+				value = ( structKeyExists(arguments.request, 'domain') ? arguments.request.domain : arguments.domain.getDomain() )
 			}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
-	</cffunction>
-	
-	<cffunction name="edit" access="public" returntype="string" output="false">
-		<cfargument name="domain" type="component" required="true" />
-		<cfargument name="request" type="struct" default="#{}#" />
-		
-		<cfset var html = '' />
-		
-		<cfsavecontent variable="html">
-			<cfoutput>
-				<p>
-					Form for editing domain (#arguments.domain.getDomainID()#).
-				</p>
-			</cfoutput>
-		</cfsavecontent>
-		
-		<cfreturn html />
 	</cffunction>
 	
 	<cffunction name="filterActive" access="public" returntype="string" output="false">
@@ -87,18 +71,8 @@
 		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewDomain') />
 		
 		<cfset datagrid.addColumn({
-				key = 'path',
-				label = 'path'
-			}) />
-		
-		<cfset datagrid.addColumn({
-				key = 'title',
-				label = 'title'
-			}) />
-		
-		<cfset datagrid.addColumn({
-				key = 'type',
-				label = 'type'
+				key = 'domain',
+				label = 'domain'
 			}) />
 		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />

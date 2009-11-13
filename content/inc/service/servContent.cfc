@@ -35,7 +35,10 @@
 			<!--- TODO Check for user connection --->
 		</cfquery>
 		
-		<cfset content.deserialize(result) />
+		
+		<cfif result.recordCount>
+			<cfset content.deserialize(result) />
+		</cfif>
 		
 		<cfreturn content />
 	</cffunction>
@@ -64,6 +67,14 @@
 				ON c."domainID" = d."domainID"
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
+			
+			<cfif structKeyExists(arguments.filter, 'search') AND arguments.filter.search NEQ ''>
+				AND (
+					p."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					OR c."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+				)
+			</cfif>
 			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
@@ -118,9 +129,9 @@
 		<!--- TODO Check user permissions --->
 		
 		<cfif arguments.content.getContentID()>
-			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content. (' & arguments.content.getContentID() & ')', arguments.currUser.getUserID()) />
 		<cfelse>
-			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content. (' & arguments.content.getContentID() & ')', arguments.currUser.getUserID()) />
 		</cfif>
 		
 		<!--- TODO Check if publishing the content --->
