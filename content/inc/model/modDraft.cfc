@@ -11,14 +11,9 @@
 				defaultValue = 0
 			) />
 		
-		<!--- Archived On --->
+		<!--- Draft --->
 		<cfset addAttribute(
-				attribute = 'archivedOn'
-			) />
-		
-		<!--- Content --->
-		<cfset addAttribute(
-				attribute = 'content'
+				attribute = 'draft'
 			) />
 		
 		<!--- CreatedOn --->
@@ -26,35 +21,18 @@
 				attribute = 'createdOn'
 			) />
 		
-		<!--- Domain ID --->
+		<!--- PublishOn --->
 		<cfset addAttribute(
-				attribute = 'domainID',
-				defaultValue = 0
+				attribute = 'publishOn'
 			) />
 		
-		<!--- Expires On --->
+		<!--- UpdatedOn --->
 		<cfset addAttribute(
-				attribute = 'expiresOn'
-			) />
-		
-		<!--- Modified On --->
-		<cfset addAttribute(
-				attribute = 'modifiedOn'
-			) />
-		
-		<!--- Title --->
-		<cfset addAttribute(
-				attribute = 'title'
-			) />
-		
-		<!--- Type ID --->
-		<cfset addAttribute(
-				attribute = 'typeID',
-				defaultValue = 0
+				attribute = 'updatedOn'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modContent') />
+		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modDraft') />
 		
 		<cfreturn this />
 	</cffunction>

@@ -502,8 +502,9 @@
 				"resourceID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."resource_resourceID_seq"'::regclass),
 				resource character varying(155) NOT NULL,
 				file character varying(255) NOT NULL,
+				"archivedOn" timestamp without time zone NULL,
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
-				"isDeprecated" boolean NOT NULL DEFAULT false,
+				"deprecatedOn" timestamp without time zone NULL,
 				"isPublic" boolean NOT NULL DEFAULT false,
 				CONSTRAINT "resource_resourceID_PK" PRIMARY KEY ("resourceID")
 			)

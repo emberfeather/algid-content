@@ -5,9 +5,9 @@
 		
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
-		<!--- Content ID --->
+		<!--- Theme ID --->
 		<cfset addAttribute(
-				attribute = 'contentID',
+				attribute = 'themeID',
 				defaultValue = 0
 			) />
 		
@@ -16,45 +16,28 @@
 				attribute = 'archivedOn'
 			) />
 		
-		<!--- Content --->
+		<!--- Directory --->
 		<cfset addAttribute(
-				attribute = 'content'
+				attribute = 'directory'
 			) />
 		
-		<!--- CreatedOn --->
+		<!--- Is Public? --->
 		<cfset addAttribute(
-				attribute = 'createdOn'
+				attribute = 'isPublic'
 			) />
 		
-		<!--- Domain ID --->
+		<!--- Levels --->
 		<cfset addAttribute(
-				attribute = 'domainID',
-				defaultValue = 0
+				attribute = 'levels'
 			) />
 		
-		<!--- Expires On --->
+		<!--- Theme --->
 		<cfset addAttribute(
-				attribute = 'expiresOn'
-			) />
-		
-		<!--- Modified On --->
-		<cfset addAttribute(
-				attribute = 'modifiedOn'
-			) />
-		
-		<!--- Title --->
-		<cfset addAttribute(
-				attribute = 'title'
-			) />
-		
-		<!--- Type ID --->
-		<cfset addAttribute(
-				attribute = 'typeID',
-				defaultValue = 0
+				attribute = 'theme'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modContent') />
+		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modTheme') />
 		
 		<cfreturn this />
 	</cffunction>
