@@ -12,7 +12,7 @@
 		
 		<!--- TODO Archive the content --->
 		
-		<cfset eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content. ' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+		<cfset eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
 	</cffunction>
 	
 	<cffunction name="getContent" access="public" returntype="component" output="false">
@@ -114,7 +114,7 @@
 		<!--- TODO Check for user permission --->
 		
 		<!--- TODO Check if publishing the content --->
-		<cfset eventLog.logEvent('content', 'contentPublish', 'Published the ''' & arguments.content.getTitle() & ''' content.' & arguments.content.getContentID(), arguments.currUser.getUserID()) />
+		<cfset eventLog.logEvent('content', 'contentPublish', 'Published the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
 	</cffunction>
 	
 	<cffunction name="setContent" access="public" returntype="void" output="false">
@@ -129,9 +129,9 @@
 		<!--- TODO Check user permissions --->
 		
 		<cfif arguments.content.getContentID()>
-			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content. (' & arguments.content.getContentID() & ')', arguments.currUser.getUserID()) />
+			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
 		<cfelse>
-			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content. (' & arguments.content.getContentID() & ')', arguments.currUser.getUserID()) />
+			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
 		</cfif>
 		
 		<!--- TODO Check if publishing the content --->

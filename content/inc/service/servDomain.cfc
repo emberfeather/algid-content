@@ -20,7 +20,7 @@
 						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
 				</cfquery>
 			
-			<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain. ' & arguments.domain.getDomainID(), arguments.currUser.getUserID()) />
+			<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
 		</cftransaction>
 	</cffunction>
 	
@@ -108,8 +108,8 @@
 		
 		<!--- TODO Check user permissions --->
 		
-		<cftransaction>
-			<cfif arguments.domain.getDomainID()>
+		<cfif arguments.domain.getDomainID()>
+			<cftransaction>
 				<cfquery datasource="#variables.datasource.name#" result="results">
 					UPDATE "#variables.datasource.prefix#content"."domain"
 					SET
@@ -118,9 +118,11 @@
 					WHERE
 						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
 				</cfquery>
-				
-				<cfset eventLog.logEvent('content', 'domainUpdate', 'Updated the ''' & arguments.domain.getDomain() & ''' domain. (' & arguments.domain.getDomainID() & ')', arguments.currUser.getUserID()) />
-			<cfelse>
+			</cftransaction>
+			
+			<cfset eventLog.logEvent('content', 'domainUpdate', 'Updated the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+		<cfelse>
+			<cftransaction>
 				<cfquery datasource="#variables.datasource.name#" result="results">
 					INSERT INTO "#variables.datasource.prefix#content"."domain"
 					(
@@ -141,9 +143,9 @@
 					
 					<cfset domain.setDomainID(results.newID) />
 				</cfif>
-				
-				<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain. (' & arguments.domain.getDomainID() & ')', arguments.currUser.getUserID()) />
-			</cfif>
-		</cftransaction>
+			</cftransaction>
+			
+			<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+		</cfif>
 	</cffunction>
 </cfcomponent>
