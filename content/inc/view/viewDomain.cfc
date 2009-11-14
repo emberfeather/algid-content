@@ -75,6 +75,22 @@
 				label = 'domain'
 			}) />
 		
+		<cfset datagrid.addColumn({
+				class = 'phantom align-right',
+				value = [ 'delete', 'edit' ],
+				link = [
+					{
+						'domain' = 'domainID',
+						'_base' = '.admin.domain.archive'
+					},
+					{
+						'domain' = 'domainID',
+						'_base' = '.admin.domain.edit'
+					}
+				],
+				linkClass = [ 'delete', '' ]
+			}) />
+		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
 	</cffunction>
 </cfcomponent>

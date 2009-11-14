@@ -1,5 +1,5 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
-	<cffunction name="deleteDomain" access="public" returntype="component" output="false">
+	<cffunction name="archiveDomain" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="domain" type="component" required="true" />
 		
@@ -10,9 +10,18 @@
 		
 		<!--- TODO Check user permissions --->
 		
-		<!--- TODO Delete the domain --->
-		
-		<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain. ' & arguments.domain.getDomainID(), arguments.currUser.getUserID()) />
+		<!--- Archive the domain --->
+		<cftransaction>
+			<cfquery datasource="#variables.datasource.name#" result="results">
+					UPDATE "#variables.datasource.prefix#content"."domain"
+					SET
+						"archivedOn" = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+					WHERE
+						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
+				</cfquery>
+			
+			<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain. ' & arguments.domain.getDomainID(), arguments.currUser.getUserID()) />
+		</cftransaction>
 	</cffunction>
 	
 	<cffunction name="getDomain" access="public" returntype="component" output="false">
@@ -44,6 +53,7 @@
 		<cfargument name="filter" type="struct" default="#{}#" />
 		
 		<cfset var defaults = {
+				isArchived = false,
 				orderBy = 'domain',
 				orderSort = 'asc'
 			} />
@@ -61,6 +71,10 @@
 				AND (
 					"domain" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'isArchived')>
+				AND "archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
 			
 			ORDER BY
@@ -99,7 +113,8 @@
 				<cfquery datasource="#variables.datasource.name#" result="results">
 					UPDATE "#variables.datasource.prefix#content"."domain"
 					SET
-						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />,
+						"archivedOn" = NULL
 					WHERE
 						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
 				</cfquery>
