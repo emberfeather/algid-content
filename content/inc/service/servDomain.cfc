@@ -115,6 +115,18 @@
 					)
 				</cfquery>
 				
+				<cfif structKeyExists(results, 'generatedKey')>
+					<cfset domain.setDomainID(listGetAt(results.generatedKey, 1)) />
+				<cfelse>
+					<cfquery datasource="#variables.datasource.name#" result="results">
+						SELECT MAX("domainID") AS newID
+						FROM "#variables.datasource.prefix#content"."domain"
+						WHERE "domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+					</cfquery>
+					
+					<cfset domain.setDomainID(results.newID) />
+				</cfif>
+				
 				<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain. (' & arguments.domain.getDomainID() & ')', arguments.currUser.getUserID()) />
 			</cfif>
 		</cftransaction>

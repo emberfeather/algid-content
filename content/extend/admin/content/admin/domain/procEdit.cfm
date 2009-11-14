@@ -9,6 +9,9 @@
 	
 	<cfset servDomain.setDomain( SESSION.managers.singleton.getUser(), domain ) />
 	
+	<!--- Add a success message --->
+	<cfset SESSION.managers.singleton.getSuccess().addMessages('The domain ''' & domain.getDomain() & ''' (' & domain.getDomainID() & ') was successfully saved.') />
+	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '.admin.domain.list') />
 	
