@@ -3,6 +3,7 @@
 		<cfargument name="domains" type="query" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
+		<cfset var element = '' />
 		<cfset var i18n = '' />
 		<cfset var theForm = '' />
 		<cfset var theURL = '' />
@@ -19,7 +20,6 @@
 				label = "title",
 				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : '' )
 			}) />
-			
 		
 		<!--- Select --->
 		<cfset element = {
