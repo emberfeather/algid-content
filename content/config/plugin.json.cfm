@@ -30,6 +30,10 @@
 		"tagger": "0.1.1",
 		"user": "0.1.1"
 	},
+	"requestSingletons": {
+	},
+	"requestTransients": {
+	},
 	"sessionSingletons": {
 	},
 	"sessionTransients": {

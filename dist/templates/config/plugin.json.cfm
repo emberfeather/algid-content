@@ -30,6 +30,10 @@
 		"tagger": "@prerequisites.tagger@",
 		"user": "@prerequisites.user@"
 	},
+	"requestSingletons": {
+	},
+	"requestTransients": {
+	},
 	"sessionSingletons": {
 	},
 	"sessionTransients": {
