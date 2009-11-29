@@ -14,12 +14,12 @@
 		<!--- Archive the domain --->
 		<cftransaction>
 			<cfquery datasource="#variables.datasource.name#" result="results">
-					UPDATE "#variables.datasource.prefix#content"."domain"
-					SET
-						"archivedOn" = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
-					WHERE
-						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
-				</cfquery>
+				UPDATE "#variables.datasource.prefix#content"."domain"
+				SET
+					"archivedOn" = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+				WHERE
+					"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
+			</cfquery>
 		</cftransaction>
 		
 		<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
@@ -123,30 +123,56 @@
 			
 			<cfset eventLog.logEvent('content', 'domainUpdate', 'Updated the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
 		<cfelse>
-			<cftransaction>
-				<cfquery datasource="#variables.datasource.name#" result="results">
-					INSERT INTO "#variables.datasource.prefix#content"."domain"
-					(
-						"domain"
-					) VALUES (
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
-					)
-				</cfquery>
-				
-				<cfif structKeyExists(results, 'generatedKey')>
-					<cfset domain.setDomainID(listGetAt(results.generatedKey, 1)) />
-				<cfelse>
+			<!--- Check for archived domain --->
+			<cfquery datasource="#variables.datasource.name#" name="results">
+				SELECT "domain"
+				FROM "#variables.datasource.prefix#content"."domain"
+				WHERE
+					"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+					AND "archivedOn" IS NULL
+			</cfquery>
+			
+			<!--- Check if we found an existing domain --->
+			<cfif results.recordCount GT 0>
+				<!--- Unarchive the domain --->
+				<cftransaction>
 					<cfquery datasource="#variables.datasource.name#" result="results">
-						SELECT MAX("domainID") AS newID
-						FROM "#variables.datasource.prefix#content"."domain"
-						WHERE "domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+						UPDATE "#variables.datasource.prefix#content"."domain"
+						SET
+							"archivedOn" = NULL
+						WHERE
+							"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+					</cfquery>
+				</cftransaction>
+				
+				<cfset eventLog.logEvent('content', 'domainCreate', 'Unarchived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+			<cfelse>
+				<!--- Insert as a new domain --->
+				<cftransaction>
+					<cfquery datasource="#variables.datasource.name#" result="results">
+						INSERT INTO "#variables.datasource.prefix#content"."domain"
+						(
+							"domain"
+						) VALUES (
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+						)
 					</cfquery>
 					
-					<cfset domain.setDomainID(results.newID) />
-				</cfif>
-			</cftransaction>
-			
-			<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+					<cfif structKeyExists(results, 'generatedKey')>
+						<cfset domain.setDomainID(listGetAt(results.generatedKey, 1)) />
+					<cfelse>
+						<cfquery datasource="#variables.datasource.name#" result="results">
+							SELECT MAX("domainID") AS newID
+							FROM "#variables.datasource.prefix#content"."domain"
+							WHERE "domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+						</cfquery>
+						
+						<cfset domain.setDomainID(results.newID) />
+					</cfif>
+				</cftransaction>
+				
+				<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+			</cfif>
 		</cfif>
 	</cffunction>
 </cfcomponent>
