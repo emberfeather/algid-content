@@ -20,9 +20,9 @@
 					WHERE
 						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
 				</cfquery>
-			
-			<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
 		</cftransaction>
+		
+		<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
 	</cffunction>
 	
 	<cffunction name="getDomain" access="public" returntype="component" output="false">
