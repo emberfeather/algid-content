@@ -161,7 +161,7 @@
 					<cfif structKeyExists(results, 'generatedKey')>
 						<cfset domain.setDomainID(listGetAt(results.generatedKey, 1)) />
 					<cfelse>
-						<cfquery datasource="#variables.datasource.name#" result="results">
+						<cfquery name="results" datasource="#variables.datasource.name#">
 							SELECT MAX("domainID") AS newID
 							FROM "#variables.datasource.prefix#content"."domain"
 							WHERE "domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
