@@ -129,7 +129,7 @@
 				FROM "#variables.datasource.prefix#content"."domain"
 				WHERE
 					"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
-					AND "archivedOn" IS NULL
+					AND "archivedOn" IS NOT NULL
 			</cfquery>
 			
 			<!--- Check if we found an existing domain --->

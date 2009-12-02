@@ -222,7 +222,8 @@
 				"domain" character varying(150) NOT NULL,
 				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
 				"archivedOn" timestamp without time zone,
-				CONSTRAINT "domain_domainID_PK" PRIMARY KEY ("domainID")
+				CONSTRAINT "domain_domainID_PK" PRIMARY KEY ("domainID"),
+				CONSTRAINT "domain_domain_U" UNIQUE (domain)
 			)
 			WITH (OIDS=FALSE);
 		</cfquery>
