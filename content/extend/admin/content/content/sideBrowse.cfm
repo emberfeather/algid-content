@@ -1,4 +1,4 @@
-<cfset viewContent = application.factories.transient.getViewContentForContent( transport ) />
+<cfset viewContent = transport.theApplication.factories.transient.getViewContentForContent( transport ) />
 
 <cfset filter = {
 		'domain' = CGI.SERVER_NAME,

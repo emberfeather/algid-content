@@ -1,4 +1,4 @@
-<cfset servDomain = application.factories.transient.getServDomainForContent(application.app.getDSUpdate(), transport) />
+<cfset servDomain = transport.theApplication.factories.transient.getServDomainForContent(application.app.getDSUpdate(), transport) />
 
 <!--- Retrieve the object --->
 <cfset domain = servDomain.getDomain( SESSION.managers.singleton.getUser(), theURL.searchID('domain') ) />
