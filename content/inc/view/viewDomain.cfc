@@ -56,7 +56,7 @@
 		<cfreturn filter.toHTML(variables.transport.theRequest.managers.singleton.getURL()) />
 	</cffunction>
 	
-	<cffunction name="list" access="public" returntype="string" output="false">
+	<cffunction name="datagrid" access="public" returntype="string" output="false">
 		<cfargument name="data" type="any" required="true" />
 		<cfargument name="options" type="struct" default="#{}#" />
 		
