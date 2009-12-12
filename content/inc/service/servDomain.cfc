@@ -35,7 +35,7 @@
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		
-		<cfset domain = variables.transport.theApplication.factories.transient.getModDomainForContent( i18n, variables.transport.locale ) />
+		<cfset domain = variables.transport.theApplication.factories.transient.getModDomainForContent( i18n, variables.transport.theSession.locale ) />
 		
 		<cfquery name="result" datasource="#variables.datasource.name#">
 			SELECT "domainID", "domain", "createdOn", "archivedOn"
