@@ -68,17 +68,17 @@
 			FROM "#variables.datasource.prefix#content"."domain"
 			WHERE 1=1
 			
-			<cfif structKeyExists(arguments.filter, 'search') AND arguments.filter.search NEQ ''>
-				AND (
+			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
+				and (
 					"domain" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
-				AND "archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
+				and "archivedOn" IS <cfif arguments.filter.isArchived>not</cfif> NULL
 			</cfif>
 			
-			ORDER BY
+			orDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfdefaultcase>
 					"domain" #arguments.filter.orderSort#
@@ -129,11 +129,11 @@
 				FROM "#variables.datasource.prefix#content"."domain"
 				WHERE
 					"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
-					AND "archivedOn" IS NOT NULL
+					and "archivedOn" IS not NULL
 			</cfquery>
 			
 			<!--- Check if we found an existing domain --->
-			<cfif results.recordCount GT 0>
+			<cfif results.recordCount gt 0>
 				<!--- Unarchive the domain --->
 				<cftransaction>
 					<cfquery datasource="#variables.datasource.name#" result="results">

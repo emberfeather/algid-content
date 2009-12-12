@@ -6,7 +6,7 @@
 		<cfset var versions = createObject('component', 'algid.inc.resource.utility.version').init() />
 		
 		<!--- fresh => 0.1.0 --->
-		<cfif versions.compareVersions(arguments.installedVersion, '0.1.0') LT 0>
+		<cfif versions.compareVersions(arguments.installedVersion, '0.1.0') lt 0>
 			<!--- Setup the Database --->
 			<cfswitch expression="#variables.datasource.type#">
 				<cfcase value="PostgreSQL">
@@ -20,7 +20,7 @@
 		</cfif>
 		
 		<!--- => 0.1.0 --->
-		<cfif versions.compareVersions(arguments.installedVersion, '0.1.1') LT 0>
+		<cfif versions.compareVersions(arguments.installedVersion, '0.1.1') lt 0>
 			<!--- Setup the Database --->
 			<cfswitch expression="#variables.datasource.type#">
 				<cfcase value="PostgreSQL">
@@ -45,7 +45,7 @@
 		<!--- Content Schema --->
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE SCHEMA "#variables.datasource.prefix#content"
-				AUTHORIZATION #variables.datasource.owner#;
+				AUTHorIZATION #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -53,12 +53,12 @@
 		</cfquery>
 		
 		<!---
-			SEQUENCES
+			SeqUENCES
 		--->
 		
 		<!--- Attribute Option Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."attributeOption_attributeOptionID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."attributeOption_attributeOptionID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -67,12 +67,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."attributeOption_attributeOptionID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."attributeOption_attributeOptionID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Attribute Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."attribute_attributeID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."attribute_attributeID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -81,12 +81,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."attribute_attributeID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."attribute_attributeID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Content Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."content_contentID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."content_contentID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -95,12 +95,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."content_contentID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."content_contentID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Domain Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."domain_domainID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."domain_domainID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -109,12 +109,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."domain_domainID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."domain_domainID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Meta Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."meta_metaID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."meta_metaID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -123,12 +123,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."meta_metaID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."meta_metaID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Navigation Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."navigation_navigationID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."navigation_navigationID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -137,12 +137,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."navigation_navigationID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."navigation_navigationID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Path Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."path_pathID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."path_pathID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -151,12 +151,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."path_pathID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."path_pathID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Permalink Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."permalink_permalinkID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."permalink_permalinkID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -165,12 +165,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."permalink_permalinkID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."permalink_permalinkID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Resource Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."resource_resourceID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."resource_resourceID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -179,12 +179,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."resource_resourceID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."resource_resourceID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Theme Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."theme_themeID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."theme_themeID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -193,12 +193,12 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."theme_themeID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."theme_themeID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!--- Type Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."type_typeID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."type_typeID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -207,7 +207,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."type_typeID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."type_typeID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!---
@@ -218,9 +218,9 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."domain"
 			(
-				"domainID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."domain_domainID_seq"'::regclass),
-				"domain" character varying(150) NOT NULL,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"domainID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."domain_domainID_seq"'::regclass),
+				"domain" character varying(150) not NULL,
+				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "domain_domainID_PK" PRIMARY KEY ("domainID"),
 				CONSTRAINT "domain_domain_U" UNIQUE (domain)
@@ -229,7 +229,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."domain" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."domain" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -241,11 +241,11 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".theme
 			(
-				"themeID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."theme_themeID_seq"'::regclass),
-				theme character varying(50) NOT NULL,
-				directory character varying(50) NOT NULL,
-				levels smallint NOT NULL DEFAULT 1,
-				"isPublic" boolean NOT NULL DEFAULT true,
+				"themeID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."theme_themeID_seq"'::regclass),
+				theme character varying(50) not NULL,
+				directory character varying(50) not NULL,
+				levels smallint not NULL DEFAUlt 1,
+				"isPublic" boolean not NULL DEFAUlt true,
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "theme_themeID_PK" PRIMARY KEY ("themeID")
 			)
@@ -253,7 +253,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".theme OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".theme OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -264,15 +264,15 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."type"
 			(
-				"typeID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."type_typeID_seq"'::regclass),
-				"type" character varying(50) NOT NULL,
+				"typeID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."type_typeID_seq"'::regclass),
+				"type" character varying(50) not NULL,
 				CONSTRAINT "type_PK" PRIMARY KEY ("typeID")
 			)
 			WITH (OIDS=FALSE);
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."type" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."type" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -283,13 +283,13 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".attribute
 			(
-				"attributeID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."attribute_attributeID_seq"'::regclass),
-				"themeID" integer NOT NULL,
-				attribute character varying(100) NOT NULL,
-				"key" character varying(25) NOT NULL,
-				"hasCustom" boolean NOT NULL DEFAULT true,
+				"attributeID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."attribute_attributeID_seq"'::regclass),
+				"themeID" integer not NULL,
+				attribute character varying(100) not NULL,
+				"key" character varying(25) not NULL,
+				"hasCustom" boolean not NULL DEFAUlt true,
 				CONSTRAINT "attribute_PK" PRIMARY KEY ("attributeID"),
-				CONSTRAINT "attribute_themeID_FK" FOREIGN KEY ("themeID")
+				CONSTRAINT "attribute_themeID_FK" ForEIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
 				CONSTRAINT "attribute_themeID_key_u" UNIQUE ("themeID", key)
@@ -298,7 +298,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".attribute OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".attribute OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -309,12 +309,12 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."attributeOption"
 			(
-				"attributeOptionID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."attributeOption_attributeOptionID_seq"'::regclass),
-				"attributeID" integer NOT NULL,
-				label character varying(100) NOT NULL,
-				"value" character varying(50) NOT NULL,
+				"attributeOptionID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."attributeOption_attributeOptionID_seq"'::regclass),
+				"attributeID" integer not NULL,
+				label character varying(100) not NULL,
+				"value" character varying(50) not NULL,
 				CONSTRAINT "attributeOption_PK" PRIMARY KEY ("attributeOptionID"),
-				CONSTRAINT "attributeOption_optionID_FK" FOREIGN KEY ("attributeID")
+				CONSTRAINT "attributeOption_optionID_FK" ForEIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -322,7 +322,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."attributeOption" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."attributeOption" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -333,20 +333,20 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."content"
 			(
-				"contentID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."content_contentID_seq"'::regclass),
-				"domainID" integer NOT NULL,
-				"typeID" integer NOT NULL,
-				title character varying(255) NOT NULL,
-				"content" text NOT NULL,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
-				"updatedOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"contentID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."content_contentID_seq"'::regclass),
+				"domainID" integer not NULL,
+				"typeID" integer not NULL,
+				title character varying(255) not NULL,
+				"content" text not NULL,
+				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
+				"updatedOn" timestamp without time zone not NULL DEFAUlt now(),
 				"expiresOn" timestamp without time zone,
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "content_content_PK" PRIMARY KEY ("contentID"),
-				CONSTRAINT "content_domainID_FK" FOREIGN KEY ("domainID")
+				CONSTRAINT "content_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "content_typeID_FK" FOREIGN KEY ("typeID")
+				CONSTRAINT "content_typeID_FK" ForEIGN KEY ("typeID")
 					REFERENCES "#variables.datasource.prefix#content"."type" ("typeID") MATCH SIMPLE
 					ON UPDATE NO ACTION ON DELETE NO ACTION
 			)
@@ -354,7 +354,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."content" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."content" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -365,13 +365,13 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".draft
 			(
-				"contentID" integer NOT NULL,
-				draft text NOT NULL,
+				"contentID" integer not NULL,
+				draft text not NULL,
 				"publishOn" timestamp without time zone,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
-				"updatedOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
+				"updatedOn" timestamp without time zone not NULL DEFAUlt now(),
 				CONSTRAINT "draft_PK" PRIMARY KEY ("contentID", "createdOn"),
-				CONSTRAINT "draft_contentID_FK" FOREIGN KEY ("contentID")
+				CONSTRAINT "draft_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -379,7 +379,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".draft OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".draft OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -390,12 +390,12 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".meta
 			(
-				"metaID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."meta_metaID_seq"'::regclass),
-				"contentID" integer NOT NULL,
-				"name" character varying(35) NOT NULL,
-				"value" text NOT NULL,
+				"metaID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."meta_metaID_seq"'::regclass),
+				"contentID" integer not NULL,
+				"name" character varying(35) not NULL,
+				"value" text not NULL,
 				CONSTRAINT "meta_PK" PRIMARY KEY ("metaID"),
-				CONSTRAINT "meta_contentID_FK" FOREIGN KEY ("contentID")
+				CONSTRAINT "meta_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE NO ACTION ON DELETE NO ACTION
 			)
@@ -403,7 +403,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".meta OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".meta OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -414,13 +414,13 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".navigation
 			(
-				"navigationID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."navigation_navigationID_seq"'::regclass),
-				"level" smallint NOT NULL,
-				navigation character varying(50) NOT NULL,
-				"themeID" integer NOT NULL,
-				"allowGroups" boolean NOT NULL DEFAULT true,
+				"navigationID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."navigation_navigationID_seq"'::regclass),
+				"level" smallint not NULL,
+				navigation character varying(50) not NULL,
+				"themeID" integer not NULL,
+				"allowGroups" boolean not NULL DEFAUlt true,
 				CONSTRAINT "navigation_PK" PRIMARY KEY ("navigationID"),
-				CONSTRAINT "navigation_themeID_FK" FOREIGN KEY ("themeID")
+				CONSTRAINT "navigation_themeID_FK" ForEIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
 				CONSTRAINT "navigation_themeID_level_navigation_u" UNIQUE ("themeID", navigation, level),
@@ -431,7 +431,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".navigation OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".navigation OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -442,23 +442,23 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".path
 			(
-				"pathID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."path_pathID_seq"'::regclass),
-				"contentID" integer NOT NULL,
-				path character varying(300) NOT NULL DEFAULT '/'::character varying,
-				title character varying(255) NOT NULL,
+				"pathID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."path_pathID_seq"'::regclass),
+				"contentID" integer not NULL,
+				path character varying(300) not NULL DEFAUlt '/'::character varying,
+				title character varying(255) not NULL,
 				"groupBy" character varying(100),
-				"orderBy" integer NOT NULL DEFAULT 0,
-				"isActive" bit(1) NOT NULL,
+				"orderBy" integer not NULL DEFAUlt 0,
+				"isActive" bit(1) not NULL,
 				"navigationID" integer,
 				"themeID" integer,
 				CONSTRAINT "path_pathID_PK" PRIMARY KEY ("pathID"),
-				CONSTRAINT "path_contentID_FK" FOREIGN KEY ("contentID")
+				CONSTRAINT "path_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "path_navigationID_FK" FOREIGN KEY ("navigationID")
+				CONSTRAINT "path_navigationID_FK" ForEIGN KEY ("navigationID")
 					REFERENCES "#variables.datasource.prefix#content".navigation ("navigationID") MATCH SIMPLE
 					ON UPDATE RESTRICT ON DELETE RESTRICT,
-				CONSTRAINT "path_themeID_FK" FOREIGN KEY ("themeID")
+				CONSTRAINT "path_themeID_FK" ForEIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE RESTRICT ON DELETE RESTRICT
 			)
@@ -466,7 +466,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".path OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".path OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -477,11 +477,11 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".permalink
 			(
-				"permalinkID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."permalink_permalinkID_seq"'::regclass),
-				"contentID" integer NOT NULL,
-				permalink character varying(100) NOT NULL,
+				"permalinkID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."permalink_permalinkID_seq"'::regclass),
+				"contentID" integer not NULL,
+				permalink character varying(100) not NULL,
 				CONSTRAINT "permalink_permalinkID_PK" PRIMARY KEY ("permalinkID"),
-				CONSTRAINT "permalink_contentID_FK" FOREIGN KEY ("contentID")
+				CONSTRAINT "permalink_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -489,7 +489,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".permalink OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".permalink OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -500,20 +500,20 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content".resource
 			(
-				"resourceID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."resource_resourceID_seq"'::regclass),
-				resource character varying(155) NOT NULL,
-				file character varying(255) NOT NULL,
+				"resourceID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."resource_resourceID_seq"'::regclass),
+				resource character varying(155) not NULL,
+				file character varying(255) not NULL,
 				"archivedOn" timestamp without time zone NULL,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
 				"deprecatedOn" timestamp without time zone NULL,
-				"isPublic" boolean NOT NULL DEFAULT false,
+				"isPublic" boolean not NULL DEFAUlt false,
 				CONSTRAINT "resource_resourceID_PK" PRIMARY KEY ("resourceID")
 			)
 			WITH (OIDS=FALSE);
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content".resource OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content".resource OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -524,18 +524,18 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bContent2Attribute"
 			(
-				"contentID" integer NOT NULL,
-				"attributeID" integer NOT NULL,
+				"contentID" integer not NULL,
+				"attributeID" integer not NULL,
 				"attributeOptionID" integer,
 				"value" character varying(50),
 				CONSTRAINT "bContent2Attribute_PK" PRIMARY KEY ("contentID", "attributeID"),
-				CONSTRAINT "bContent2Attribute_attributeID_FK" FOREIGN KEY ("attributeID")
+				CONSTRAINT "bContent2Attribute_attributeID_FK" ForEIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bContent2Attribute_attributeOptionID_FK" FOREIGN KEY ("attributeOptionID")
+				CONSTRAINT "bContent2Attribute_attributeOptionID_FK" ForEIGN KEY ("attributeOptionID")
 					REFERENCES "#variables.datasource.prefix#content"."attributeOption" ("attributeOptionID") MATCH SIMPLE
 					ON UPDATE SET NULL ON DELETE SET NULL,
-				CONSTRAINT "bContent2Attribute_contentID_FK" FOREIGN KEY ("contentID")
+				CONSTRAINT "bContent2Attribute_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -543,7 +543,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bContent2Attribute" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bContent2Attribute" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -554,14 +554,14 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bContent2Tag"
 			(
-				"contentID" integer NOT NULL,
-				"tagID" integer NOT NULL,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"contentID" integer not NULL,
+				"tagID" integer not NULL,
+				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
 				CONSTRAINT "bContent2Tag_PK" PRIMARY KEY ("contentID", "tagID"),
-				CONSTRAINT "bContent2Tag_contentID_FK" FOREIGN KEY ("contentID")
+				CONSTRAINT "bContent2Tag_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bContent2Tag_tagID_FK" FOREIGN KEY ("tagID")
+				CONSTRAINT "bContent2Tag_tagID_FK" ForEIGN KEY ("tagID")
 					REFERENCES "#variables.datasource.prefix#tagger".tag ("tagID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -569,7 +569,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bContent2Tag" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bContent2Tag" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -580,18 +580,18 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bDomain2Attribute"
 			(
-				"domainID" integer NOT NULL,
-				"attributeID" integer NOT NULL,
+				"domainID" integer not NULL,
+				"attributeID" integer not NULL,
 				"attributeOptionID" integer,
 				"value" character varying(50),
 				CONSTRAINT "bDomain2Attribute_PK" PRIMARY KEY ("domainID", "attributeID"),
-				CONSTRAINT "bDomain2Attribute_attributeID_FK" FOREIGN KEY ("attributeID")
+				CONSTRAINT "bDomain2Attribute_attributeID_FK" ForEIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bDomain2Attribute_attributeOptionID_FK" FOREIGN KEY ("attributeOptionID")
+				CONSTRAINT "bDomain2Attribute_attributeOptionID_FK" ForEIGN KEY ("attributeOptionID")
 					REFERENCES "#variables.datasource.prefix#content"."attributeOption" ("attributeOptionID") MATCH SIMPLE
 					ON UPDATE SET NULL ON DELETE SET NULL,
-				CONSTRAINT "bDomain2Attribute_domainID_FK" FOREIGN KEY ("domainID")
+				CONSTRAINT "bDomain2Attribute_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -599,7 +599,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bDomain2Attribute" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bDomain2Attribute" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -610,18 +610,18 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bDomain2Tag2User"
 			(
-				"domainID" integer NOT NULL,
-				"tagID" integer NOT NULL,
-				"userID" integer NOT NULL,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"domainID" integer not NULL,
+				"tagID" integer not NULL,
+				"userID" integer not NULL,
+				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
 				CONSTRAINT "bDomain2Tag2User_PK" PRIMARY KEY ("domainID", "tagID", "userID"),
-				CONSTRAINT "bDomain2Tag2User_domainID_FK" FOREIGN KEY ("domainID")
+				CONSTRAINT "bDomain2Tag2User_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bDomain2Tag2User_tagID_FK" FOREIGN KEY ("tagID")
+				CONSTRAINT "bDomain2Tag2User_tagID_FK" ForEIGN KEY ("tagID")
 					REFERENCES "#variables.datasource.prefix#tagger".tag ("tagID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bDomain2Tag2User_userID_FK" FOREIGN KEY ("userID")
+				CONSTRAINT "bDomain2Tag2User_userID_FK" ForEIGN KEY ("userID")
 					REFERENCES "#variables.datasource.prefix#user"."user" ("userID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -629,7 +629,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bDomain2Tag2User" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bDomain2Tag2User" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -640,18 +640,18 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bPath2Attribute"
 			(
-				"pathID" integer NOT NULL,
-				"attributeID" integer NOT NULL,
+				"pathID" integer not NULL,
+				"attributeID" integer not NULL,
 				"attributeOptionID" integer,
 				"value" character varying(50),
 				CONSTRAINT "bPath2Attribute_PK" PRIMARY KEY ("pathID", "attributeID"),
-				CONSTRAINT "bPath2Attribute_attributeID_FK" FOREIGN KEY ("attributeID")
+				CONSTRAINT "bPath2Attribute_attributeID_FK" ForEIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bPath2Attribute_attributeOption_FK" FOREIGN KEY ("attributeOptionID")
+				CONSTRAINT "bPath2Attribute_attributeOption_FK" ForEIGN KEY ("attributeOptionID")
 					REFERENCES "#variables.datasource.prefix#content"."attributeOption" ("attributeOptionID") MATCH SIMPLE
 					ON UPDATE SET NULL ON DELETE SET NULL,
-				CONSTRAINT "bPath2Attribute_pathID_FK" FOREIGN KEY ("pathID")
+				CONSTRAINT "bPath2Attribute_pathID_FK" ForEIGN KEY ("pathID")
 					REFERENCES "#variables.datasource.prefix#content".path ("pathID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -659,7 +659,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bPath2Attribute" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bPath2Attribute" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -670,15 +670,15 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bPath2Tag"
 			(
-				"pathID" integer NOT NULL,
-				"tagID" integer NOT NULL,
-				"isRecursive" boolean NOT NULL DEFAULT false,
-				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"pathID" integer not NULL,
+				"tagID" integer not NULL,
+				"isRecursive" boolean not NULL DEFAUlt false,
+				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
 				CONSTRAINT "bPath2Tag_PK" PRIMARY KEY ("pathID", "tagID"),
-				CONSTRAINT "bPath2Tag_pathID_FK" FOREIGN KEY ("pathID")
+				CONSTRAINT "bPath2Tag_pathID_FK" ForEIGN KEY ("pathID")
 					REFERENCES "#variables.datasource.prefix#content".path ("pathID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bPath2Tag_tagID_FK" FOREIGN KEY ("tagID")
+				CONSTRAINT "bPath2Tag_tagID_FK" ForEIGN KEY ("tagID")
 					REFERENCES "#variables.datasource.prefix#tagger".tag ("tagID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -686,7 +686,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bPath2Tag" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bPath2Tag" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -697,13 +697,13 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bResource2Content"
 			(
-				"resourceID" integer NOT NULL,
-				"contentID" integer NOT NULL,
+				"resourceID" integer not NULL,
+				"contentID" integer not NULL,
 				CONSTRAINT "bResource2Content_PK" PRIMARY KEY ("resourceID", "contentID"),
-				CONSTRAINT "bResource2Content_contentID_FK" FOREIGN KEY ("contentID")
+				CONSTRAINT "bResource2Content_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bResource2Content_resourceID_FK" FOREIGN KEY ("resourceID")
+				CONSTRAINT "bResource2Content_resourceID_FK" ForEIGN KEY ("resourceID")
 					REFERENCES "#variables.datasource.prefix#content".resource ("resourceID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -711,7 +711,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bResource2Content" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bResource2Content" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -722,13 +722,13 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bResource2Domain"
 			(
-				"domainID" integer NOT NULL,
-				"resourceID" integer NOT NULL,
+				"domainID" integer not NULL,
+				"resourceID" integer not NULL,
 				CONSTRAINT "bResource2Domain_PK" PRIMARY KEY ("resourceID", "domainID"),
-				CONSTRAINT "bResource2Domain_domainID_FK" FOREIGN KEY ("domainID")
+				CONSTRAINT "bResource2Domain_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bResource2Domain_resourceID_FK" FOREIGN KEY ("resourceID")
+				CONSTRAINT "bResource2Domain_resourceID_FK" ForEIGN KEY ("resourceID")
 					REFERENCES "#variables.datasource.prefix#content".resource ("resourceID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -736,7 +736,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bResource2Domain" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bResource2Domain" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -747,13 +747,13 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bResource2Theme"
 			(
-				"resourceID" integer NOT NULL,
-				"themeID" integer NOT NULL,
+				"resourceID" integer not NULL,
+				"themeID" integer not NULL,
 				CONSTRAINT "bResource2Theme_PK" PRIMARY KEY ("resourceID", "themeID"),
-				CONSTRAINT "bResource2Theme_resourceID_FK" FOREIGN KEY ("resourceID")
+				CONSTRAINT "bResource2Theme_resourceID_FK" ForEIGN KEY ("resourceID")
 					REFERENCES "#variables.datasource.prefix#content".resource ("resourceID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bResource2Theme_themeID_FK" FOREIGN KEY ("themeID")
+				CONSTRAINT "bResource2Theme_themeID_FK" ForEIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -761,7 +761,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bResource2Theme" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bResource2Theme" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -772,13 +772,13 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."bTheme2Domain"
 			(
-				"themeID" integer NOT NULL,
-				"domainID" integer NOT NULL,
+				"themeID" integer not NULL,
+				"domainID" integer not NULL,
 				CONSTRAINT "bTheme2Domain_PK" PRIMARY KEY ("themeID", "domainID"),
-				CONSTRAINT "bTheme2Domain_domainID_FK" FOREIGN KEY ("domainID")
+				CONSTRAINT "bTheme2Domain_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bTheme2Domain_themeID_FK" FOREIGN KEY ("themeID")
+				CONSTRAINT "bTheme2Domain_themeID_FK" ForEIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -786,7 +786,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."bTheme2Domain" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."bTheme2Domain" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -799,12 +799,12 @@
 	--->
 	<cffunction name="postgreSQL0_1_1" access="public" returntype="void" output="false">
 		<!---
-			SEQUENCES
+			SeqUENCES
 		--->
 		
 		<!--- Attribute Option Sequence --->
 		<cfquery datasource="#variables.datasource.name#">
-			CREATE SEQUENCE "#variables.datasource.prefix#content"."host_hostID_seq"
+			CREATE SeqUENCE "#variables.datasource.prefix#content"."host_hostID_seq"
 				INCREMENT 1
 				MINVALUE 1
 				MAXVALUE 9223372036854775807
@@ -813,7 +813,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."host_hostID_seq" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."host_hostID_seq" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<!---
@@ -824,12 +824,12 @@
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE TABLE "#variables.datasource.prefix#content"."host"
 			(
-				"hostID" integer NOT NULL DEFAULT nextval('#variables.datasource.prefix#content."host_hostID_seq"'::regclass),
-				"domainID" integer NOT NULL,
-				hostname character varying(255) NOT NULL,
-				"hasSSL" boolean NOT NULL DEFAULT false,
+				"hostID" integer not NULL DEFAUlt nextval('#variables.datasource.prefix#content."host_hostID_seq"'::regclass),
+				"domainID" integer not NULL,
+				hostname character varying(255) not NULL,
+				"hasSSL" boolean not NULL DEFAUlt false,
 				CONSTRAINT "host_PK" PRIMARY KEY ("hostID"),
-				CONSTRAINT "host_domainID_FK" FOREIGN KEY ("domainID")
+				CONSTRAINT "host_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
 				CONSTRAINT "host_hostname_U" UNIQUE (hostname)
@@ -838,7 +838,7 @@
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."host" OWNER TO #variables.datasource.owner#;
+			AlteR TABLE "#variables.datasource.prefix#content"."host" OWNER TO #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">

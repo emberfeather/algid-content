@@ -65,18 +65,18 @@
 				ON c."typeID" = t."typeID"
 			JOIN "#variables.datasource.prefix#content"."domain" AS d
 				ON c."domainID" = d."domainID"
-					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+					and d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
 			
-			<cfif structKeyExists(arguments.filter, 'search') AND arguments.filter.search NEQ ''>
-				AND (
+			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
+				and (
 					p."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
-					OR c."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
-					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					or c."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					or p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
 			
-			ORDER BY
+			orDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="updatedOn">
 					p."path" #arguments.filter.orderSort#

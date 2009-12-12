@@ -3,5 +3,5 @@
 <cfset domains = servDomain.getDomains() />
 
 <cfoutput>
-	#viewContent.add(domains, FORM)#
+	#viewContent.add(domains, ForM)#
 </cfoutput>
