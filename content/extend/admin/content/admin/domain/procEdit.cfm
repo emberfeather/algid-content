@@ -3,9 +3,9 @@
 <!--- Retrieve the object --->
 <cfset domain = servDomain.getDomain( session.managers.singleton.getUser(), theURL.searchID('domain') ) />
 
-<cfif CGI.ReqUEST_METHOD eq 'post'>
+<cfif cgi.request_method eq 'post'>
 	<!--- Process the form submission --->
-	<cfset domain.deserialize(ForM) />
+	<cfset domain.deserialize(form) />
 	
 	<cfset servDomain.setDomain( session.managers.singleton.getUser(), domain ) />
 	

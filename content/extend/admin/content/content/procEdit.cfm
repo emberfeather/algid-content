@@ -3,6 +3,6 @@
 <!--- Retrieve the object --->
 <cfset content = servContent.getContent( session.managers.singleton.getUser(), theURL.searchID('content') ) />
 
-<cfif CGI.ReqUEST_METHOD eq 'post'>
+<cfif cgi.request_method eq 'post'>
 	<!--- Process the form submission --->
 </cfif>
