@@ -65,7 +65,7 @@
 		
 		<cfset arguments.options.theURL = variables.transport.theRequest.managers.singleton.getURL() />
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.theSession.locale) />
+		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.theSession.managers.singleton.getSession().getLocale()) />
 		
 		<!--- Add the resource bundle for the view --->
 		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewDomain') />

@@ -1,4 +1,4 @@
-<cfset servDomain = transport.theApplication.factories.transient.getServDomainForContent(application.app.getDSUpdate(), transport) />
+<cfset servDomain = transport.theApplication.factories.transient.getServDomainForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Update the URL and redirect --->

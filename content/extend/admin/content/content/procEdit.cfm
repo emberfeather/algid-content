@@ -1,4 +1,4 @@
-<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(application.app.getDSUpdate(), transport) />
+<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
 
 <!--- Retrieve the object --->
 <cfset content = servContent.getContent( session.managers.singleton.getUser(), theURL.searchID('content') ) />

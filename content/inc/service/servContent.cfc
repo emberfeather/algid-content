@@ -25,7 +25,7 @@
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		
-		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, variables.transport.theSession.locale ) />
+		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
 		
 		<cfquery name="result" datasource="#variables.datasource.name#">
 			SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
