@@ -1,36 +1,37 @@
 <cfcomponent extends="algid.inc.resource.plugin.configure" output="false">
-	<cffunction name="update" access="public" returntype="void" output="false">
-		<cfargument name="plugin" type="struct" required="true" />
-		<cfargument name="installedVersion" type="string" default="" />
+	<cffunction name="inContent" access="public" returntype="boolean" output="false">
+		<cfargument name="theApplication" type="struct" required="true" />
+		<cfargument name="targetPage" type="string" required="true" />
 		
-		<cfset var versions = createObject('component', 'algid.inc.resource.utility.version').init() />
+		<cfset var path = '' />
 		
-		<!--- fresh => 0.1.0 --->
-		<cfif versions.compareVersions(arguments.installedVersion, '0.1.0') lt 0>
-			<!--- Setup the Database --->
-			<cfswitch expression="#variables.datasource.type#">
-				<cfcase value="PostgreSQL">
-					<cfset postgreSQL0_1_0() />
-				</cfcase>
-				<cfdefaultcase>
-					<!--- TODO Remove this thow when a later version supports more database types  --->
-					<cfthrow message="Database Type Not Supported" detail="The #variables.datasource.type# database type is not currently supported" />
-				</cfdefaultcase>
-			</cfswitch>
-		</cfif>
+		<!--- Get the path to the base --->
+		<cfset path = arguments.theApplication.managers.singleton.getApplication().getPath()
+			& arguments.theApplication.managers.plugin.getContent().getPath() />
 		
-		<!--- => 0.1.0 --->
-		<cfif versions.compareVersions(arguments.installedVersion, '0.1.1') lt 0>
-			<!--- Setup the Database --->
-			<cfswitch expression="#variables.datasource.type#">
-				<cfcase value="PostgreSQL">
-					<cfset postgreSQL0_1_1() />
-				</cfcase>
-				<cfdefaultcase>
-					<!--- TODO Remove this thow when a later version supports more database types  --->
-					<cfthrow message="Database Type Not Supported" detail="The #variables.datasource.type# database type is not currently supported" />
-				</cfdefaultcase>
-			</cfswitch>
+		<!--- Only pages in the root of path qualify --->
+		<cfreturn reFind('^' & path & '[a-zA-Z0-9-\.]*.cfm$', arguments.targetPage) GT 0 />
+	</cffunction>
+	
+	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
+		<cfargument name="theApplication" type="struct" required="true" />
+		<cfargument name="theSession" type="struct" required="true" />
+		<cfargument name="theRequest" type="struct" required="true" />
+		<cfargument name="targetPage" type="string" required="true" />
+		
+		<cfset var temp = '' />
+		
+		<!--- Only do the following if in the admin area --->
+		<cfif inContent( arguments.theApplication, arguments.targetPage )>
+			<!--- Create a profiler object --->
+			<cfset temp = arguments.theApplication.factories.transient.getProfiler(arguments.theApplication.managers.singleton.getApplication().getEnvironment() neq 'production') />
+			
+			<cfset arguments.theRequest.managers.singleton.setProfiler( temp ) />
+			
+			<!--- Create the URL object for all the admin requests --->
+			<cfset temp = arguments.theApplication.factories.transient.getUrlForContent(URL) />
+			
+			<cfset arguments.theRequest.managers.singleton.setUrl( temp ) />
 		</cfif>
 	</cffunction>
 	
@@ -844,5 +845,40 @@
 		<cfquery datasource="#variables.datasource.name#">
 			COMMENT ON TABLE "#variables.datasource.prefix#content"."host" IS 'Hosts assigned to a domain.';
 		</cfquery>
+	</cffunction>
+	
+	<cffunction name="update" access="public" returntype="void" output="false">
+		<cfargument name="plugin" type="struct" required="true" />
+		<cfargument name="installedVersion" type="string" default="" />
+		
+		<cfset var versions = createObject('component', 'algid.inc.resource.utility.version').init() />
+		
+		<!--- fresh => 0.1.0 --->
+		<cfif versions.compareVersions(arguments.installedVersion, '0.1.0') lt 0>
+			<!--- Setup the Database --->
+			<cfswitch expression="#variables.datasource.type#">
+				<cfcase value="PostgreSQL">
+					<cfset postgreSQL0_1_0() />
+				</cfcase>
+				<cfdefaultcase>
+					<!--- TODO Remove this thow when a later version supports more database types  --->
+					<cfthrow message="Database Type Not Supported" detail="The #variables.datasource.type# database type is not currently supported" />
+				</cfdefaultcase>
+			</cfswitch>
+		</cfif>
+		
+		<!--- => 0.1.0 --->
+		<cfif versions.compareVersions(arguments.installedVersion, '0.1.1') lt 0>
+			<!--- Setup the Database --->
+			<cfswitch expression="#variables.datasource.type#">
+				<cfcase value="PostgreSQL">
+					<cfset postgreSQL0_1_1() />
+				</cfcase>
+				<cfdefaultcase>
+					<!--- TODO Remove this thow when a later version supports more database types  --->
+					<cfthrow message="Database Type Not Supported" detail="The #variables.datasource.type# database type is not currently supported" />
+				</cfdefaultcase>
+			</cfswitch>
+		</cfif>
 	</cffunction>
 </cfcomponent>
