@@ -76,7 +76,7 @@
 				)
 			</cfif>
 			
-			orDER BY
+			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="updatedOn">
 					p."path" #arguments.filter.orderSort#

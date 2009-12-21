@@ -78,7 +78,7 @@
 				and "archivedOn" IS <cfif arguments.filter.isArchived>not</cfif> NULL
 			</cfif>
 			
-			orDER BY
+			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfdefaultcase>
 					"domain" #arguments.filter.orderSort#
