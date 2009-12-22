@@ -11,6 +11,7 @@
 		"modResourceForContent": "plugins.content.inc.model.modResource",
 		"modThemeForContent": "plugins.content.inc.model.modTheme",
 		"modTypeForContent": "plugins.content.inc.model.modType",
+		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
 		"servContentForContent": "plugins.content.inc.service.servContent",
 		"servDomainForContent": "plugins.content.inc.service.servDomain",
 		"templateForContent": "algid.inc.resource.structure.template",

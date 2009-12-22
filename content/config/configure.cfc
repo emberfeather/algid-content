@@ -13,6 +13,26 @@
 		<cfreturn reFind('^' & path & '[a-zA-Z0-9-\.]*.cfm$', arguments.targetPage) GT 0 />
 	</cffunction>
 	
+	<cffunction name="onApplicationStart" access="public" returntype="void" output="false">
+		<cfargument name="theApplication" type="struct" required="true" />
+		
+		<cfset var bundleName = '' />
+		<cfset var contentDirectory = '' />
+		<cfset var files = '' />
+		<cfset var i = '' />
+		<cfset var i18n = '' />
+		<cfset var i18nDirectory = '' />
+		<cfset var navDirectory = '' />
+		<cfset var navigation = '' />
+		<cfset var plugin = '' />
+		<cfset var search = '' />
+		
+		<!--- Create the admin navigation singleton --->
+		<cfset navigation = arguments.theApplication.factories.transient.getNavigationForContent(arguments.theApplication.managers.singleton.getI18N()) />
+		
+		<cfset arguments.theApplication.managers.singleton.setContentNavigation(navigation) />
+	</cffunction>
+	
 	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
 		<cfargument name="theApplication" type="struct" required="true" />
 		<cfargument name="theSession" type="struct" required="true" />

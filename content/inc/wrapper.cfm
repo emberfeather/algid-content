@@ -18,7 +18,7 @@
 	<!--- Retrieve the objects --->
 	<cfset i18n = transport.theApplication.managers.singleton.getI18N() />
 	<cfset theURL = transport.theRequest.managers.singleton.getURL() />
-	<cfset navigation = transport.theApplication.managers.singleton.getAdminNavigation() />
+	<cfset navigation = transport.theApplication.managers.singleton.getContentNavigation() />
 	
 	<!--- Check for a change to the number of records per page --->
 	<cfif theURL.searchID('numPerPage')>
@@ -51,37 +51,7 @@
 	
 	<cfset profiler.stop('template') />
 	
-	<!--- 
-	<cfset profiler.start('process') />
-	
-	<!--- Capture any validation errors --->
-	<cftry>
-		<!--- Include Processing --->
-		<cfinclude template="#template.getContentPath('proc')#" />
-		
-		<cfcatch type="validation">
-			<!--- Add the errors that happened from validations to errors --->
-			<cfloop list="#cfcatch.message#" index="i" delimiters="|">
-				<cfset session.notification.error.addMessages(i) />
-			</cfloop>
-		</cfcatch>
-	</cftry>
-	
-	<cfset profiler.stop('process') />
-	
-	<cfset profiler.start('content') />
-	
-	<!--- TODO Add in caching --->
-	<cfsavecontent variable="content">
-		<cfinclude template="#template.getContentPath('cont')#" />
-	</cfsavecontent>
-	
-	<cfset template.setContent(content) />
-	
-	<cfset profiler.stop('content') />
-	 --->
-	
-	<cfset template.setContent('Coming some other time... Content!!!') />
+	<cfset template.setContent('Coming some other time... content!!!') />
 	
 	<cfset profiler.start('theme') />
 </cfsilent>
