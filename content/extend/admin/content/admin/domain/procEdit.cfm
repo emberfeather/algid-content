@@ -5,7 +5,7 @@
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Process the form submission --->
-	<cfset domain.deserialize(form) />
+	<cfset objectSerial.deserialize(form, domain) />
 	
 	<cfset servDomain.setDomain( session.managers.singleton.getUser(), domain ) />
 	

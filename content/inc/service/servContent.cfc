@@ -17,27 +17,29 @@
 	
 	<cffunction name="getContent" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
-		<cfargument name="contentID" type="numeric" required="true" />
+		<cfargument name="contentID" type="string" required="true" />
 		
 		<cfset var content = '' />
 		<cfset var i18n = '' />
-		<cfset var result = '' />
+		<cfset var objectSerial = '' />
+		<cfset var results = '' />
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		
 		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
 		
-		<cfquery name="result" datasource="#variables.datasource.name#">
+		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
 			FROM "#variables.datasource.prefix#content"."content"
-			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.contentID#" />
+			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" />::uuid
 			
 			<!--- TODO Check for user connection --->
 		</cfquery>
 		
-		
-		<cfif result.recordCount>
-			<cfset content.deserialize(result) />
+		<cfif results.recordCount>
+			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			
+			<cfset objectSerial.deserialize(results, content) />
 		</cfif>
 		
 		<cfreturn content />

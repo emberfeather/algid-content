@@ -18,7 +18,7 @@
 				SET
 					"archivedOn" = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
 				WHERE
-					"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
+					"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
 			</cfquery>
 		</cftransaction>
 		
@@ -27,24 +27,27 @@
 	
 	<cffunction name="getDomain" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
-		<cfargument name="domainID" type="numeric" required="true" />
+		<cfargument name="domainID" type="string" required="true" />
 		
 		<cfset var domain = '' />
 		<cfset var i18n = '' />
-		<cfset var result = '' />
+		<cfset var objectSerial = '' />
+		<cfset var results = '' />
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		
 		<cfset domain = variables.transport.theApplication.factories.transient.getModDomainForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
 		
-		<cfquery name="result" datasource="#variables.datasource.name#">
+		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "domainID", "domain", "createdOn", "archivedOn"
 			FROM "#variables.datasource.prefix#content"."domain"
-			WHERE "domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domainID#" />
+			WHERE "domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domainID#" />::uuid
 		</cfquery>
 		
-		<cfif result.recordCount>
-			<cfset domain.deserialize(result) />
+		<cfif results.recordCount>
+			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			
+			<cfset objectSerial.deserialize(results, domain) />
 		</cfif>
 		
 		<cfreturn domain />
@@ -117,7 +120,7 @@
 						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />,
 						"archivedOn" = NULL
 					WHERE
-						"domainID" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.domain.getDomainID()#" />
+						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
 				</cfquery>
 			</cftransaction>
 			
@@ -148,27 +151,21 @@
 				<cfset eventLog.logEvent('content', 'domainCreate', 'Unarchived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
 			<cfelse>
 				<!--- Insert as a new domain --->
+				
+				<!--- Create the new ID --->
+				<cfset arguments.domain.setDomainID( createUUID() ) />
+				
 				<cftransaction>
 					<cfquery datasource="#variables.datasource.name#" result="results">
 						INSERT INTO "#variables.datasource.prefix#content"."domain"
 						(
+							"domainID",
 							"domain"
 						) VALUES (
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid,
 							<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
 						)
 					</cfquery>
-					
-					<cfif structKeyExists(results, 'generatedKey')>
-						<cfset domain.setDomainID(listGetAt(results.generatedKey, 1)) />
-					<cfelse>
-						<cfquery name="results" datasource="#variables.datasource.name#">
-							SELECT MAX("domainID") AS newID
-							FROM "#variables.datasource.prefix#content"."domain"
-							WHERE "domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
-						</cfquery>
-						
-						<cfset domain.setDomainID(results.newID) />
-					</cfif>
 				</cftransaction>
 				
 				<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
