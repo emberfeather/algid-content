@@ -112,7 +112,7 @@
 		
 		<!--- TODO Check user permissions --->
 		
-		<cfif arguments.domain.getDomainID()>
+		<cfif arguments.domain.getDomainID() neq ''>
 			<cftransaction>
 				<cfquery datasource="#variables.datasource.name#" result="results">
 					UPDATE "#variables.datasource.prefix#content"."domain"

@@ -7,8 +7,7 @@
 		
 		<!--- Content ID --->
 		<cfset addAttribute(
-				attribute = 'contentID',
-				defaultValue = 0
+				attribute = 'contentID'
 			) />
 		
 		<!--- Draft --->

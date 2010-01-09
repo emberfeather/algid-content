@@ -7,8 +7,7 @@
 		
 		<!--- Domain ID --->
 		<cfset addAttribute(
-				attribute = 'domainID',
-				defaultValue = 0
+				attribute = 'domainID'
 			) />
 		
 		<!--- Archived On --->

@@ -7,14 +7,12 @@
 		
 		<!--- Meta ID --->
 		<cfset addAttribute(
-				attribute = 'metaID',
-				defaultValue = 0
+				attribute = 'metaID'
 			) />
 		
 		<!--- Content ID --->
 		<cfset addAttribute(
-				attribute = 'contentID',
-				defaultValue = 0
+				attribute = 'contentID'
 			) />
 		
 		<!--- Name --->

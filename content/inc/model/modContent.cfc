@@ -7,8 +7,7 @@
 		
 		<!--- Content ID --->
 		<cfset addAttribute(
-				attribute = 'contentID',
-				defaultValue = 0
+				attribute = 'contentID'
 			) />
 		
 		<!--- Archived On --->
@@ -28,8 +27,7 @@
 		
 		<!--- Domain ID --->
 		<cfset addAttribute(
-				attribute = 'domainID',
-				defaultValue = 0
+				attribute = 'domainID'
 			) />
 		
 		<!--- Expires On --->
@@ -49,8 +47,7 @@
 		
 		<!--- Type ID --->
 		<cfset addAttribute(
-				attribute = 'typeID',
-				defaultValue = 0
+				attribute = 'typeID'
 			) />
 		
 		<!--- Set the bundle information for translation --->

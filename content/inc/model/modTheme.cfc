@@ -7,8 +7,7 @@
 		
 		<!--- Theme ID --->
 		<cfset addAttribute(
-				attribute = 'themeID',
-				defaultValue = 0
+				attribute = 'themeID'
 			) />
 		
 		<!--- Archived On --->

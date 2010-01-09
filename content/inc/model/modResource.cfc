@@ -7,8 +7,7 @@
 		
 		<!--- Resource ID --->
 		<cfset addAttribute(
-				attribute = 'resourceID',
-				defaultValue = 0
+				attribute = 'resourceID'
 			) />
 		
 		<!--- Archived On --->

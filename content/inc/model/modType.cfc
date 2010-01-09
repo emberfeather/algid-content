@@ -7,8 +7,7 @@
 		
 		<!--- Type ID --->
 		<cfset addAttribute(
-				attribute = 'typeID',
-				defaultValue = 0
+				attribute = 'typeID'
 			) />
 		
 		<!--- Type --->

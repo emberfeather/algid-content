@@ -7,14 +7,12 @@
 		
 		<!--- Attribute ID --->
 		<cfset addAttribute(
-				attribute = 'attributeID',
-				defaultValue = 0
+				attribute = 'attributeID'
 			) />
 		
 		<!--- Theme ID --->
 		<cfset addAttribute(
-				attribute = 'themeID',
-				defaultValue = 0
+				attribute = 'themeID'
 			) />
 		
 		<!--- Attribute --->

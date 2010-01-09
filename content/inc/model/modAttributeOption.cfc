@@ -7,14 +7,12 @@
 		
 		<!--- Attribute Option ID --->
 		<cfset addAttribute(
-				attribute = 'attributeOptionID',
-				defaultValue = 0
+				attribute = 'attributeOptionID'
 			) />
 		
 		<!--- Attribute ID --->
 		<cfset addAttribute(
-				attribute = 'attributeID',
-				defaultValue = 0
+				attribute = 'attributeID'
 			) />
 		
 		<!--- Label --->
