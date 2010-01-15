@@ -57,6 +57,6 @@
 </cfsilent>
 
 <!--- Include the theme --->
-<cfinclude template="/plugins/#transport.theApplication.managers.plugin.getContent().getTheme()#/index.cfm" />
+<cfinclude template="/plugins/#transport.theApplication.managers.plugin.getContent().getDefaultTheme()#/index.cfm" />
 
 <cfset profiler.stop('theme') />

@@ -19,6 +19,7 @@
 		"viewDomainForContent": "plugins.content.inc.view.viewDomain",
 		"urlForContent": "cf-compendium.inc.resource.utility.url"
 	},
+	"defaultTheme": "content/extend/content/theme/content",
 	"path": "",
 	"requestSingletons": {
 	},
@@ -27,6 +28,5 @@
 	"sessionSingletons": {
 	},
 	"sessionTransients": {
-	},
-	"theme": "content/extend/content/theme/content"
+	}
 }
