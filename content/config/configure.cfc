@@ -701,19 +701,5 @@
 				</cfdefaultcase>
 			</cfswitch>
 		</cfif>
-		
-		<!--- => 0.1.0 --->
-		<cfif versions.compareVersions(arguments.installedVersion, '0.1.1') lt 0>
-			<!--- Setup the Database --->
-			<cfswitch expression="#variables.datasource.type#">
-				<cfcase value="PostgreSQL">
-					<cfset postgreSQL0_1_1() />
-				</cfcase>
-				<cfdefaultcase>
-					<!--- TODO Remove this thow when a later version supports more database types  --->
-					<cfthrow message="Database Type Not Supported" detail="The #variables.datasource.type# database type is not currently supported" />
-				</cfdefaultcase>
-			</cfswitch>
-		</cfif>
 	</cffunction>
 </cfcomponent>
