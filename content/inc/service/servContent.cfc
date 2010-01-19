@@ -31,7 +31,7 @@
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
 			FROM "#variables.datasource.prefix#content"."content"
-			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" />::uuid
+			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
 			
 			<!--- TODO Check for user connection --->
 		</cfquery>

@@ -41,7 +41,7 @@
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "domainID", "domain", "createdOn", "archivedOn"
 			FROM "#variables.datasource.prefix#content"."domain"
-			WHERE "domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domainID#" />::uuid
+			WHERE "domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domainID#" null="#arguments.domainID eq ''#" />::uuid
 		</cfquery>
 		
 		<cfif results.recordCount>
@@ -120,7 +120,7 @@
 						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />,
 						"archivedOn" = NULL
 					WHERE
-						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
+						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" null="#arguments.domain.getDomainID() eq ''#" />::uuid
 				</cfquery>
 			</cftransaction>
 			
