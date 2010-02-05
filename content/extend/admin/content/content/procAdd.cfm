@@ -12,7 +12,7 @@
 	
 	<cfset theUrl.setRedirect('_base', '.admin.domain.add') />
 	
-	<cflocation url="#theUrl.getRedirect(false)#" addtoken="false" />
+	<cfset theURL.redirectRedirect() />
 </cfif>
 
 <!--- Check for form submission --->

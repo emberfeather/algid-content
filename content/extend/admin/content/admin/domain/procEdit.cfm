@@ -16,5 +16,5 @@
 	<cfset theURL.setRedirect('_base', '.admin.domain.list') />
 	<cfset theURL.removeRedirect('domain') />
 	
-	<cflocation url="#theURL.getRedirect(false)#" addtoken="false" />
+	<cfset theURL.redirectRedirect() />
 </cfif>
