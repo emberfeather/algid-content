@@ -44,7 +44,7 @@
 		<!--- Only do the following if in the admin area --->
 		<cfif inContent( arguments.theApplication, arguments.targetPage )>
 			<!--- Create a profiler object --->
-			<cfset temp = arguments.theApplication.factories.transient.getProfiler(arguments.theApplication.managers.singleton.getApplication().getEnvironment() neq 'production') />
+			<cfset temp = arguments.theApplication.factories.transient.getProfiler(not arguments.theApplication.managers.singleton.getApplication().isProduction()) />
 			
 			<cfset arguments.theRequest.managers.singleton.setProfiler( temp ) />
 			
