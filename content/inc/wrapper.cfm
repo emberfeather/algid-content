@@ -36,18 +36,20 @@
 	<!--- Create template object --->
 	<cfset options = {
 			scripts = [
-				'https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js'
+				'https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'
 			]
 		} />
 	
 	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale(), options) />
 	
 	<!--- Include minified files for production --->
-	<cfset midfix = (transport.theApplication.managers.singleton.getApplication().getEnvironment() eq 'production' ? '-min' : '') />
-	
-	<!--- Add the scripts and styles --->
-	<cfset template.addScripts('cf-compendium/script/form#midfix#.js', 'cf-compendium/script/list#midfix#.js', 'cf-compendium/script/jquery.datagrid#midfix#.js', 'cf-compendium/script/jquery.timeago#midfix#.js') />
-	<cfset template.addStyles('cf-compendium/style/styles#midfix#.css', 'cf-compendium/style/form#midfix#.css', 'cf-compendium/style/list#midfix#.css', 'cf-compendium/style/datagrid#midfix#.css') />
+	<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
+		<cfset template.addScripts('/cf-compendium/script/jquery.cf-compendium-min.js') />
+		<cfset template.addStyles('/cf-compendium/style/cf-compendium-min.css') />
+	<cfelse>
+		<cfset template.addScripts('/cf-compendium/script/jquery.base.js', '/cf-compendium/script/jquery.form.js', '/cf-compendium/script/jquery.list.js', '/cf-compendium/script/jquery.datagrid.js', '/cf-compendium/script/jquery.timeago.js') />
+		<cfset template.addStyles('/cf-compendium/style/base.css', '/cf-compendium/style/form.css', '/cf-compendium/style/list.css', '/cf-compendium/style/datagrid.css', '/cf-compendium/style/code.css') />
+	</cfif>
 	
 	<cfset profiler.stop('template') />
 	

@@ -5,6 +5,9 @@
 		
 		<title><cfoutput>#template.getHTMltitle()#</cfoutput></title>
 		
+		<!--- Include minified files for production --->
+		<cfset midfix = (transport.theApplication.managers.singleton.getApplication().isProduction() ? '-min' : '') />
+		
 		<cfset template.addStyles('plugins/admin/style/960/reset#midfix#.css', 'plugins/admin/style/960/960#midfix#.css"', 'plugins/content/extend/content/theme/content/style/styles#midfix#.css') />
 		<cfset template.addStyle('plugins/content/extend/content/theme/content/style/print#midfix#.css', 'print') />
 		
