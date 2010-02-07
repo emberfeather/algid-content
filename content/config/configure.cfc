@@ -83,7 +83,7 @@
 			(
 				"domainID" uuid NOT NULL,
 				"domain" character varying(150) not NULL,
-				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
+				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "domain_domainID_PK" PRIMARY KEY ("domainID"),
 				CONSTRAINT "domain_domain_U" UNIQUE (domain)
@@ -107,8 +107,8 @@
 				"themeID" uuid NOT NULL,
 				theme character varying(50) not NULL,
 				directory character varying(50) not NULL,
-				levels smallint not NULL DEFAUlt 1,
-				"isPublic" boolean not NULL DEFAUlt true,
+				levels smallint not NULL DEFAULT 1,
+				"isPublic" boolean not NULL DEFAULT true,
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "theme_themeID_PK" PRIMARY KEY ("themeID")
 			)
@@ -150,7 +150,7 @@
 				"themeID" uuid NOT NULL,
 				attribute character varying(100) not NULL,
 				"key" character varying(25) not NULL,
-				"hasCustom" boolean not NULL DEFAUlt true,
+				"hasCustom" boolean not NULL DEFAULT true,
 				CONSTRAINT "attribute_PK" PRIMARY KEY ("attributeID"),
 				CONSTRAINT "attribute_themeID_FK" ForEIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
@@ -201,8 +201,8 @@
 				"typeID" uuid NOT NULL,
 				title character varying(255) not NULL,
 				"content" text not NULL,
-				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
-				"updatedOn" timestamp without time zone not NULL DEFAUlt now(),
+				"createdOn" timestamp without time zone not NULL DEFAULT now(),
+				"updatedOn" timestamp without time zone not NULL DEFAULT now(),
 				"expiresOn" timestamp without time zone,
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "content_content_PK" PRIMARY KEY ("contentID"),
@@ -231,8 +231,8 @@
 				"contentID" uuid NOT NULL,
 				draft text not NULL,
 				"publishOn" timestamp without time zone,
-				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
-				"updatedOn" timestamp without time zone not NULL DEFAUlt now(),
+				"createdOn" timestamp without time zone not NULL DEFAULT now(),
+				"updatedOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "draft_PK" PRIMARY KEY ("contentID", "createdOn"),
 				CONSTRAINT "draft_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
@@ -281,7 +281,7 @@
 				"level" smallint not NULL,
 				navigation character varying(50) not NULL,
 				"themeID" uuid NOT NULL,
-				"allowGroups" boolean not NULL DEFAUlt true,
+				"allowGroups" boolean not NULL DEFAULT true,
 				CONSTRAINT "navigation_PK" PRIMARY KEY ("navigationID"),
 				CONSTRAINT "navigation_themeID_FK" ForEIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
@@ -307,10 +307,10 @@
 			(
 				"pathID" uuid NOT NULL,
 				"contentID" uuid NOT NULL,
-				path character varying(300) not NULL DEFAUlt '/'::character varying,
+				path character varying(300) not NULL DEFAULT '/'::character varying,
 				title character varying(255) not NULL,
 				"groupBy" character varying(100),
-				"orderBy" integer not NULL DEFAUlt 0,
+				"orderBy" integer not NULL DEFAULT 0,
 				"isActive" bit(1) not NULL,
 				"navigationID" uuid,
 				"themeID" uuid,
@@ -367,9 +367,9 @@
 				resource character varying(155) not NULL,
 				file character varying(255) not NULL,
 				"archivedOn" timestamp without time zone NULL,
-				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
+				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				"deprecatedOn" timestamp without time zone NULL,
-				"isPublic" boolean not NULL DEFAUlt false,
+				"isPublic" boolean not NULL DEFAULT false,
 				CONSTRAINT "resource_resourceID_PK" PRIMARY KEY ("resourceID")
 			)
 			WITH (OIDS=FALSE);
@@ -390,7 +390,7 @@
 				"hostID" uuid NOT NULL,
 				"domainID" uuid NOT NULL,
 				hostname character varying(255) not NULL,
-				"hasSSL" boolean not NULL DEFAUlt false,
+				"hasSSL" boolean not NULL DEFAULT false,
 				CONSTRAINT "host_PK" PRIMARY KEY ("hostID"),
 				CONSTRAINT "host_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
@@ -444,7 +444,7 @@
 			(
 				"contentID" uuid NOT NULL,
 				"tagID" uuid NOT NULL,
-				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
+				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "bContent2Tag_PK" PRIMARY KEY ("contentID", "tagID"),
 				CONSTRAINT "bContent2Tag_contentID_FK" ForEIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
@@ -501,7 +501,7 @@
 				"domainID" uuid NOT NULL,
 				"tagID" uuid NOT NULL,
 				"userID" uuid NOT NULL,
-				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
+				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "bDomain2Tag2User_PK" PRIMARY KEY ("domainID", "tagID", "userID"),
 				CONSTRAINT "bDomain2Tag2User_domainID_FK" ForEIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
@@ -560,8 +560,8 @@
 			(
 				"pathID" uuid NOT NULL,
 				"tagID" uuid NOT NULL,
-				"isRecursive" boolean not NULL DEFAUlt false,
-				"createdOn" timestamp without time zone not NULL DEFAUlt now(),
+				"isRecursive" boolean not NULL DEFAULT false,
+				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "bPath2Tag_PK" PRIMARY KEY ("pathID", "tagID"),
 				CONSTRAINT "bPath2Tag_pathID_FK" ForEIGN KEY ("pathID")
 					REFERENCES "#variables.datasource.prefix#content".path ("pathID") MATCH SIMPLE
