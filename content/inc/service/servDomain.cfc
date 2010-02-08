@@ -120,7 +120,7 @@
 						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />,
 						"archivedOn" = NULL
 					WHERE
-						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" null="#arguments.domain.getDomainID() eq ''#" />::uuid
+						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
 				</cfquery>
 			</cftransaction>
 			
@@ -151,7 +151,6 @@
 				<cfset eventLog.logEvent('content', 'domainCreate', 'Unarchived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
 			<cfelse>
 				<!--- Insert as a new domain --->
-				
 				<!--- Create the new ID --->
 				<cfset arguments.domain.setDomainID( createUUID() ) />
 				

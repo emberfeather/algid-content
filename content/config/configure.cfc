@@ -59,6 +59,8 @@
 		Configures the database for v0.1.0
 	--->
 	<cffunction name="postgreSQL0_1_0" access="public" returntype="void" output="false">
+		<cfset var i = '' />
+		
 		<!---
 			SCHEMA
 		--->
@@ -66,7 +68,7 @@
 		<!--- Content Schema --->
 		<cfquery datasource="#variables.datasource.name#">
 			CREATE SCHEMA "#variables.datasource.prefix#content"
-				AUTHorIZATION #variables.datasource.owner#;
+				AUTHORIZATION #variables.datasource.owner#;
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
@@ -152,7 +154,7 @@
 				"key" character varying(25) not NULL,
 				"hasCustom" boolean not NULL DEFAULT true,
 				CONSTRAINT "attribute_PK" PRIMARY KEY ("attributeID"),
-				CONSTRAINT "attribute_themeID_FK" ForEIGN KEY ("themeID")
+				CONSTRAINT "attribute_themeID_FK" FOREIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
 				CONSTRAINT "attribute_themeID_key_u" UNIQUE ("themeID", key)
@@ -177,7 +179,7 @@
 				label character varying(100) not NULL,
 				"value" character varying(50) not NULL,
 				CONSTRAINT "attributeOption_PK" PRIMARY KEY ("attributeOptionID"),
-				CONSTRAINT "attributeOption_optionID_FK" ForEIGN KEY ("attributeID")
+				CONSTRAINT "attributeOption_optionID_FK" FOREIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -198,18 +200,18 @@
 			(
 				"contentID" uuid NOT NULL,
 				"domainID" uuid NOT NULL,
-				"typeID" uuid NOT NULL,
-				title character varying(255) not NULL,
-				"content" text not NULL,
-				"createdOn" timestamp without time zone not NULL DEFAULT now(),
-				"updatedOn" timestamp without time zone not NULL DEFAULT now(),
+				"typeID" uuid,
+				title character varying(255) NOT NULL,
+				"content" text NOT NULL,
+				"createdOn" timestamp without time zone NOT NULL DEFAULT now(),
+				"updatedOn" timestamp without time zone NOT NULL DEFAULT now(),
 				"expiresOn" timestamp without time zone,
 				"archivedOn" timestamp without time zone,
 				CONSTRAINT "content_content_PK" PRIMARY KEY ("contentID"),
-				CONSTRAINT "content_domainID_FK" ForEIGN KEY ("domainID")
+				CONSTRAINT "content_domainID_FK" FOREIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "content_typeID_FK" ForEIGN KEY ("typeID")
+				CONSTRAINT "content_typeID_FK" FOREIGN KEY ("typeID")
 					REFERENCES "#variables.datasource.prefix#content"."type" ("typeID") MATCH SIMPLE
 					ON UPDATE NO ACTION ON DELETE NO ACTION
 			)
@@ -234,7 +236,7 @@
 				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				"updatedOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "draft_PK" PRIMARY KEY ("contentID", "createdOn"),
-				CONSTRAINT "draft_contentID_FK" ForEIGN KEY ("contentID")
+				CONSTRAINT "draft_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -258,7 +260,7 @@
 				"name" character varying(35) not NULL,
 				"value" text not NULL,
 				CONSTRAINT "meta_PK" PRIMARY KEY ("metaID"),
-				CONSTRAINT "meta_contentID_FK" ForEIGN KEY ("contentID")
+				CONSTRAINT "meta_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE NO ACTION ON DELETE NO ACTION
 			)
@@ -283,7 +285,7 @@
 				"themeID" uuid NOT NULL,
 				"allowGroups" boolean not NULL DEFAULT true,
 				CONSTRAINT "navigation_PK" PRIMARY KEY ("navigationID"),
-				CONSTRAINT "navigation_themeID_FK" ForEIGN KEY ("themeID")
+				CONSTRAINT "navigation_themeID_FK" FOREIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
 				CONSTRAINT "navigation_themeID_level_navigation_u" UNIQUE ("themeID", navigation, level),
@@ -315,13 +317,13 @@
 				"navigationID" uuid,
 				"themeID" uuid,
 				CONSTRAINT "path_pathID_PK" PRIMARY KEY ("pathID"),
-				CONSTRAINT "path_contentID_FK" ForEIGN KEY ("contentID")
+				CONSTRAINT "path_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "path_navigationID_FK" ForEIGN KEY ("navigationID")
+				CONSTRAINT "path_navigationID_FK" FOREIGN KEY ("navigationID")
 					REFERENCES "#variables.datasource.prefix#content".navigation ("navigationID") MATCH SIMPLE
 					ON UPDATE RESTRICT ON DELETE RESTRICT,
-				CONSTRAINT "path_themeID_FK" ForEIGN KEY ("themeID")
+				CONSTRAINT "path_themeID_FK" FOREIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE RESTRICT ON DELETE RESTRICT
 			)
@@ -344,7 +346,7 @@
 				"contentID" uuid NOT NULL,
 				permalink character varying(100) not NULL,
 				CONSTRAINT "permalink_permalinkID_PK" PRIMARY KEY ("permalinkID"),
-				CONSTRAINT "permalink_contentID_FK" ForEIGN KEY ("contentID")
+				CONSTRAINT "permalink_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -392,7 +394,7 @@
 				hostname character varying(255) not NULL,
 				"hasSSL" boolean not NULL DEFAULT false,
 				CONSTRAINT "host_PK" PRIMARY KEY ("hostID"),
-				CONSTRAINT "host_domainID_FK" ForEIGN KEY ("domainID")
+				CONSTRAINT "host_domainID_FK" FOREIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
 				CONSTRAINT "host_hostname_U" UNIQUE (hostname)
@@ -417,13 +419,13 @@
 				"attributeOptionID" uuid,
 				"value" character varying(50),
 				CONSTRAINT "bContent2Attribute_PK" PRIMARY KEY ("contentID", "attributeID"),
-				CONSTRAINT "bContent2Attribute_attributeID_FK" ForEIGN KEY ("attributeID")
+				CONSTRAINT "bContent2Attribute_attributeID_FK" FOREIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bContent2Attribute_attributeOptionID_FK" ForEIGN KEY ("attributeOptionID")
+				CONSTRAINT "bContent2Attribute_attributeOptionID_FK" FOREIGN KEY ("attributeOptionID")
 					REFERENCES "#variables.datasource.prefix#content"."attributeOption" ("attributeOptionID") MATCH SIMPLE
 					ON UPDATE SET NULL ON DELETE SET NULL,
-				CONSTRAINT "bContent2Attribute_contentID_FK" ForEIGN KEY ("contentID")
+				CONSTRAINT "bContent2Attribute_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -446,10 +448,10 @@
 				"tagID" uuid NOT NULL,
 				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "bContent2Tag_PK" PRIMARY KEY ("contentID", "tagID"),
-				CONSTRAINT "bContent2Tag_contentID_FK" ForEIGN KEY ("contentID")
+				CONSTRAINT "bContent2Tag_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bContent2Tag_tagID_FK" ForEIGN KEY ("tagID")
+				CONSTRAINT "bContent2Tag_tagID_FK" FOREIGN KEY ("tagID")
 					REFERENCES "#variables.datasource.prefix#tagger".tag ("tagID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -473,13 +475,13 @@
 				"attributeOptionID" uuid,
 				"value" character varying(50),
 				CONSTRAINT "bDomain2Attribute_PK" PRIMARY KEY ("domainID", "attributeID"),
-				CONSTRAINT "bDomain2Attribute_attributeID_FK" ForEIGN KEY ("attributeID")
+				CONSTRAINT "bDomain2Attribute_attributeID_FK" FOREIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bDomain2Attribute_attributeOptionID_FK" ForEIGN KEY ("attributeOptionID")
+				CONSTRAINT "bDomain2Attribute_attributeOptionID_FK" FOREIGN KEY ("attributeOptionID")
 					REFERENCES "#variables.datasource.prefix#content"."attributeOption" ("attributeOptionID") MATCH SIMPLE
 					ON UPDATE SET NULL ON DELETE SET NULL,
-				CONSTRAINT "bDomain2Attribute_domainID_FK" ForEIGN KEY ("domainID")
+				CONSTRAINT "bDomain2Attribute_domainID_FK" FOREIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -503,13 +505,13 @@
 				"userID" uuid NOT NULL,
 				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "bDomain2Tag2User_PK" PRIMARY KEY ("domainID", "tagID", "userID"),
-				CONSTRAINT "bDomain2Tag2User_domainID_FK" ForEIGN KEY ("domainID")
+				CONSTRAINT "bDomain2Tag2User_domainID_FK" FOREIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bDomain2Tag2User_tagID_FK" ForEIGN KEY ("tagID")
+				CONSTRAINT "bDomain2Tag2User_tagID_FK" FOREIGN KEY ("tagID")
 					REFERENCES "#variables.datasource.prefix#tagger".tag ("tagID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bDomain2Tag2User_userID_FK" ForEIGN KEY ("userID")
+				CONSTRAINT "bDomain2Tag2User_userID_FK" FOREIGN KEY ("userID")
 					REFERENCES "#variables.datasource.prefix#user"."user" ("userID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -533,13 +535,13 @@
 				"attributeOptionID" uuid,
 				"value" character varying(50),
 				CONSTRAINT "bPath2Attribute_PK" PRIMARY KEY ("pathID", "attributeID"),
-				CONSTRAINT "bPath2Attribute_attributeID_FK" ForEIGN KEY ("attributeID")
+				CONSTRAINT "bPath2Attribute_attributeID_FK" FOREIGN KEY ("attributeID")
 					REFERENCES "#variables.datasource.prefix#content".attribute ("attributeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bPath2Attribute_attributeOption_FK" ForEIGN KEY ("attributeOptionID")
+				CONSTRAINT "bPath2Attribute_attributeOption_FK" FOREIGN KEY ("attributeOptionID")
 					REFERENCES "#variables.datasource.prefix#content"."attributeOption" ("attributeOptionID") MATCH SIMPLE
 					ON UPDATE SET NULL ON DELETE SET NULL,
-				CONSTRAINT "bPath2Attribute_pathID_FK" ForEIGN KEY ("pathID")
+				CONSTRAINT "bPath2Attribute_pathID_FK" FOREIGN KEY ("pathID")
 					REFERENCES "#variables.datasource.prefix#content".path ("pathID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -563,10 +565,10 @@
 				"isRecursive" boolean not NULL DEFAULT false,
 				"createdOn" timestamp without time zone not NULL DEFAULT now(),
 				CONSTRAINT "bPath2Tag_PK" PRIMARY KEY ("pathID", "tagID"),
-				CONSTRAINT "bPath2Tag_pathID_FK" ForEIGN KEY ("pathID")
+				CONSTRAINT "bPath2Tag_pathID_FK" FOREIGN KEY ("pathID")
 					REFERENCES "#variables.datasource.prefix#content".path ("pathID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bPath2Tag_tagID_FK" ForEIGN KEY ("tagID")
+				CONSTRAINT "bPath2Tag_tagID_FK" FOREIGN KEY ("tagID")
 					REFERENCES "#variables.datasource.prefix#tagger".tag ("tagID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -588,10 +590,10 @@
 				"resourceID" uuid NOT NULL,
 				"contentID" uuid NOT NULL,
 				CONSTRAINT "bResource2Content_PK" PRIMARY KEY ("resourceID", "contentID"),
-				CONSTRAINT "bResource2Content_contentID_FK" ForEIGN KEY ("contentID")
+				CONSTRAINT "bResource2Content_contentID_FK" FOREIGN KEY ("contentID")
 					REFERENCES "#variables.datasource.prefix#content"."content" ("contentID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bResource2Content_resourceID_FK" ForEIGN KEY ("resourceID")
+				CONSTRAINT "bResource2Content_resourceID_FK" FOREIGN KEY ("resourceID")
 					REFERENCES "#variables.datasource.prefix#content".resource ("resourceID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -613,10 +615,10 @@
 				"domainID" uuid NOT NULL,
 				"resourceID" uuid NOT NULL,
 				CONSTRAINT "bResource2Domain_PK" PRIMARY KEY ("resourceID", "domainID"),
-				CONSTRAINT "bResource2Domain_domainID_FK" ForEIGN KEY ("domainID")
+				CONSTRAINT "bResource2Domain_domainID_FK" FOREIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bResource2Domain_resourceID_FK" ForEIGN KEY ("resourceID")
+				CONSTRAINT "bResource2Domain_resourceID_FK" FOREIGN KEY ("resourceID")
 					REFERENCES "#variables.datasource.prefix#content".resource ("resourceID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -638,10 +640,10 @@
 				"resourceID" uuid NOT NULL,
 				"themeID" uuid NOT NULL,
 				CONSTRAINT "bResource2Theme_PK" PRIMARY KEY ("resourceID", "themeID"),
-				CONSTRAINT "bResource2Theme_resourceID_FK" ForEIGN KEY ("resourceID")
+				CONSTRAINT "bResource2Theme_resourceID_FK" FOREIGN KEY ("resourceID")
 					REFERENCES "#variables.datasource.prefix#content".resource ("resourceID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bResource2Theme_themeID_FK" ForEIGN KEY ("themeID")
+				CONSTRAINT "bResource2Theme_themeID_FK" FOREIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -663,10 +665,10 @@
 				"themeID" uuid NOT NULL,
 				"domainID" uuid NOT NULL,
 				CONSTRAINT "bTheme2Domain_PK" PRIMARY KEY ("themeID", "domainID"),
-				CONSTRAINT "bTheme2Domain_domainID_FK" ForEIGN KEY ("domainID")
+				CONSTRAINT "bTheme2Domain_domainID_FK" FOREIGN KEY ("domainID")
 					REFERENCES "#variables.datasource.prefix#content"."domain" ("domainID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE,
-				CONSTRAINT "bTheme2Domain_themeID_FK" ForEIGN KEY ("themeID")
+				CONSTRAINT "bTheme2Domain_themeID_FK" FOREIGN KEY ("themeID")
 					REFERENCES "#variables.datasource.prefix#content".theme ("themeID") MATCH SIMPLE
 					ON UPDATE CASCADE ON DELETE CASCADE
 			)
@@ -680,6 +682,24 @@
 		<cfquery datasource="#variables.datasource.name#">
 			COMMENT ON TABLE "#variables.datasource.prefix#content"."bTheme2Domain" IS 'Bridge for typing the theme to domains.';
 		</cfquery>
+		
+		<!---
+			DATA
+		--->
+		
+		<!--- Content Type --->
+		<cfloop list="HTML" index="i">
+			<cfquery datasource="#variables.datasource.name#">
+				INSERT INTO "#variables.datasource.prefix#content"."type"
+				(
+					"typeID",
+					"type"
+				) VALUES (
+					<cfqueryparam cfsqltype="cf_sql_varchar" value="#createUUID()#" />::uuid,
+					<cfqueryparam cfsqltype="cf_sql_varchar" value="#i#" />
+				);
+			</cfquery>
+		</cfloop>
 	</cffunction>
 	
 	<cffunction name="update" access="public" returntype="void" output="false">

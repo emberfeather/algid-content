@@ -59,11 +59,11 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT p."path", p."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn"
+			SELECT c."contentID", p."path", p."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn"
 			FROM "#variables.datasource.prefix#content"."content" AS c
 			LEFT JOIN "#variables.datasource.prefix#content"."path" AS p
 				ON c."contentID" = p."contentID"
-			JOIN "#variables.datasource.prefix#content"."type" AS t
+			LEFT JOIN "#variables.datasource.prefix#content"."type" AS t
 				ON c."typeID" = t."typeID"
 			JOIN "#variables.datasource.prefix#content"."domain" AS d
 				ON c."domainID" = d."domainID"
@@ -86,6 +86,10 @@
 				<cfcase value="updatedOn">
 					c."updatedOn" #arguments.filter.orderSort#,
 					c."title" ASC
+				</cfcase>
+				<cfcase value="navTitle">
+					p."title" #arguments.filter.orderSort#,
+					c."title" #arguments.filter.orderSort#
 				</cfcase>
 				<cfdefaultcase>
 					c."title" #arguments.filter.orderSort#
@@ -130,9 +134,45 @@
 		
 		<!--- TODO Check user permissions --->
 		
-		<cfif arguments.content.getContentID()>
+		<cfif arguments.content.getContentID() neq ''>
+			<cftransaction>
+				<cfquery datasource="#variables.datasource.name#" result="results">
+					UPDATE "#variables.datasource.prefix#content"."content"
+					SET
+						"typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTypeID()#" null="#arguments.content.getTypeID() eq ''#" />::uuid,
+						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getDomainID()#" />::uuid,
+						"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTitle()#" />,
+						"content" = <cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.content.getContent()#" />,
+						"updatedOn" = now(),
+						"archivedOn" = NULL
+					WHERE
+						"contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getContentID()#" />::uuid
+				</cfquery>
+			</cftransaction>
+			
 			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
 		<cfelse>
+			<!--- Insert as a new domain --->
+			<!--- Create the new ID --->
+			<cfset arguments.content.setContentID( createUUID() ) />
+			
+			<cftransaction>
+				<cfquery datasource="#variables.datasource.name#" result="results">
+					INSERT INTO "#variables.datasource.prefix#content"."content"
+					(
+						"contentID",
+						"domainID",
+						"title",
+						"content"
+					) VALUES (
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getContentID()#" />::uuid,
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getDomainID()#" />::uuid,
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTitle()#" />,
+						<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.content.getContent()#" />
+					)
+				</cfquery>
+			</cftransaction>
+			
 			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
 		</cfif>
 		
