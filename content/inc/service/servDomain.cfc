@@ -78,7 +78,7 @@
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
-				and "archivedOn" IS <cfif arguments.filter.isArchived>not</cfif> NULL
+				and "archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
 			
 			ORDER BY
@@ -98,6 +98,23 @@
 		</cfquery>
 		
 		<cfreturn results />
+	</cffunction>
+	
+	<cffunction name="hasDomain" access="public" returntype="boolean" output="false">
+		<cfargument name="domain" type="string" required="true" />
+		
+		<cfset var results = '' />
+		
+		<cfset arguments.domain = trim(arguments.domain) />
+		
+		<cfquery name="results" datasource="#variables.datasource.name#">
+			SELECT "domainID"
+			FROM "#variables.datasource.prefix#content"."domain"
+			WHERE "domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
+				AND "archivedOn" IS NULL
+		</cfquery>
+		
+		<cfreturn results.recordCount GT 0 />
 	</cffunction>
 	
 	<cffunction name="setDomain" access="public" returntype="void" output="false">
@@ -128,27 +145,31 @@
 		<cfelse>
 			<!--- Check for archived domain --->
 			<cfquery datasource="#variables.datasource.name#" name="results">
-				SELECT "domain"
+				SELECT "domain", "archivedOn"
 				FROM "#variables.datasource.prefix#content"."domain"
 				WHERE
 					"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
-					and "archivedOn" IS not NULL
 			</cfquery>
 			
 			<!--- Check if we found an existing domain --->
 			<cfif results.recordCount gt 0>
-				<!--- Unarchive the domain --->
-				<cftransaction>
-					<cfquery datasource="#variables.datasource.name#" result="results">
-						UPDATE "#variables.datasource.prefix#content"."domain"
-						SET
-							"archivedOn" = NULL
-						WHERE
-							"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
-					</cfquery>
-				</cftransaction>
-				
-				<cfset eventLog.logEvent('content', 'domainCreate', 'Unarchived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+				<cfif results.archivedOn eq ''>
+					<!--- Duplicate domain --->
+					<cfthrow type="validation" message="Domain name already in use" detail="The '#arguments.domain.getDomain()#' domain already exists." />
+				<cfelse>
+					<!--- Unarchive the domain --->
+					<cftransaction>
+						<cfquery datasource="#variables.datasource.name#" result="results">
+							UPDATE "#variables.datasource.prefix#content"."domain"
+							SET
+								"archivedOn" = NULL
+							WHERE
+								"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
+						</cfquery>
+					</cftransaction>
+					
+					<cfset eventLog.logEvent('content', 'domainCreate', 'Unarchived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+				</cfif>
 			<cfelse>
 				<!--- Insert as a new domain --->
 				<!--- Create the new ID --->
