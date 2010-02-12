@@ -14,7 +14,7 @@
 			var path = createObject('component', 'plugins.content.inc.model.modPath').init(variables.i18n);
 			
 			try {
-				path.setPath('test.path');
+				path.setPath('test/path');
 				
 				fail("Should not be able to set the path that does not start with a dot.");
 			} catch(mxunit.exception.AssertionFailedError exception) {
@@ -27,12 +27,12 @@
 		/**
 		 * Tests the conversion of backward slashing paths to dot notation
 		 */
-		public void function testSetPath_withBackwordSlash_shouldConvertToDotNotation() {
+		public void function testSetPath_withBackwordSlash_shouldConvertToForwardSlash() {
 			var path = createObject('component', 'plugins.content.inc.model.modPath').init(variables.i18n);
 			
 			path.setPath('\test\path');
 			
-			assertEquals('.test.path', path.getPath());
+			assertEquals('/test/path', path.getPath());
 		}
 		
 		/**
@@ -53,25 +53,53 @@
 		}
 		
 		/**
-		 * Tests the conversion of backward slashing paths to dot notation
-		 */
-		public void function testSetPath_withDots() {
-			var path = createObject('component', 'plugins.content.inc.model.modPath').init(variables.i18n);
-			
-			path.setPath('.test.path');
-			
-			assertEquals('.test.path', path.getPath());
-		}
-		
-		/**
 		 * Tests the conversion of forward slashing paths to dot notation
 		 */
-		public void function testSetPath_withForwardSlash_shouldConvertToDotNotation() {
+		public void function testSetPath_withForwardSlash() {
 			var path = createObject('component', 'plugins.content.inc.model.modPath').init(variables.i18n);
 			
 			path.setPath('/test/path');
 			
-			assertEquals('.test.path', path.getPath());
+			assertEquals('/test/path', path.getPath());
+		}
+		
+		/**
+		 * Tests the validity of valid characters
+		 */
+		public void function testSetPath_withInvalidCharacters_shouldError() {
+			var path = createObject('component', 'plugins.content.inc.model.modPath').init(variables.i18n);
+			
+			try {
+				path.setPath('/test@a/path##with*invalid()characters');
+				
+				fail("Should not be able to set the path to a blank string.");
+			} catch(mxunit.exception.AssertionFailedError exception) {
+				rethrow();
+			} catch(any exception) {
+				// expect to get here
+			}
+		}
+		
+		/**
+		 * Tests the validity of valid characters
+		 */
+		public void function testSetPath_withSpace_shouldConvertToUnderscore() {
+			var path = createObject('component', 'plugins.content.inc.model.modPath').init(variables.i18n);
+			
+			path.setPath('/test a/path with valid spaces');
+			
+			assertEquals('/test_a/path_with_valid_spaces', path.getPath());
+		}
+		
+		/**
+		 * Tests the validity of valid characters
+		 */
+		public void function testSetPath_withValidCharacters() {
+			var path = createObject('component', 'plugins.content.inc.model.modPath').init(variables.i18n);
+			
+			path.setPath('/test-a/path~with_valid.characters');
+			
+			assertEquals('/test-a/path~with_valid.characters', path.getPath());
 		}
 	</cfscript>
 </cfcomponent>

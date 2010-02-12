@@ -60,7 +60,7 @@
 		<cfargument name="value" type="string" required="true" />
 		
 		<!--- Convert forward and backslashes to periods --->
-		<cfset arguments.value = replaceList(arguments.value, '/,\','.,.') />
+		<cfset arguments.value = replaceList(arguments.value, '\, ','/,_') />
 		
 		<cfset arguments.value = trim(arguments.value) />
 		
@@ -70,8 +70,13 @@
 		</cfif>
 		
 		<!--- Check for path not starting with a dot --->
-		<cfif left(arguments.value, 1) neq '.'>
-			<cfthrow type="validation" message="The path needs to start with a period" />
+		<cfif left(arguments.value, 1) neq '/'>
+			<cfthrow type="validation" message="The path #arguments.value# needs to start with a forward slash" />
+		</cfif>
+		
+		<!--- Check for invalid characters --->
+		<cfif reFind('[^/a-zA-Z0-9-\._~]', arguments.value)>
+			<cfthrow type="validation" message="The path can only contain characters that contain uppercase and lowercase letters, decimal digits, hyphen, period, underscore, and tilde" />
 		</cfif>
 		
 		<cfset variables.instance.path = arguments.value />

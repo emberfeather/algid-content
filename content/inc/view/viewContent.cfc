@@ -157,11 +157,11 @@
 				link = [
 					{
 						'content' = 'contentID',
-						'_base' = '.content.archive'
+						'_base' = '/content/archive'
 					},
 					{
 						'content' = 'contentID',
-						'_base' = '.content.edit'
+						'_base' = '/content/edit'
 					}
 				],
 				linkClass = [ 'delete', '' ]

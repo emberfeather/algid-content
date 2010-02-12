@@ -81,11 +81,11 @@
 				link = [
 					{
 						'domain' = 'domainID',
-						'_base' = '.admin.domain.archive'
+						'_base' = '/admin/domain/archive'
 					},
 					{
 						'domain' = 'domainID',
-						'_base' = '.admin.domain.edit'
+						'_base' = '/admin/domain/edit'
 					}
 				],
 				linkClass = [ 'delete', '' ]

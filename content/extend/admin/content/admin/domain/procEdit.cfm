@@ -13,7 +13,7 @@
 	<cfset session.managers.singleton.getSuccess().addMessages('The domain ''' & domain.getDomain() & ''' was successfully saved.') />
 	
 	<!--- Redirect --->
-	<cfset theURL.setRedirect('_base', '.admin.domain.list') />
+	<cfset theURL.setRedirect('_base', '/admin/domain/list') />
 	<cfset theURL.removeRedirect('domain') />
 	
 	<cfset theURL.redirectRedirect() />
