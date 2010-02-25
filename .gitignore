@@ -1,6 +1,6 @@
 .project
-content/config/settings.json.cfm
-content/config/version.json.cfm
 build/logs/
 build/settings/user.properties
+content/config/settings.json.cfm
+content/config/version.json.cfm
 dist/
