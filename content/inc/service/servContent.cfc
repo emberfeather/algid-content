@@ -177,6 +177,10 @@
 			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
 		</cfif>
 		
+		<!--- Trigger the event --->
+		<!--- TODO Shorten this! --->
+		<cfset variables.transport.theApplication.managers.plugin.getContent().getObserver().getContent().afterSave( arguments.content ) />
+		
 		<!--- TODO Check if publishing the content --->
 	</cffunction>
 </cfcomponent>
