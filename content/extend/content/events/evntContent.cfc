@@ -1,11 +1,25 @@
 <cfcomponent extends="algid.inc.resource.base.event" output="false">
 <cfscript>
-	/**
-	 * Listen for after a content save completes.
-	 */
 	/* required content */
-	public void function afterSave( component content ) {
-		// TODO something with the content...
+	public void function afterCreate( struct transport, component currUser, component content ) {
+		var eventLog = '';
+		
+		// Get the event log from the transport
+		eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
+		
+		// TODO use i18n
+		eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+	}
+	
+	/* required content */
+	public void function afterUpdate( struct transport, component currUser, component content ) {
+		var eventLog = '';
+		
+		// Get the event log from the transport
+		eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
+		
+		// TODO use i18n
+		eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
 	}
 </cfscript>
 </cfcomponent>

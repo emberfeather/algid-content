@@ -127,11 +127,11 @@
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
-		<cfset var eventLog = '' />
+		<cfset var observer = '' />
 		<cfset var results = '' />
 		
-		<!--- Get the event log from the transport --->
-		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<!--- TODO Check user permissions --->
 		
@@ -151,7 +151,8 @@
 				</cfquery>
 			</cftransaction>
 			
-			<cfset eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
+			<!--- After Update Event --->
+			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.content) />
 		<cfelse>
 			<!--- Insert as a new domain --->
 			<!--- Create the new ID --->
@@ -174,12 +175,12 @@
 				</cfquery>
 			</cftransaction>
 			
-			<cfset eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
+			<!--- After Create Event --->
+			<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.content) />
 		</cfif>
 		
-		<!--- Trigger the event --->
-		<!--- TODO Shorten this! --->
-		<cfset variables.transport.theApplication.managers.plugin.getContent().getObserver().getContent().afterSave( arguments.content ) />
+		<!--- After Save Event --->
+		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.content) />
 		
 		<!--- TODO Check if publishing the content --->
 	</cffunction>
