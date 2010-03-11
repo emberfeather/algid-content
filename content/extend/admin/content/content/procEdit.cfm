@@ -10,6 +10,7 @@
 	<cfset servContent.setContent( session.managers.singleton.getUser(), content ) />
 	
 	<!--- Add a success message --->
+	<!--- TODO use i18n --->
 	<cfset session.managers.singleton.getSuccess().addMessages('The ''' & content.getTitle() & ''' content was successfully saved.') />
 	
 	<!--- Redirect --->

@@ -8,7 +8,7 @@
 <cfif domains.recordCount eq 0>
 	<cfset message = transport.theSession.managers.singleton.getMessage() />
 	
-	<!--- TODO Use i18n for message --->
+	<!--- TODO Use i18n --->
 	<cfset message.addMessages('A domain is needed before adding content.') />
 	
 	<cfset theUrl.setRedirect('_base', '/admin/domain/add') />
@@ -42,10 +42,11 @@
 	
 	<!--- Add a success message --->
 	<cfif numContent gt 1>
+		<!--- TODO Use i18n --->
 		<cfset session.managers.singleton.getSuccess().addMessages('Successfully added ' & numContent & ' new pages.') />
 		<cfset theURL.setRedirect('_base', '/content/browse') />
 	<cfelse>
-		<cfset theURL.setRedirect('contentID', content.getContentID()) />
+		<cfset theURL.setRedirect('content', content.getContentID()) />
 		<cfset theURL.setRedirect('_base', '/content/edit') />
 	</cfif>
 	
