@@ -4,12 +4,16 @@
 		<cfargument name="domain" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
+		<cfset var observer = '' />
 		<cfset var results = '' />
 		
-		<!--- Get the event log from the transport --->
-		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<!--- TODO Check user permissions --->
+		
+		<!--- Before Archive Event --->
+		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
 		
 		<!--- Archive the domain --->
 		<cftransaction>
@@ -22,7 +26,8 @@
 			</cfquery>
 		</cftransaction>
 		
-		<cfset eventLog.logEvent('content', 'domainArchive', 'Archived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+		<!--- After Archive Event --->
+		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
 	
 	<cffunction name="getDomain" access="public" returntype="component" output="false">
@@ -122,27 +127,18 @@
 		<cfargument name="domain" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
+		<cfset var observer = '' />
 		<cfset var results = '' />
 		
-		<!--- Get the event log from the transport --->
-		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'domain') />
 		
 		<!--- TODO Check user permissions --->
 		
-		<cfif arguments.domain.getDomainID() neq ''>
-			<cftransaction>
-				<cfquery datasource="#variables.datasource.name#" result="results">
-					UPDATE "#variables.datasource.prefix#content"."domain"
-					SET
-						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />,
-						"archivedOn" = NULL
-					WHERE
-						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
-				</cfquery>
-			</cftransaction>
-			
-			<cfset eventLog.logEvent('content', 'domainUpdate', 'Updated the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
-		<cfelse>
+		<!--- Before Save Event --->
+		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.domain) />
+		
+		<cfif arguments.domain.getDomainID() eq ''>
 			<!--- Check for archived domain --->
 			<cfquery datasource="#variables.datasource.name#" name="results">
 				SELECT "domain", "archivedOn"
@@ -168,7 +164,8 @@
 						</cfquery>
 					</cftransaction>
 					
-					<cfset eventLog.logEvent('content', 'domainCreate', 'Unarchived the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+					<!--- After Update Event --->
+					<cfset observer.afterUnarchive(variables.transport, arguments.currUser, arguments.domain) />
 				</cfif>
 			<cfelse>
 				<!--- Insert as a new domain --->
@@ -188,8 +185,26 @@
 					</cfquery>
 				</cftransaction>
 				
-				<cfset eventLog.logEvent('content', 'domainCreate', 'Created the ''' & arguments.domain.getDomain() & ''' domain.', arguments.currUser.getUserID(), arguments.domain.getDomainID()) />
+				<!--- After Create Event --->
+				<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.domain) />
 			</cfif>
+		<cfelse>
+			<cftransaction>
+				<cfquery datasource="#variables.datasource.name#" result="results">
+					UPDATE "#variables.datasource.prefix#content"."domain"
+					SET
+						"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />,
+						"archivedOn" = NULL
+					WHERE
+						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
+				</cfquery>
+			</cftransaction>
+			
+			<!--- After Update Event --->
+			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.domain) />
 		</cfif>
+		
+		<!--- After Save Event --->
+		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.domain) />
 	</cffunction>
 </cfcomponent>

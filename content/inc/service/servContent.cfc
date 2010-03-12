@@ -1,18 +1,26 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
-	<cffunction name="deleteContent" access="public" returntype="component" output="false">
+	<cffunction name="archiveContent" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
+		<cfset var observer = '' />
+		
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
 		<!--- TODO Check user Permissions --->
 		
+		<!--- Before Archive Event --->
+		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
+		
 		<!--- TODO Archive the content --->
 		
-		<cfset eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
+		<!--- After Archive Event --->
+		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
 	
 	<cffunction name="getContent" access="public" returntype="component" output="false">
@@ -113,14 +121,20 @@
 		<cfargument name="content" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
+		<cfset var observer = '' />
 		
-		<!--- Get the event log from the transport --->
-		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<!--- TODO Check for user permission --->
 		
-		<!--- TODO Check if publishing the content --->
-		<cfset eventLog.logEvent('content', 'contentPublish', 'Published the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID()) />
+		<!--- Before Publish Event --->
+		<cfset observer.beforePublish(variables.transport, arguments.currUser, arguments.content) />
+		
+		<!--- TODO Publish the content --->
+		
+		<!--- After Publish Event --->
+		<cfset observer.afterPublish(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
 	
 	<cffunction name="setContent" access="public" returntype="void" output="false">
@@ -134,6 +148,9 @@
 		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<!--- TODO Check user permissions --->
+		
+		<!--- Before Save Event --->
+		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.content) />
 		
 		<cfif arguments.content.getContentID() neq ''>
 			<cftransaction>
