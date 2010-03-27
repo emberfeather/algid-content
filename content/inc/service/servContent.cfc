@@ -153,6 +153,9 @@
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.content) />
 		
 		<cfif arguments.content.getContentID() neq ''>
+			<!--- Before Update Event --->
+			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.content) />
+			
 			<cftransaction>
 				<cfquery datasource="#variables.datasource.name#" result="results">
 					UPDATE "#variables.datasource.prefix#content"."content"
@@ -171,6 +174,9 @@
 			<!--- After Update Event --->
 			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.content) />
 		<cfelse>
+			<!--- Before Create Event --->
+			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.content) />
+			
 			<!--- Insert as a new domain --->
 			<!--- Create the new ID --->
 			<cfset arguments.content.setContentID( createUUID() ) />
@@ -198,7 +204,5 @@
 		
 		<!--- After Save Event --->
 		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.content) />
-		
-		<!--- TODO Check if publishing the content --->
 	</cffunction>
 </cfcomponent>
