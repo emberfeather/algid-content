@@ -16,12 +16,25 @@
 	/* required theApplication */
 	public void function onApplicationStart(struct theApplication) {
 		var navigation = '';
-		var  = '';
+		var storagePath = '';
 		
 		// Create the admin navigation singleton
 		navigation = arguments.theApplication.factories.transient.getNavigationForContent(arguments.theApplication.managers.singleton.getI18N());
 		
 		arguments.theApplication.managers.singleton.setContentNavigation(navigation);
+		
+		// Check for the existance of the content storage
+		storagePath = arguments.theApplication.managers.singleton.getApplication().getStoragePath() & '/content';
+		
+		// Create the storage directory for the plugin if it doesn't exist already
+		if( !directoryExists(storagePath) ) {
+			directoryCreate(storagePath);
+		}
+		
+		// Create the storage directory for the content if it doesn't exist already
+		if( !directoryExists(storagePath & '/content') ) {
+			directoryCreate(storagePath & '/content');
+		}
 	}
 	
 	/* required theApplication */
@@ -709,4 +722,10 @@
 		}
 	}
 </cfscript>
+	<!--- TODO Remove when Railo supports directoryCreate() --->
+	<cffunction name="directoryCreate" access="public" returntype="void" output="false">
+		<cfargument name="path" type="string" required="true" />
+		
+		<cfdirectory action="create" directory="#arguments.path#" />
+	</cffunction>
 </cfcomponent>
