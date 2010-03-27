@@ -1,60 +1,50 @@
 <cfcomponent extends="algid.inc.resource.plugin.configure" output="false">
-	<cffunction name="inContent" access="public" returntype="boolean" output="false">
-		<cfargument name="theApplication" type="struct" required="true" />
-		<cfargument name="targetPage" type="string" required="true" />
+<cfscript>
+	/* required theApplication */
+	/* required targetPage */
+	public boolean function inContent(struct theApplication, string targetPage) {
+		var path = '';
 		
-		<cfset var path = '' />
+		// Get the path to the base
+		path = arguments.theApplication.managers.singleton.getApplication().getPath();
+		path &= arguments.theApplication.managers.plugin.getContent().getPath();
 		
-		<!--- Get the path to the base --->
-		<cfset path = arguments.theApplication.managers.singleton.getApplication().getPath()
-			& arguments.theApplication.managers.plugin.getContent().getPath() />
-		
-		<!--- Only pages in the root of path qualify --->
-		<cfreturn reFind('^' & path & '[a-zA-Z0-9-\.]*.cfm$', arguments.targetPage) GT 0 />
-	</cffunction>
+		// Only pages in the root of path qualify
+		return reFind('^' & path & '[a-zA-Z0-9-\.]*.cfm$', arguments.targetPage) GT 0;
+	}
 	
-	<cffunction name="onApplicationStart" access="public" returntype="void" output="false">
-		<cfargument name="theApplication" type="struct" required="true" />
+	/* required theApplication */
+	public void function onApplicationStart(struct theApplication) {
+		var navigation = '';
+		var  = '';
 		
-		<cfset var bundleName = '' />
-		<cfset var contentDirectory = '' />
-		<cfset var files = '' />
-		<cfset var i = '' />
-		<cfset var i18n = '' />
-		<cfset var i18nDirectory = '' />
-		<cfset var navDirectory = '' />
-		<cfset var navigation = '' />
-		<cfset var plugin = '' />
-		<cfset var search = '' />
+		// Create the admin navigation singleton
+		navigation = arguments.theApplication.factories.transient.getNavigationForContent(arguments.theApplication.managers.singleton.getI18N());
 		
-		<!--- Create the admin navigation singleton --->
-		<cfset navigation = arguments.theApplication.factories.transient.getNavigationForContent(arguments.theApplication.managers.singleton.getI18N()) />
-		
-		<cfset arguments.theApplication.managers.singleton.setContentNavigation(navigation) />
-	</cffunction>
+		arguments.theApplication.managers.singleton.setContentNavigation(navigation);
+	}
 	
-	<cffunction name="onRequestStart" access="public" returntype="void" output="false">
-		<cfargument name="theApplication" type="struct" required="true" />
-		<cfargument name="theSession" type="struct" required="true" />
-		<cfargument name="theRequest" type="struct" required="true" />
-		<cfargument name="targetPage" type="string" required="true" />
+	/* required theApplication */
+	/* required theSession */
+	/* required theRequest */
+	/* required targetPage */
+	public void function onRequestStart(struct theApplication, struct theSession, struct theRequest, string targetPage) {
+		var temp = '';
 		
-		<cfset var temp = '' />
-		
-		<!--- Only do the following if in the admin area --->
-		<cfif inContent( arguments.theApplication, arguments.targetPage )>
-			<!--- Create a profiler object --->
-			<cfset temp = arguments.theApplication.factories.transient.getProfiler(not arguments.theApplication.managers.singleton.getApplication().isProduction()) />
+		// Only do the following if in the content area
+		if (inContent( arguments.theApplication, arguments.targetPage )) {
+			// Create a profiler object
+			temp = arguments.theApplication.factories.transient.getProfiler(not arguments.theApplication.managers.singleton.getApplication().isProduction());
 			
-			<cfset arguments.theRequest.managers.singleton.setProfiler( temp ) />
+			arguments.theRequest.managers.singleton.setProfiler( temp );
 			
-			<!--- Create the URL object for all the admin requests --->
-			<cfset temp = arguments.theApplication.factories.transient.getUrlForContent(URL) />
+			// Create the URL object for all the admin requests
+			temp = arguments.theApplication.factories.transient.getUrlForContent(URL);
 			
-			<cfset arguments.theRequest.managers.singleton.setUrl( temp ) />
-		</cfif>
-	</cffunction>
-	
+			arguments.theRequest.managers.singleton.setUrl( temp );
+		}
+	}
+</cfscript>
 	<!---
 		Configures the database for v0.1.0
 	--->
@@ -701,25 +691,22 @@
 			</cfquery>
 		</cfloop>
 	</cffunction>
-	
-	<cffunction name="update" access="public" returntype="void" output="false">
-		<cfargument name="plugin" type="struct" required="true" />
-		<cfargument name="installedVersion" type="string" default="" />
+<cfscript>
+	/* required plugin */
+	public void function update(struct plugin, string installedVersion = '') {
+		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
 		
-		<cfset var versions = createObject('component', 'algid.inc.resource.utility.version').init() />
-		
-		<!--- fresh => 0.1.0 --->
-		<cfif versions.compareVersions(arguments.installedVersion, '0.1.0') lt 0>
-			<!--- Setup the Database --->
-			<cfswitch expression="#variables.datasource.type#">
-				<cfcase value="PostgreSQL">
-					<cfset postgreSQL0_1_0() />
-				</cfcase>
-				<cfdefaultcase>
-					<!--- TODO Remove this thow when a later version supports more database types  --->
-					<cfthrow message="Database Type Not Supported" detail="The #variables.datasource.type# database type is not currently supported" />
-				</cfdefaultcase>
-			</cfswitch>
-		</cfif>
-	</cffunction>
+		// fresh => 0.1.0
+		if (versions.compareVersions(arguments.installedVersion, '0.1.0') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_0();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+	}
+</cfscript>
 </cfcomponent>
