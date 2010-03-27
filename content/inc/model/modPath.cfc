@@ -32,12 +32,14 @@
 		
 		<!--- Order By --->
 		<cfset addAttribute(
-				attribute = 'orderBy'
+				attribute = 'orderBy',
+				defaultValue = 0
 			) />
 		
 		<!--- Path --->
 		<cfset addAttribute(
-				attribute = 'path'
+				attribute = 'path',
+				defaultValue = '/'
 			) />
 		
 		<!--- Title --->
@@ -59,26 +61,37 @@
 	<cffunction name="setPath" access="public" returntype="void" output="false">
 		<cfargument name="value" type="string" required="true" />
 		
-		<!--- Convert forward and backslashes to periods --->
-		<cfset arguments.value = replaceList(arguments.value, '\, ','/,_') />
-		
 		<cfset arguments.value = trim(arguments.value) />
 		
-		<!--- Check for blank path --->
-		<cfif arguments.value eq ''>
-			<cfthrow type="validation" message="The path cannot be blank" />
-		</cfif>
-		
-		<!--- Check for path not starting with a dot --->
-		<cfif left(arguments.value, 1) neq '/'>
-			<cfthrow type="validation" message="The path #arguments.value# needs to start with a forward slash" />
-		</cfif>
+		<!--- Convert standard characters --->
+		<cfset arguments.value = replaceList(arguments.value, '\, ','/,_') />
 		
 		<!--- Check for invalid characters --->
-		<cfif reFind('[^/a-zA-Z0-9-\._~]', arguments.value)>
+		<cfif reFind('[^/a-zA-Z0-9-\._~-]', arguments.value)>
 			<cfthrow type="validation" message="The path can only contain characters that contain uppercase and lowercase letters, decimal digits, hyphen, period, underscore, and tilde" />
 		</cfif>
 		
-		<cfset variables.instance.path = arguments.value />
+		<!--- Check for blank path --->
+		<cfif arguments.value eq ''>
+			<cfset arguments.value = '/' />
+		</cfif>
+		
+		<!--- Check for path not starting with a slash --->
+		<cfif left(arguments.value, 1) neq '/'>
+			<cfset arguments.value = '/' & arguments.value />
+		</cfif>
+		
+		<!--- Strip repeating symbols --->
+		<cfset arguments.value = reReplace(arguments.value, '[/]{2,}', '/', 'all') />
+		<cfset arguments.value = reReplace(arguments.value, '[_]{2,}', '_', 'all') />
+		<cfset arguments.value = reReplace(arguments.value, '[-]{2,}', '-', 'all') />
+		<cfset arguments.value = reReplace(arguments.value, '[~]{2,}', '~', 'all') />
+		
+		<!--- Check for path ending with a slash --->
+		<cfif right(arguments.value, 1) eq '/'>
+			<cfset arguments.value = reReplace(arguments.value, '[/]+$', '') />
+		</cfif>
+		
+		<cfset variables.instance['path'] = arguments.value />
 	</cffunction>
 </cfcomponent>
