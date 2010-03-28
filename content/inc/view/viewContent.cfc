@@ -63,7 +63,10 @@
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
+		<cfset var i = '' />
 		<cfset var i18n = '' />
+		<cfset var path = '' />
+		<cfset var paths = '' />
 		<cfset var theForm = '' />
 		<cfset var theURL = '' />
 		
@@ -74,16 +77,37 @@
 		<!--- Add the resource bundle for the view --->
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
+		<!--- Title --->
 		<cfset theForm.addElement('text', {
 				name = "title",
 				label = "title",
 				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
 			}) />
 		
+		<!--- Content --->
 		<cfset theForm.addElement('textarea', {
 				name = "content",
 				label = "content",
 				value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )
+			}) />
+		
+		<!--- Paths --->
+		<cfset paths = arguments.content.getPaths() />
+		
+		<cfloop from="1" to="#arrayLen(paths)#" index="i">
+`			<cfset theForm.addElement('text', {
+					class = 'allowDeletion',
+					name = 'path' & i,
+					label = 'path',
+					value = paths[i].getPath()
+				}) />
+		</cfloop>
+		
+		<cfset theForm.addElement('text', {
+				class = 'allowDuplication allowDeletion',
+				name = 'path',
+				label = 'path',
+				value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
 			}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />

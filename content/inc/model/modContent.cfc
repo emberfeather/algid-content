@@ -40,6 +40,12 @@
 				attribute = 'modifiedOn'
 			) />
 		
+		<!--- Paths --->
+		<cfset addAttribute(
+				attribute = 'paths',
+				defaultValue = []
+			) />
+		
 		<!--- Title --->
 		<cfset addAttribute(
 				attribute = 'title'

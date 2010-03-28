@@ -7,7 +7,17 @@
 	<!--- Process the form submission --->
 	<cfset objectSerial.deserialize(form, content) />
 	
-	<cfset servContent.setContent( session.managers.singleton.getUser(), content ) />
+	<!--- Find all paths --->
+	<cfloop list="#form.fieldnames#" index="i">
+		<cfif left(i, 4) eq 'path' and trim(form[i]) neq ''>
+			<!--- Get the path from the content/create a new path --->
+			<cfset servContent.getPath( content, form[i] ) />
+		</cfif>
+	</cfloop>
+	
+	<cfset user = session.managers.singleton.getUser() />
+	
+	<cfset servContent.setContent( user, content ) />
 	
 	<!--- Add a success message --->
 	<!--- TODO use i18n --->

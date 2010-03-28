@@ -28,13 +28,17 @@
 		<cfargument name="contentID" type="string" required="true" />
 		
 		<cfset var content = '' />
+		<cfset var i = '' />
 		<cfset var i18n = '' />
+		<cfset var locale = '' />
 		<cfset var objectSerial = '' />
+		<cfset var path = '' />
 		<cfset var results = '' />
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
+		<cfset locale = variables.transport.theSession.managers.singleton.getSession().getLocale() />
 		
-		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, locale ) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
@@ -48,6 +52,26 @@
 			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
 			
 			<cfset objectSerial.deserialize(results, content) />
+			
+			<!--- Retrieve the content paths --->
+			<cfquery name="results" datasource="#variables.datasource.name#">
+				SELECT "contentID", "pathID", "path", "title", "groupBy", "orderBy", "isActive", "navigationID", "themeID"
+				FROM "#variables.datasource.prefix#content"."path"
+				WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
+				ORDER BY "path" ASC
+			</cfquery>
+			
+			<cfloop query="results">
+				<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, locale ) />
+				
+				<cfloop list="#structKeyList(results)#" index="i">
+					<cfinvoke component="#path#" method="set#i#">
+						<cfinvokeargument name="value" value="#results[i]#" />
+					</cfinvoke>
+				</cfloop>
+				
+				<cfset content.addPaths(path) />
+			</cfloop>
 		</cfif>
 		
 		<cfreturn content />
@@ -75,22 +99,19 @@
 				ON c."typeID" = t."typeID"
 			JOIN "#variables.datasource.prefix#content"."domain" AS d
 				ON c."domainID" = d."domainID"
-					and d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
-				and (
+				AND (
 					p."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
-					or c."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
-					or p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					OR c."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
 			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
-				<cfcase value="updatedOn">
-					p."path" #arguments.filter.orderSort#
-				</cfcase>
 				<cfcase value="updatedOn">
 					c."updatedOn" #arguments.filter.orderSort#,
 					c."title" ASC
@@ -100,6 +121,7 @@
 					c."title" #arguments.filter.orderSort#
 				</cfcase>
 				<cfdefaultcase>
+					p."path" #arguments.filter.orderSort#,
 					c."title" #arguments.filter.orderSort#
 				</cfdefaultcase>
 			</cfswitch>
@@ -114,6 +136,43 @@
 		</cfquery>
 		
 		<cfreturn results />
+	</cffunction>
+	
+	<cffunction name="getPath" access="public" returntype="component" output="false">
+		<cfargument name="content" type="component" required="true" />
+		<cfargument name="path" type="string" required="true" />
+		
+		<cfset var i18n = '' />
+		<cfset var path = '' />
+		<cfset var paths = '' />
+		
+		<!--- Retrieve the paths from the content --->
+		<cfset paths = arguments.content.getPaths() />
+		
+		<cfloop array="#paths#" index="path">
+			<cfif path.getPath() eq arguments.path>
+				<!--- Mark as used --->
+				<!--- TODO figure out a better way of doing this... --->
+				<cfset path.set__isUsed(true) />
+				
+				<cfreturn path />
+			</cfif>
+		</cfloop>
+		
+		<!--- Not found so create a new path --->
+		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
+		
+		<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		
+		<!--- Set the contentID and default title --->
+		<cfset path.setContentID(arguments.content.getContentID()) />
+		<cfset path.setPath(arguments.path) />
+		<cfset path.setTitle(arguments.content.getTitle()) />
+		
+		<!--- Add to the content object --->
+		<cfset arguments.content.addPaths(path) />
+		
+		<cfreturn path />
 	</cffunction>
 	
 	<cffunction name="publishContent" access="public" returntype="void" output="false">
@@ -143,6 +202,7 @@
 		
 		<cfset var observer = '' />
 		<cfset var results = '' />
+		<cfset var path = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
@@ -157,7 +217,7 @@
 			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.content) />
 			
 			<cftransaction>
-				<cfquery datasource="#variables.datasource.name#" result="results">
+				<cfquery datasource="#variables.datasource.name#">
 					UPDATE "#variables.datasource.prefix#content"."content"
 					SET
 						"typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTypeID()#" null="#arguments.content.getTypeID() eq ''#" />::uuid,
@@ -182,9 +242,8 @@
 			<cfset arguments.content.setContentID( createUUID() ) />
 			
 			<cftransaction>
-				<cfquery datasource="#variables.datasource.name#" result="results">
-					INSERT INTO "#variables.datasource.prefix#content"."content"
-					(
+				<cfquery datasource="#variables.datasource.name#">
+					INSERT INTO "#variables.datasource.prefix#content"."content" (
 						"contentID",
 						"domainID",
 						"title",
@@ -201,6 +260,64 @@
 			<!--- After Create Event --->
 			<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.content) />
 		</cfif>
+		
+		<!--- Save the paths --->
+		<cftransaction>
+			<cfloop array="#arguments.content.getPaths()#" index="path">
+				<cfif path.getPathID() neq ''>
+					<!--- Check if not used --->
+					<!--- TODO figure out a better way of doing this... --->
+					<cfif not path.has__isUsed()>
+						<cfquery datasource="#variables.datasource.name#">
+							DELETE
+							FROM "#variables.datasource.prefix#content"."path"
+							WHERE "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getPathID()#" />::uuid
+						</cfquery>
+					<cfelse>
+						<cfquery datasource="#variables.datasource.name#">
+							UPDATE "#variables.datasource.prefix#content"."path"
+							SET
+								"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getNavigationID()#" null="#path.getNavigationID() eq ''#" />::uuid,
+								"themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getThemeID()#" null="#path.getThemeID() eq ''#" />::uuid,
+								"path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getPath()#" />,
+								"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getTitle()#" />,
+								"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getGroupBy()#" maxlength="100" />,
+								"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#path.getOrderBy()#" />,
+								"isActive" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getIsActive()#" />::bit
+							WHERE "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getPathID()#" />::uuid
+						</cfquery>
+					</cfif>
+				<cfelse>
+					<!--- Insert as a new path --->
+					<!--- Create the new ID --->
+					<cfset path.setPathID( createUUID() ) />
+					
+					<cfquery datasource="#variables.datasource.name#">
+						INSERT INTO "#variables.datasource.prefix#content"."path" (
+							"pathID",
+							"contentID",
+							"navigationID",
+							"themeID",
+							"path",
+							"title",
+							"groupBy",
+							"orderBy",
+							"isActive"
+						) VALUES (
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getPathID()#" />::uuid,
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getContentID()#" />::uuid,
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getNavigationID()#" null="#path.getNavigationID() eq ''#" />::uuid,
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getThemeID()#" null="#path.getThemeID() eq ''#" />::uuid,
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getPath()#" />,
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getTitle()#" />,
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getGroupBy()#" maxlength="100" />,
+							<cfqueryparam cfsqltype="cf_sql_integer" value="#path.getOrderBy()#" />,
+							<cfqueryparam cfsqltype="cf_sql_varchar" value="#path.getIsActive()#" />::bit
+						)
+					</cfquery>
+				</cfif>
+			</cfloop>
+		</cftransaction>
 		
 		<!--- After Save Event --->
 		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.content) />
