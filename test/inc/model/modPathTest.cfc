@@ -33,6 +33,16 @@
 		}
 		
 		/**
+		 * Tests setting the path to multiple forward slashes only.
+		 * Defaults to a / since all paths must have at least a /.
+		 */
+		public void function testSetPath_withMultipleSlashes_shouldDefaultToRoot() {
+			variables.path.setPath('///');
+			
+			assertEquals('/', variables.path.getPath());
+		}
+		
+		/**
 		 * Tests the conversion of forward slashing paths to dot notation
 		 */
 		public void function testSetPath_withForwardSlash() {
