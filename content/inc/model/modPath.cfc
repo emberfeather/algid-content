@@ -71,13 +71,8 @@
 			<cfthrow type="validation" message="The path can only contain characters that contain uppercase and lowercase letters, decimal digits, hyphen, period, underscore, and tilde" />
 		</cfif>
 		
-		<!--- Check for blank path --->
-		<cfif arguments.value eq ''>
-			<cfset arguments.value = '/' />
-		</cfif>
-		
 		<!--- Check for path not starting with a slash --->
-		<cfif left(arguments.value, 1) neq '/'>
+		<cfif not len(arguments.value) or left(arguments.value, 1) neq '/'>
 			<cfset arguments.value = '/' & arguments.value />
 		</cfif>
 		
@@ -88,7 +83,7 @@
 		<cfset arguments.value = reReplace(arguments.value, '[~]{2,}', '~', 'all') />
 		
 		<!--- Check for path ending with a slash --->
-		<cfif right(arguments.value, 1) eq '/'>
+		<cfif len(arguments.value) gt 1 and right(arguments.value, 1) eq '/'>
 			<cfset arguments.value = reReplace(arguments.value, '[/]+$', '') />
 		</cfif>
 		
