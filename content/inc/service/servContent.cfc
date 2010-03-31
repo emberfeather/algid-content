@@ -201,7 +201,7 @@
 	
 	<cffunction name="getPath" access="public" returntype="component" output="false">
 		<cfargument name="content" type="component" required="true" />
-		<cfargument name="path" type="string" required="true" />
+		<cfargument name="identifier" type="string" required="true" />
 		
 		<cfset var i18n = '' />
 		<cfset var path = '' />
@@ -210,8 +210,20 @@
 		<!--- Retrieve the paths from the content --->
 		<cfset paths = arguments.content.getPaths() />
 		
+		<!--- Check for an id match --->
 		<cfloop array="#paths#" index="path">
-			<cfif path.getPath() eq arguments.path>
+			<cfif path.getPathID() eq identifier>
+				<!--- Mark as used --->
+				<!--- TODO figure out a better way of doing this... --->
+				<cfset path.set__isUsed(true) />
+				
+				<cfreturn path />
+			</cfif>
+		</cfloop>
+		
+		<!--- Check for existing path with same path --->
+		<cfloop array="#paths#" index="path">
+			<cfif path.getPath() eq identifier>
 				<!--- Mark as used --->
 				<!--- TODO figure out a better way of doing this... --->
 				<cfset path.set__isUsed(true) />
@@ -227,7 +239,7 @@
 		
 		<!--- Set the contentID and default title --->
 		<cfset path.setContentID(arguments.content.getContentID()) />
-		<cfset path.setPath(arguments.path) />
+		<cfset path.setPath(identifier) />
 		<cfset path.setTitle(arguments.content.getTitle()) />
 		
 		<!--- Add to the content object --->

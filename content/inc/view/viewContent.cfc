@@ -101,6 +101,11 @@
 					label = 'path',
 					value = paths[i].getPath()
 				}) />
+			
+`			<cfset theForm.addElement('hidden', {
+					name = 'path' & i & '_id',
+					value = paths[i].getPathID()
+				}) />
 		</cfloop>
 		
 		<cfset theForm.addElement('text', {
