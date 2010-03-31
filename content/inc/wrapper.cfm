@@ -36,7 +36,8 @@
 	<!--- Create template object --->
 	<cfset options = {
 			scripts = [
-				'https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'
+				'https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+				'https://ajax.googleapis.com/ajax/libs/jqueryui/1/jqueryui.min.js'
 			]
 		} />
 	
@@ -53,7 +54,36 @@
 	
 	<cfset profiler.stop('template') />
 	
-	<cfset template.setContent('Coming some other time... content!!!') />
+	<cfset profiler.start('content') />
+	
+	<!--- TODO Use the navigation to get the content instead of this PoC --->
+	<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+	
+	<cfset filter = {
+			domain = transport.theCgi.server_name,
+			path = theUrl.search('_base')
+		} />
+	
+	<cfset contents = servContent.getContents( filter ) />
+	
+	<cfif contents.recordCount eq 1>
+		<cfset template.setContent(contents.content) />
+	<cfelse>
+		<cfset filter.keyAlongPath = '404' />
+		<cfset filter.orderBy = 'path' />
+		<cfset filter.orderSort = 'desc' />
+		
+		<cfset contents = servContent.getContents( filter ) />
+		
+		<cfif contents.recordCount gt 0>
+			<cfset template.setContent(contents.content) />
+		<cfelse>
+			<!--- Page not found and no 404 page along the path --->
+			<cfset template.setContent('404... content not found!') />
+		</cfif>
+	</cfif>
+	
+	<cfset profiler.stop('content') />
 	
 	<cfset profiler.start('theme') />
 </cfsilent>

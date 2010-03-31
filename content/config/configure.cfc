@@ -38,8 +38,13 @@
 			
 			arguments.theRequest.managers.singleton.setProfiler( temp );
 			
+			// Default base
+			if ( !structKeyExists(url, '_base') ) {
+				url['_base'] = '/';
+			}
+			
 			// Create the URL object for all the admin requests
-			temp = arguments.theApplication.factories.transient.getUrlForContent(URL);
+			temp = arguments.theApplication.factories.transient.getUrlForContent( url );
 			
 			arguments.theRequest.managers.singleton.setUrl( temp );
 		}

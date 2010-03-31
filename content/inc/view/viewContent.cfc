@@ -41,7 +41,7 @@
 				<cfset element.options.addOption(arguments.domains.domain, arguments.domains.domainID) />
 				
 				<!--- Check for the current domain --->
-				<cfif arguments.domains.domain eq cgi.server_name>
+				<cfif arguments.domains.domain eq variables.transport.theCgi.server_name>
 					<cfset element.value = toString(arguments.domains.domainID) />
 				</cfif>
 			</cfloop>

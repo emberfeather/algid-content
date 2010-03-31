@@ -22,6 +22,31 @@
 		<!--- After Archive Event --->
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
+<cfscript>
+	/* required path */
+	private string function createPathList( string path, string key = '' ) {
+		var pathList = '';
+		var pathPart = '';
+		var i = '';
+		
+		// If provided a key then prepend a slash so it can be added to the end of the pathPart
+		if(arguments.key != '') {
+			arguments.key = '/' & arguments.key;
+		}
+		
+		// Set the base path in the path list
+		pathList = listAppend(pathList, arguments.key);
+		
+		// Make the list from each part of the provided path
+		for( i = 1; i <= listLen(arguments.path, '/'); i++ ) {
+			pathPart = listAppend(pathPart, listGetAt(arguments.path, i, '/'), '/');
+			
+			pathList = listAppend(pathList, '/' & pathPart & arguments.key);
+		}
+		
+		return pathList;
+	}
+</cfscript>
 	
 	<cffunction name="getContent" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
@@ -81,17 +106,19 @@
 		<cfargument name="filter" type="struct" default="#{}#" />
 		
 		<cfset var defaults = {
-				domain = CGI.SERVER_NAME,
+				domain = variables.transport.theCgi.server_name,
 				orderBy = 'title',
 				orderSort = 'asc'
 			} />
+		<cfset var i = '' />
+		<cfset var pathPart = '' />
 		<cfset var results = '' />
 		
 		<!--- Expand the with defaults --->
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT c."contentID", p."path", p."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn"
+			SELECT c."contentID", p."path", p."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
 			FROM "#variables.datasource.prefix#content"."content" AS c
 			LEFT JOIN "#variables.datasource.prefix#content"."path" AS p
 				ON c."contentID" = p."contentID"
@@ -110,6 +137,29 @@
 				)
 			</cfif>
 			
+			<!--- Check if we want to find a key in the path --->
+			<cfif structKeyExists(arguments.filter, 'pathKey')>
+				AND (
+					p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%/#arguments.filter.pathKey#" />
+					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%/#arguments.filter.pathKey#/%" />
+					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.pathKey#/%" />
+				)
+			</cfif>
+			
+			<!--- Check for path specific filters --->
+			<cfif structKeyExists(arguments.filter, 'keyAlongPath')>
+				<!--- Find a key that is along the path --->
+				<cfparam name="arguments.filter.path" default="/" />
+				
+				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(arguments.filter.path, arguments.filter.keyAlongPath)#" list="true" />)
+			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
+				<!--- Find any content along the path --->
+				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(arguments.filter.alongPath)#" list="true" />)
+			<cfelseif structKeyExists(arguments.filter, 'path')>
+				<!--- Match a specific path --->
+				AND p."path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.path#" />
+			</cfif>
+			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="updatedOn">
@@ -119,6 +169,9 @@
 				<cfcase value="navTitle">
 					p."title" #arguments.filter.orderSort#,
 					c."title" #arguments.filter.orderSort#
+				</cfcase>
+				<cfcase value="path">
+					p."path" #arguments.filter.orderSort#
 				</cfcase>
 				<cfdefaultcase>
 					p."path" #arguments.filter.orderSort#,
