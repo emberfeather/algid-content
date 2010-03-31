@@ -57,36 +57,42 @@
 		
 		<cfreturn this />
 	</cffunction>
+
+<cfscript>
+	/* required value */
+	public string function cleanPath( string value ) {
+		arguments.value = trim(arguments.value);
+		
+		// Convert standard characters
+		arguments.value = replaceList(arguments.value, '\, ','/,_');
+		
+		// Check for invalid characters
+		if (reFind('[^/a-zA-Z0-9-\._~-]', arguments.value)) {
+			throw(type="validation", message="The path can only contain characters that contain uppercase and lowercase letters, decimal digits, hyphen, period, underscore, and tilde");
+		}
+		
+		// Check for path not starting with a slash
+		if (not len(arguments.value) or left(arguments.value, 1) neq '/') {
+			arguments.value = '/' & arguments.value;
+		}
+		
+		// Strip repeating symbols
+		arguments.value = reReplace(arguments.value, '[/]{2,}', '/', 'all');
+		arguments.value = reReplace(arguments.value, '[_]{2,}', '_', 'all');
+		arguments.value = reReplace(arguments.value, '[-]{2,}', '-', 'all');
+		arguments.value = reReplace(arguments.value, '[~]{2,}', '~', 'all');
+		
+		// Check for path ending with a slash
+		if (len(arguments.value) gt 1 and right(arguments.value, 1) eq '/') {
+			arguments.value = reReplace(arguments.value, '[/]+$', '');
+		}
+		
+		return arguments.value;
+	}
 	
-	<cffunction name="setPath" access="public" returntype="void" output="false">
-		<cfargument name="value" type="string" required="true" />
-		
-		<cfset arguments.value = trim(arguments.value) />
-		
-		<!--- Convert standard characters --->
-		<cfset arguments.value = replaceList(arguments.value, '\, ','/,_') />
-		
-		<!--- Check for invalid characters --->
-		<cfif reFind('[^/a-zA-Z0-9-\._~-]', arguments.value)>
-			<cfthrow type="validation" message="The path can only contain characters that contain uppercase and lowercase letters, decimal digits, hyphen, period, underscore, and tilde" />
-		</cfif>
-		
-		<!--- Check for path not starting with a slash --->
-		<cfif not len(arguments.value) or left(arguments.value, 1) neq '/'>
-			<cfset arguments.value = '/' & arguments.value />
-		</cfif>
-		
-		<!--- Strip repeating symbols --->
-		<cfset arguments.value = reReplace(arguments.value, '[/]{2,}', '/', 'all') />
-		<cfset arguments.value = reReplace(arguments.value, '[_]{2,}', '_', 'all') />
-		<cfset arguments.value = reReplace(arguments.value, '[-]{2,}', '-', 'all') />
-		<cfset arguments.value = reReplace(arguments.value, '[~]{2,}', '~', 'all') />
-		
-		<!--- Check for path ending with a slash --->
-		<cfif len(arguments.value) gt 1 and right(arguments.value, 1) eq '/'>
-			<cfset arguments.value = reReplace(arguments.value, '[/]+$', '') />
-		</cfif>
-		
-		<cfset variables.instance['path'] = arguments.value />
-	</cffunction>
+	/* required value */
+	public void function setPath( string value ) {
+		variables.instance['path'] = cleanPath(arguments.value);
+	}
+</cfscript>
 </cfcomponent>

@@ -24,6 +24,14 @@
 	</cffunction>
 <cfscript>
 	/* required path */
+	private string function cleanPath(string dirtyPath) {
+		var i18n = variables.transport.theApplication.managers.singleton.getI18N();
+		var path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() );
+		
+		return path.cleanPath(arguments.dirtyPath);
+	}
+	
+	/* required path */
 	private string function createPathList( string path, string key = '' ) {
 		var pathList = '';
 		var pathPart = '';
@@ -151,13 +159,13 @@
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
-				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(arguments.filter.path, arguments.filter.keyAlongPath)#" list="true" />)
+				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath)#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
 				<!--- Find any content along the path --->
-				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(arguments.filter.alongPath)#" list="true" />)
+				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.alongPath))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
-				AND p."path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.path#" />
+				AND p."path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#cleanPath(arguments.filter.path)#" />
 			</cfif>
 			
 			ORDER BY
