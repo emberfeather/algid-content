@@ -56,32 +56,48 @@
 	
 	<cfset profiler.start('content') />
 	
-	<!--- TODO Use the navigation to get the content instead of this PoC --->
-	<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
-	
-	<cfset filter = {
-			domain = transport.theCgi.server_name,
-			path = theUrl.search('_base')
-		} />
-	
-	<cfset contents = servContent.getContents( filter ) />
-	
-	<cfif contents.recordCount eq 1>
-		<cfset template.setContent(contents.content) />
-	<cfelse>
-		<cfset filter.keyAlongPath = '404' />
-		<cfset filter.orderBy = 'path' />
-		<cfset filter.orderSort = 'desc' />
+	<cftry>
+		<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+		
+		<cfset filter = {
+				domain = transport.theCgi.server_name,
+				path = theUrl.search('_base')
+			} />
 		
 		<cfset contents = servContent.getContents( filter ) />
 		
-		<cfif contents.recordCount gt 0>
+		<cfif contents.recordCount eq 1>
 			<cfset template.setContent(contents.content) />
 		<cfelse>
-			<!--- Page not found and no 404 page along the path --->
-			<cfset template.setContent('404... content not found!') />
+			<cfset filter.keyAlongPath = '404' />
+			<cfset filter.orderBy = 'path' />
+			<cfset filter.orderSort = 'desc' />
+			
+			<cfset contents = servContent.getContents( filter ) />
+			
+			<cfif contents.recordCount gt 0>
+				<cfset template.setContent(contents.content) />
+			<cfelse>
+				<!--- Page not found and no 404 page along the path --->
+				<cfset template.setContent('404... content not found!') />
+			</cfif>
 		</cfif>
-	</cfif>
+		
+		<cfcatch type="any">
+			<cfset filter.keyAlongPath = '500' />
+			<cfset filter.orderBy = 'path' />
+			<cfset filter.orderSort = 'desc' />
+			<cfset filter.path = 'desc' />
+			
+			<cfset contents = servContent.getContents( filter ) />
+			
+			<cfif contents.recordCount gt 0>
+				<cfset template.setContent(contents.content) />
+			<cfelse>
+				<cfset template.setContent('500... Internal Server Error!') />
+			</cfif>
+		</cfcatch>
+	</cftry>
 	
 	<cfset profiler.stop('content') />
 	
