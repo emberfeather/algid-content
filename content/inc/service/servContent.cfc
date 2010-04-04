@@ -73,38 +73,40 @@
 		
 		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, locale ) />
 		
-		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
-			FROM "#variables.datasource.prefix#content"."content"
-			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
-			
-			<!--- TODO Check for user connection --->
-		</cfquery>
-		
-		<cfif results.recordCount>
-			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
-			
-			<cfset objectSerial.deserialize(results, content) />
-			
-			<!--- Retrieve the content paths --->
+		<cfif arguments.contentID neq ''>
 			<cfquery name="results" datasource="#variables.datasource.name#">
-				SELECT "contentID", "pathID", "path", "title", "groupBy", "orderBy", "isActive", "navigationID", "themeID"
-				FROM "#variables.datasource.prefix#content"."path"
+				SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
+				FROM "#variables.datasource.prefix#content"."content"
 				WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
-				ORDER BY "path" ASC
+				
+				<!--- TODO Check for user connection --->
 			</cfquery>
 			
-			<cfloop query="results">
-				<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, locale ) />
+			<cfif results.recordCount>
+				<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
 				
-				<cfloop list="#structKeyList(results)#" index="i">
-					<cfinvoke component="#path#" method="set#i#">
-						<cfinvokeargument name="value" value="#results[i]#" />
-					</cfinvoke>
+				<cfset objectSerial.deserialize(results, content) />
+				
+				<!--- Retrieve the content paths --->
+				<cfquery name="results" datasource="#variables.datasource.name#">
+					SELECT "contentID", "pathID", "path", "title", "groupBy", "orderBy", "isActive", "navigationID", "themeID"
+					FROM "#variables.datasource.prefix#content"."path"
+					WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
+					ORDER BY "path" ASC
+				</cfquery>
+				
+				<cfloop query="results">
+					<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, locale ) />
+					
+					<cfloop list="#structKeyList(results)#" index="i">
+						<cfinvoke component="#path#" method="set#i#">
+							<cfinvokeargument name="value" value="#results[i]#" />
+						</cfinvoke>
+					</cfloop>
+					
+					<cfset content.addPaths(path) />
 				</cfloop>
-				
-				<cfset content.addPaths(path) />
-			</cfloop>
+			</cfif>
 		</cfif>
 		
 		<cfreturn content />

@@ -85,16 +85,26 @@
 			<cfset contents = servContent.getContents( filter ) />
 			
 			<cfif contents.recordCount gt 0>
-				<cfset template.setContent(contents.content) />
+				<!--- Use the cache for the error page --->
+				<cfif cacheContent.has( filter.domain & contents.path )>
+					<cfset content = cacheContent.get( filter.domain & contents.path ) />
+				<cfelse>
+					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), contents.contentID.toString() ) />
+					
+					<!--- Put the error page in the cache --->
+					<cfset cacheContent.put(filter.domain & contents.path, content) />
+				</cfif>
 			<cfelse>
+				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
+				
 				<!--- Page not found and no 404 page along the path --->
-				<cfset template.setContent('404... content not found!') />
+				<cfset content.setContent('404... content not found!') />
 			</cfif>
 		</cfif>
 	</cfif>
 	
 	<cftry>
-		<cfset template.setContent(contents.content) />
+		<cfset template.setContent(content.getContent()) />
 		
 		<cfcatch type="any">
 			<cfset filter.keyAlongPath = '500' />
@@ -105,10 +115,22 @@
 			<cfset contents = servContent.getContents( filter ) />
 			
 			<cfif contents.recordCount gt 0>
-				<cfset template.setContent(contents.content) />
+				<!--- Use the cache for the error page --->
+				<cfif cacheContent.has( filter.domain & contents.path )>
+					<cfset content = cacheContent.get( filter.domain & contents.path ) />
+				<cfelse>
+					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), contents.contentID.toString() ) />
+					
+					<!--- Put the error page in the cache --->
+					<cfset cacheContent.put(filter.domain & contents.path, content) />
+				</cfif>
 			<cfelse>
-				<cfset template.setContent('500... Internal Server Error!') />
+				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
+				
+				<cfset content.setContent('500... Internal server error!') />
 			</cfif>
+			
+			<cfset template.setContent(content.getContent()) />
 		</cfcatch>
 	</cftry>
 	
