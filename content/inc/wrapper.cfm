@@ -22,9 +22,9 @@
 	
 	<!--- Check for a change to the number of records per page --->
 	<cfif theURL.searchID('numPerPage')>
-		<cfset session.numPerPage = theURL.searchID('numPerPage') />
+		<cfset transport.theSession.numPerPage = theURL.searchID('numPerPage') />
 		
-		<cfcookie name="numPerPage" value="#session.numPerPage#" />
+		<cfcookie name="numPerPage" value="#transport.theSession.numPerPage#" />
 		
 		<cfset theURL.remove('numPerPage') />
 	</cfif>
@@ -56,18 +56,27 @@
 	
 	<cfset profiler.start('content') />
 	
-	<cftry>
-		<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
-		
-		<cfset filter = {
-				domain = transport.theCgi.server_name,
-				path = theUrl.search('_base')
-			} />
-		
+	<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+	
+	<cfset filter = {
+			domain = transport.theCgi.server_name,
+			path = theUrl.search('_base')
+		} />
+	
+	<!--- Use the plugin cache to pull the content from the cache first --->
+	<cfset cacheContent = transport.theApplication.managers.plugin.getContent().getCache().getContent() />
+	
+	<cfif cacheContent.has( filter.domain & filter.path )>
+		<cfset content = cacheContent.get( filter.domain & filter.path ) />
+	<cfelse>
+		<!--- The content is not cached, retrieve it --->
 		<cfset contents = servContent.getContents( filter ) />
 		
 		<cfif contents.recordCount eq 1>
-			<cfset template.setContent(contents.content) />
+			<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), contents.contentID.toString() ) />
+			
+			<!--- Put the content in the cache --->
+			<cfset cacheContent.put(filter.domain & filter.path, content) />
 		<cfelse>
 			<cfset filter.keyAlongPath = '404' />
 			<cfset filter.orderBy = 'path' />
@@ -82,6 +91,10 @@
 				<cfset template.setContent('404... content not found!') />
 			</cfif>
 		</cfif>
+	</cfif>
+	
+	<cftry>
+		<cfset template.setContent(contents.content) />
 		
 		<cfcatch type="any">
 			<cfset filter.keyAlongPath = '500' />

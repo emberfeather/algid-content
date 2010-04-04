@@ -15,13 +15,24 @@
 	
 	/* required theApplication */
 	public void function onApplicationStart(struct theApplication) {
+		var cache = '';
 		var navigation = '';
+		var plugin = '';
 		var storagePath = '';
 		
-		// Create the admin navigation singleton
+		// Get the plugin
+		plugin = arguments.theApplication.managers.plugin.getContent();
+		
+		// Create the navigation singleton
 		navigation = arguments.theApplication.factories.transient.getNavigationForContent(arguments.theApplication.managers.singleton.getI18N());
 		
 		arguments.theApplication.managers.singleton.setContentNavigation(navigation);
+		
+		// Create the content cache
+		cache = arguments.theApplication.factories.transient.getCacheContentForContent( plugin.getCacheContent() );
+		
+		// Store the cache in the plugin cache manager
+		plugin.getCache().setContent(cache);
 	}
 	
 	/* required theApplication */

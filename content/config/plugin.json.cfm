@@ -2,6 +2,7 @@
 	"applicationSingletons": {
 	},
 	"applicationTransients": {
+		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"modAttributeForContent": "plugins.content.inc.model.modAttribute",
 		"modAttributeOptionForContent": "plugins.content.inc.model.modAttributeOption",
 		"modContentForContent": "plugins.content.inc.model.modContent",
@@ -20,6 +21,7 @@
 		"viewDomainForContent": "plugins.content.inc.view.viewDomain",
 		"urlForContent": "cf-compendium.inc.resource.utility.url"
 	},
+	"cacheContent": "",
 	"defaultTheme": "content/extend/content/theme/content",
 	"i18n": {
 		"locales": [
