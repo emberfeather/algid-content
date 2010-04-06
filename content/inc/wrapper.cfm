@@ -60,7 +60,7 @@
 	
 	<cfset filter = {
 			domain = transport.theCgi.server_name,
-			path = theUrl.search('_base')
+			path = lcase(theUrl.search('_base'))
 		} />
 	
 	<!--- Use the plugin cache to pull the content from the cache first --->

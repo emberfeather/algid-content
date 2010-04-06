@@ -194,13 +194,13 @@
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
-				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath)#" list="true" />)
+				AND LOWER(p."path") IN (LOWER(<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath)#" list="true" />))
 			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
 				<!--- Find any content along the path --->
-				AND p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.alongPath))#" list="true" />)
+				AND LOWER(p."path") IN (LOWER(<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.alongPath))#" list="true" />))
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
-				AND p."path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#cleanPath(arguments.filter.path)#" />
+				AND LOWER(p."path") = LOWER(<cfqueryparam cfsqltype="cf_sql_varchar" value="#cleanPath(arguments.filter.path)#" />)
 			</cfif>
 			
 			ORDER BY
