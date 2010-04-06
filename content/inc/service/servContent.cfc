@@ -275,14 +275,19 @@
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
+		<cfset var i = '' />
 		<cfset var observer = '' />
 		<cfset var results = '' />
 		<cfset var path = '' />
+		<cfset var paths = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<!--- TODO Check user permissions --->
+		
+		<!--- Retrieve the paths from the content --->
+		<cfset paths = arguments.content.getPaths() />
 		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.content) />
@@ -338,7 +343,7 @@
 		
 		<!--- Save the paths --->
 		<cftransaction>
-			<cfloop array="#arguments.content.getPaths()#" index="path">
+			<cfloop array="#paths#" index="path">
 				<cfif path.getPathID() neq ''>
 					<!--- Check if not used --->
 					<!--- TODO figure out a better way of doing this... --->
