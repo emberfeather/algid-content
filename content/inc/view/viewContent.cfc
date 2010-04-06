@@ -59,6 +59,37 @@
 		<cfreturn theForm.toHTML(theURL.get()) />
 	</cffunction>
 	
+	<cffunction name="caching" access="public" returntype="string" output="false">
+		<cfargument name="data" type="array" required="true" />
+		<cfargument name="options" type="struct" default="#{}#" />
+		
+		<cfset var datagrid = '' />
+		<cfset var i18n = '' />
+		
+		<cfset arguments.options.theURL = variables.transport.theRequest.managers.singleton.getURL() />
+		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
+		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.theSession.managers.singleton.getSession().getLocale()) />
+		
+		<!--- Add the resource bundle for the view --->
+		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		
+		<cfset datagrid.addColumn({
+				label = 'path'
+			}) />
+		
+		<cfset datagrid.addColumn({
+				class = 'phantom align-right',
+				value = 'delete',
+				link = {
+					'path' = '__value',
+					'_base' = '/admin/content/caching/delete'
+				},
+				linkClass = 'delete'
+			}) />
+		
+		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
+	</cffunction>
+	
 	<cffunction name="edit" access="public" returntype="string" output="false">
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />

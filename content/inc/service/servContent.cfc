@@ -32,6 +32,17 @@
 	}
 	
 	/* required path */
+	public void function clearCache() {
+		var cacheContent = '';
+		
+		// Get the cache for the content
+		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		
+		// Clear the cache
+		cacheContent.clear();
+	}
+	
+	/* required path */
 	private string function createPathList( string path, string key = '' ) {
 		var pathList = '';
 		var pathPart = '';
@@ -53,6 +64,28 @@
 		}
 		
 		return pathList;
+	}
+	
+	/* required path */
+	public void function deleteCacheKey( string key ) {
+		var cacheContent = '';
+		
+		// Get the cache for the content
+		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		
+		// Delete from the cache
+		cacheContent.delete( arguments.key );
+	}
+	
+	/* required path */
+	public array function getCacheAllIds() {
+		var cacheContent = '';
+		
+		// Get the cache for the content
+		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		
+		// Clear the cache
+		return cacheContent.getAllIds();
 	}
 </cfscript>
 	
