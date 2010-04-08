@@ -194,13 +194,13 @@
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
-				AND LOWER(p."path") IN (LOWER(<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath)#" list="true" />))
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
 				<!--- Find any content along the path --->
-				AND LOWER(p."path") IN (LOWER(<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(cleanPath(arguments.filter.alongPath))#" list="true" />))
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
-				AND LOWER(p."path") = LOWER(<cfqueryparam cfsqltype="cf_sql_varchar" value="#cleanPath(arguments.filter.path)#" />)
+				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
 			</cfif>
 			
 			ORDER BY
@@ -281,6 +281,60 @@
 		<cfset arguments.content.addPaths(path) />
 		
 		<cfreturn path />
+	</cffunction>
+	
+	<cffunction name="getPaths" access="public" returntype="query" output="false">
+		<cfargument name="filter" type="struct" default="#{}#" />
+		
+		<cfset var defaults = {
+				domain = variables.transport.theCgi.server_name,
+				orderBy = 'title',
+				orderSort = 'desc'
+			} />
+		<cfset var i = '' />
+		<cfset var pathPart = '' />
+		<cfset var results = '' />
+		
+		<!--- Expand the with defaults --->
+		<cfset arguments.filter = extend(defaults, arguments.filter) />
+		
+		<cfquery name="results" datasource="#variables.datasource.name#">
+			SELECT p."contentID", p."path", p."title" AS navTitle
+			FROM "#variables.datasource.prefix#content"."content" c
+			LEFT JOIN "#variables.datasource.prefix#content"."path" p
+				ON c."contentID" = p."contentID"
+			JOIN "#variables.datasource.prefix#content"."domain" d
+				ON c."domainID" = d."domainID"
+					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			WHERE 1=1
+			
+			<!--- Check for path specific filters --->
+			<cfif structKeyExists(arguments.filter, 'keyAlongPath')>
+				<!--- Find a key that is along the path --->
+				<cfparam name="arguments.filter.path" default="/" />
+				
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
+			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
+				<!--- Find any content along the path --->
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
+			<cfelseif structKeyExists(arguments.filter, 'path')>
+				<!--- Match a specific path --->
+				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+			</cfif>
+			
+			ORDER BY
+				p."path" #arguments.filter.orderSort#
+			
+			<cfif structKeyExists(arguments.filter, 'limit')>
+				LIMIT <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.filter.limit#" />
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'offset')>
+				OFFSET <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.filter.offset#" />
+			</cfif>
+		</cfquery>
+		
+		<cfreturn results />
 	</cffunction>
 	
 	<cffunction name="publishContent" access="public" returntype="void" output="false">

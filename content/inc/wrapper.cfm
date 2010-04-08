@@ -70,29 +70,27 @@
 		<cfset content = cacheContent.get( filter.domain & filter.path ) />
 	<cfelse>
 		<!--- The content is not cached, retrieve it --->
-		<cfset contents = servContent.getContents( filter ) />
+		<cfset paths = servContent.getPaths( filter ) />
 		
-		<cfif contents.recordCount eq 1>
-			<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), contents.contentID.toString() ) />
+		<cfif paths.recordCount eq 1>
+			<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 			
 			<!--- Put the content in the cache --->
 			<cfset cacheContent.put(filter.domain & filter.path, content) />
 		<cfelse>
 			<cfset filter.keyAlongPath = '404' />
-			<cfset filter.orderBy = 'path' />
-			<cfset filter.orderSort = 'desc' />
 			
-			<cfset contents = servContent.getContents( filter ) />
+			<cfset paths = servContent.getPaths( filter ) />
 			
-			<cfif contents.recordCount gt 0>
+			<cfif paths.recordCount gt 0>
 				<!--- Use the cache for the error page --->
-				<cfif cacheContent.has( filter.domain & contents.path )>
-					<cfset content = cacheContent.get( filter.domain & contents.path ) />
+				<cfif cacheContent.has( filter.domain & paths.path )>
+					<cfset content = cacheContent.get( filter.domain & paths.path ) />
 				<cfelse>
-					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), contents.contentID.toString() ) />
+					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 					
 					<!--- Put the error page in the cache --->
-					<cfset cacheContent.put(filter.domain & contents.path, content) />
+					<cfset cacheContent.put(filter.domain & paths.path, content) />
 				</cfif>
 			<cfelse>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
