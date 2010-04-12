@@ -186,19 +186,31 @@
 		<cfargument name="data" type="any" required="true" />
 		<cfargument name="options" type="struct" default="#{}#" />
 		
+		<cfset var app = '' />
+		<cfset var content = '' />
 		<cfset var datagrid = '' />
 		<cfset var i18n = '' />
+		<cfset var theUrl = '' />
 		
 		<cfset arguments.options.theURL = variables.transport.theRequest.managers.singleton.getURL() />
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.theSession.managers.singleton.getSession().getLocale()) />
+		
+		<!--- Create a content front-end url --->
+		<cfset app = variables.transport.theApplication.managers.singleton.getApplication() />
+		<cfset content = variables.transport.theApplication.managers.plugin.getContent() />
+		<cfset theUrl = variables.transport.theApplication.factories.transient.getUrlForContent('', { start = app.getPath() & content.getPath() & '?' } ) />
 		
 		<!--- Add the resource bundle for the view --->
 		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<cfset datagrid.addColumn({
 				key = 'path',
-				label = 'path'
+				label = 'path',
+				link = {
+					'_base' = 'path'
+				},
+				theUrl = theUrl
 			}) />
 		
 		<cfset datagrid.addColumn({

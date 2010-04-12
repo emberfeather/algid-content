@@ -40,6 +40,8 @@
 	/* required theRequest */
 	/* required targetPage */
 	public void function onRequestStart(struct theApplication, struct theSession, struct theRequest, string targetPage) {
+		var app = '';
+		var plugin = '';
 		var temp = '';
 		
 		// Only do the following if in the content area
@@ -55,7 +57,9 @@
 			}
 			
 			// Create the URL object for all the admin requests
-			temp = arguments.theApplication.factories.transient.getUrlForContent( url );
+			app = arguments.theApplication.managers.singleton.getApplication();
+			plugin = arguments.theApplication.managers.plugin.getContent();
+			temp = arguments.theApplication.factories.transient.getUrlForContent(url, , { start = app.getPath() & plugin.getPath() & '?' });
 			
 			arguments.theRequest.managers.singleton.setUrl( temp );
 		}
