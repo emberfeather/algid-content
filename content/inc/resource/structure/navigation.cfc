@@ -325,7 +325,7 @@
 		<cfargument name="locale" type="string" required="true" />
 		<cfargument name="authUser" type="component" required="false" />
 		
-		<cfset var currentPage = createObject('component', 'algid.inc.resource.structure.currentPageFile').init() />
+		<cfset var currentPage = createObject('component', 'algid.inc.resource.structure.currentPage').init() />
 		<cfset var paths = '' />
 		<cfset var navigation = '' />
 		<cfset var currentPath = '' />

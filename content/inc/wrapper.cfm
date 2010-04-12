@@ -96,6 +96,7 @@
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
 				
 				<!--- Page not found and no 404 page along the path --->
+				<cfset content.setTitle('404 Not Found') />
 				<cfset content.setContent('404... content not found!') />
 			</cfif>
 		</cfif>
@@ -103,8 +104,13 @@
 	
 	<cftry>
 		<cfset template.setContent(content.getContent()) />
+		<cfset template.addLevel(content.getTitle(), '', theUrl.get()) />
 		
 		<cfcatch type="any">
+			<!--- TODO Remove --->
+			<cfdump var="#cfcatch#" />
+			<cfabort />
+			
 			<cfset filter.keyAlongPath = '500' />
 			<cfset filter.orderBy = 'path' />
 			<cfset filter.orderSort = 'desc' />
