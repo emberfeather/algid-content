@@ -20,7 +20,7 @@
 			<cfinclude template="partial.cfm" />
 			
 			<div class="grid_12 align-center">
-				Powered by <a href="http://code.google.com/p/algid/" title="Algid CFML Framework">Algid</a>.
+				Powered by <a href="http://github.com/Zoramite/algid" title="Algid CFML Framework">Algid</a>.
 			</div>
 			
 			<div class="clear"><!-- clear --></div>
