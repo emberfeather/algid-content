@@ -8,7 +8,7 @@
 		<cfset var results = '' />
 		
 		<!--- Get the event observer --->
-		<cfset observer = getPluginObserver('content', 'content') />
+		<cfset observer = getPluginObserver('content', 'domain') />
 		
 		<!--- TODO Check user permissions --->
 		
