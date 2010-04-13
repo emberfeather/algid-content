@@ -698,7 +698,7 @@
 		--->
 		
 		<!--- Content Type --->
-		<cfloop list="HTML" index="i">
+		<cfloop list="HTML,Markdown,BBcode,Textile,Wiki,Dotclear" index="i">
 			<cfquery datasource="#variables.datasource.name#">
 				INSERT INTO "#variables.datasource.prefix#content"."type"
 				(

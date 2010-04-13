@@ -40,6 +40,19 @@
 	}
 	
 	/**
+	 * Parse the content to generate the contentHtml.
+	 */
+	/* required transport */
+	/* required currUser */
+	/* required content */
+	public void function afterRead( struct transport, component currUser, component content ) {
+		// TODO use the proper parser and pass in the raw content
+		
+		// TODO Remove
+		arguments.content.setContentHtml(arguments.content.getType().getType() & '<br />' & arguments.content.getContent());
+	}
+	
+	/**
 	 * Remove the cached paths after the save including paths removed from the content.
 	 */
 	/* required transport */

@@ -98,8 +98,13 @@
 		<cfset var i18n = '' />
 		<cfset var locale = '' />
 		<cfset var objectSerial = '' />
+		<cfset var observer = '' />
 		<cfset var path = '' />
 		<cfset var results = '' />
+		<cfset var type = '' />
+		
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset locale = variables.transport.theSession.managers.singleton.getSession().getLocale() />
@@ -124,7 +129,7 @@
 				<cfquery name="results" datasource="#variables.datasource.name#">
 					SELECT "contentID", "pathID", "path", "title", "groupBy", "orderBy", "isActive", "navigationID", "themeID"
 					FROM "#variables.datasource.prefix#content"."path"
-					WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
+					WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" />::uuid
 					ORDER BY "path" ASC
 				</cfquery>
 				
@@ -139,8 +144,24 @@
 					
 					<cfset content.addPaths(path) />
 				</cfloop>
+				
+				<!--- Retrieve the content type object --->
+				<cfquery name="results" datasource="#variables.datasource.name#">
+					SELECT "typeID", "type"
+					FROM "#variables.datasource.prefix#content"."type"
+					WHERE "typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#content.getTypeID()#" />::uuid
+				</cfquery>
+				
+				<cfset type = variables.transport.theApplication.factories.transient.getModTypeForContent( i18n, locale ) />
+				
+				<cfset objectSerial.deserialize(results, type) />
+				
+				<cfset content.setType(type) />
 			</cfif>
 		</cfif>
+		
+		<!--- After Read Event --->
+		<cfset observer.afterRead(variables.transport, arguments.currUser, content) />
 		
 		<cfreturn content />
 	</cffunction>
