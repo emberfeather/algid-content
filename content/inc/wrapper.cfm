@@ -103,13 +103,11 @@
 	</cfif>
 	
 	<cftry>
-		<cfset template.setContent(content.getContent()) />
+		<cfset template.setContent(content.getContentHtml()) />
 		<cfset template.addLevel(content.getTitle(), '', theUrl.get()) />
 		
 		<cfcatch type="any">
-			<!--- TODO Remove --->
-			<cfdump var="#cfcatch#" />
-			<cfabort />
+			<!--- TODO log the exception --->
 			
 			<cfset filter.keyAlongPath = '500' />
 			<cfset filter.orderBy = 'path' />

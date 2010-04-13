@@ -59,6 +59,20 @@
 		<!--- Set the bundle information for translation --->
 		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modContent') />
 		
+		<!--- Prime to blank --->
+		<cfset this.setContentHtml('') />
+		
 		<cfreturn this />
 	</cffunction>
+<cfscript>
+	/**
+	 * When setting the content the contentHtml should also be reset to the same value.
+	 */
+	/* required value */
+	public void function setContent( string value ) {
+		// Set both the content and the contentHtml to the value
+		variables.instance['content'] = arguments.value;
+		variables.instance['contentHtml'] = arguments.value;
+	}
+</cfscript>
 </cfcomponent>
