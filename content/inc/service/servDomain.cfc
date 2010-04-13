@@ -13,7 +13,7 @@
 		<!--- TODO Check user permissions --->
 		
 		<!--- Before Archive Event --->
-		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.domain) />
 		
 		<!--- Archive the domain --->
 		<cftransaction>
