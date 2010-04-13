@@ -27,7 +27,7 @@
 		</cftransaction>
 		
 		<!--- After Archive Event --->
-		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.domain) />
 	</cffunction>
 	
 	<cffunction name="getDomain" access="public" returntype="component" output="false">
