@@ -15,6 +15,11 @@
 				attribute = 'type'
 			) />
 		
+		<!--- Archived On --->
+		<cfset addAttribute(
+				attribute = 'archivedOn'
+			) />
+		
 		<!--- Set the bundle information for translation --->
 		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modType') />
 		

@@ -40,7 +40,7 @@
 			<cfloop query="arguments.domains">
 				<cfset element.options.addOption(arguments.domains.domain, arguments.domains.domainID) />
 				
-				<!--- Check for the current domain --->
+				<!--- Check for the current domain in the options --->
 				<cfif arguments.domains.domain eq variables.transport.theCgi.server_name>
 					<cfset element.value = toString(arguments.domains.domainID) />
 				</cfif>
@@ -92,6 +92,7 @@
 	
 	<cffunction name="edit" access="public" returntype="string" output="false">
 		<cfargument name="content" type="component" required="true" />
+		<cfargument name="types" type="query" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var i = '' />
@@ -114,6 +115,21 @@
 				label = "title",
 				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
 			}) />
+		
+		<!--- Type --->
+		<cfset element = {
+				name = "typeID",
+				label = "type",
+				options = variables.transport.theApplication.factories.transient.getOptions(),
+				value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
+			} />
+		
+		<!--- Create the options for the select --->
+		<cfloop query="arguments.types">
+			<cfset element.options.addOption(arguments.types.type, arguments.types.typeID) />
+		</cfloop>
+		
+		<cfset theForm.addElement('radio', element) />
 		
 		<!--- Content --->
 		<cfset theForm.addElement('textarea', {
