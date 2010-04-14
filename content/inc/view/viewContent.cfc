@@ -95,6 +95,7 @@
 		<cfargument name="types" type="query" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
+		<cfset var element = '' />
 		<cfset var i = '' />
 		<cfset var i18n = '' />
 		<cfset var path = '' />
