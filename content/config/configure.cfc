@@ -141,6 +141,7 @@
 			(
 				"typeID" uuid NOT NULL,
 				"type" character varying(50) not NULL,
+				"archivedOn" timestamp without time zone,
 				CONSTRAINT "type_PK" PRIMARY KEY ("typeID")
 			)
 			WITH (OIDS=FALSE);
@@ -698,7 +699,7 @@
 		--->
 		
 		<!--- Content Type --->
-		<cfloop list="HTML,Markdown,BBcode,Textile,Wiki,Dotclear" index="i">
+		<cfloop list="HTML,Markdown,Confluence,Textile,MediaWiki,TracWiki,TWiki" index="i">
 			<cfquery datasource="#variables.datasource.name#">
 				INSERT INTO "#variables.datasource.prefix#content"."type"
 				(
