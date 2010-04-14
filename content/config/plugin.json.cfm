@@ -1,5 +1,11 @@
 {
 	"applicationSingletons": {
+		"parserConfluence": "cf-compendium.inc.resource.parse.parseConfluence",
+		"parserMarkdown": "cf-compendium.inc.resource.parse.parseMarkdown",
+		"parserMediaWiki": "cf-compendium.inc.resource.parse.parseMediaWiki",
+		"parserTextile": "cf-compendium.inc.resource.parse.parseTextile",
+		"parserTracWiki": "cf-compendium.inc.resource.parse.parseTracWiki",
+		"parserTWiki": "cf-compendium.inc.resource.parse.parseTWiki"
 	},
 	"applicationTransients": {
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",

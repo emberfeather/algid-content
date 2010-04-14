@@ -46,10 +46,23 @@
 	/* required currUser */
 	/* required content */
 	public void function afterRead( struct transport, component currUser, component content ) {
-		// TODO use the proper parser and pass in the raw content
+		var html = '';
+		var parser = '';
+		var type = '';
 		
-		// TODO Remove
-		arguments.content.setContentHtml(arguments.content.getType().getType() & '<br />' & arguments.content.getContent());
+		// Get the parser type for content
+		type = 'parser' & arguments.content.getType().getType();
+		
+		// If we know what parser to use then use it
+		if(arguments.transport.theApplication.managers.singleton.has(type)) {
+			parser = arguments.transport.theApplication.managers.singleton.get(type);
+			
+			// Parse the raw markup
+			html = parser.toHtml(arguments.content.getContent());
+			
+			// Store it as the html content
+			arguments.content.setContentHtml(html);
+		}
 	}
 	
 	/**
