@@ -435,12 +435,14 @@
 						"contentID",
 						"domainID",
 						"title",
-						"content"
+						"content", 
+						"updatedOn"
 					) VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getContentID()#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getDomainID()#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTitle()#" />,
-						<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.content.getContent()#" />
+						<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.content.getContent()#" />,
+						now()
 					)
 				</cfquery>
 			</cftransaction>
