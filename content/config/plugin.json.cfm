@@ -23,7 +23,7 @@
 		"servContentForContent": "plugins.content.inc.service.servContent",
 		"servDomainForContent": "plugins.content.inc.service.servDomain",
 		"servTypeForContent": "plugins.content.inc.service.servType",
-		"templateForContent": "algid.inc.resource.structure.template",
+		"templateForContent": "plugins.content.inc.resource.structure.template",
 		"viewContentForContent": "plugins.content.inc.view.viewContent",
 		"viewDomainForContent": "plugins.content.inc.view.viewDomain",
 		"urlForContent": "cf-compendium.inc.resource.utility.url"

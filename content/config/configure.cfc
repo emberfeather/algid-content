@@ -24,7 +24,7 @@
 		plugin = arguments.theApplication.managers.plugin.getContent();
 		
 		// Create the navigation singleton
-		navigation = arguments.theApplication.factories.transient.getNavigationForContent(arguments.theApplication.managers.singleton.getI18N());
+		navigation = arguments.theApplication.factories.transient.getNavigationForContent(arguments.theApplication.managers.singleton.getApplication().getDSUpdate(), arguments.theApplication.managers.singleton.getI18N());
 		
 		arguments.theApplication.managers.singleton.setContentNavigation(navigation);
 		

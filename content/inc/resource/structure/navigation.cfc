@@ -1,14 +1,12 @@
 <cfcomponent extends="algid.inc.resource.base.navigation" output="false">
 	<cffunction name="init" access="public" returntype="component" output="false">
+		<cfargument name="datasource" type="struct" required="true" />
 		<cfargument name="i18n" type="component" required="true" />
 		
 		<cfset super.init() />
 		
-		<!--- Store the i18n information --->
 		<cfset variables.i18n = arguments.i18n />
-		
-		<!--- Use a query for the navigation storage --->
-		<cfset variables.navigation = '' />
+		<cfset variables.datasource = arguments.datasource />
 		
 		<!--- The default root is used when there is no base path given --->
 		<cfset variables.defaultRoot = '/' />
@@ -35,22 +33,34 @@
 		</cfif>
 		
 		<!--- Query the navigation query for the page information --->
-		<cfquery name="navigation" dbtype="query">
-			SELECT "contentID", "level", "path", "title", "navTitle", "navPosition", "description", "ids", "vars", "attribute", "attributeValue", "allow", "deny", "secureOrder", "defaults", "orderBy"
-			FROM "#variables.datasource.prefix#content"."content"
-			WHERE "level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.level#" />
-				and "path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentPath#%" />
-				and "locale" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.locale#" />
-				and "navPosition" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navPosition#" />
-				
-				<!--- Check if we want to return blank nav titles --->
-				<cfif structKeyExists(arguments.options, 'hideBlankNavTitles') and arguments.options.hideBlankNavTitles eq true>
-					and "navTitle" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="" />
-				</cfif>
-				
-				<!--- TODO Permission checking --->
-				
-				ORDER BY "orderBy" ASC, "navTitle" ASC
+		<cfquery name="navigation" datasource="#variables.datasource.name#">
+			SELECT c."contentID", p."path", c."title", p."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", p."orderBy"
+			FROM "#variables.datasource.prefix#content"."content" c
+			JOIN "#variables.datasource.prefix#content"."path" p
+				ON c."contentID" = p."contentID"
+			JOIN "#variables.datasource.prefix#content"."navigation" n
+				ON p."navigationID" = n."navigationID"
+			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Attribute" pa
+				ON p."pathID" = pa."pathID"
+			LEFT JOIN "#variables.datasource.prefix#content"."attribute" a
+				ON pa."attributeID" = a."attributeID"
+			LEFT JOIN "#variables.datasource.prefix#content"."attributeOption" ao
+				ON pa."attributeOptionID" = ao."attributeOptionID"
+			WHERE n."level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.level#" />
+				AND p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentPath#%" />
+				AND n."navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navPosition#" />
+			
+			<!--- TODO add in locale Support --->
+				<!--- and "locale" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.locale#" /> --->
+			
+			<!--- Check if we want to return blank nav titles --->
+			<cfif structKeyExists(arguments.options, 'hideBlankNavTitles') and arguments.options.hideBlankNavTitles eq true>
+				AND p."title" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="" />
+			</cfif>
+			
+			<!--- TODO Permission checking --->
+			
+			ORDER BY p."orderBy" ASC, p."title" ASC
 		</cfquery>
 		
 		<cfreturn navigation />
@@ -67,7 +77,7 @@
 		
 		<cfset var currentPage = createObject('component', 'algid.inc.resource.structure.currentPage').init() />
 		<cfset var paths = '' />
-		<cfset var navigation = '' />
+		<cfset var locate = '' />
 		<cfset var currentPath = '' />
 		
 		<!--- Check the base path --->
@@ -77,26 +87,30 @@
 		<cfset paths = explodePath(currentPath eq '' ? variables.defaultRoot : currentPath) />
 		
 		<!--- Query for the exact pages that match the paths --->
-		<cfquery name="navigation" dbtype="query">
-			SELECT contentID, [level], path, title, navTitle, navPosition, description, ids, vars, attribute, attributeValue, allow, deny, defaults, contentPath, orderBy
-			FROM variables.navigation
-			WHERE path IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arrayToList(paths)#" list="true" />)
-				and locale = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.locale#" />
-				
-				<!--- TODO add in authUser type permission checking --->
-				
-				ORDER BY path ASC
+		<cfquery name="locate"  datasource="#variables.datasource.name#">
+			SELECT p."path", c."title", p."title" AS "navTitle"
+			FROM "#variables.datasource.prefix#content"."content" c
+			JOIN "#variables.datasource.prefix#content"."path" p
+				ON c."contentID" = p."contentID"
+			WHERE "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arrayToList(paths)#" list="true" />)
+			
+			<!--- TODO Add in locale Support --->
+				<!--- AND "locale" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.locale#" /> --->
+			
+			<!--- TODO add in authUser type permission checking --->
+			
+			ORDER BY path ASC
 		</cfquery>
 		
 		<!--- Prime the URL --->
 		<cfset arguments.theURL.cleanCurrent() />
 		
-		<cfloop query="navigation">
+		<cfloop query="locate">
 			<!--- Create the url --->
-			<cfset arguments.theURL.setCurrent('_base', navigation.path) />
+			<cfset arguments.theURL.setCurrent('_base', locate.path) />
 			
 			<!--- Add to the current page --->
-			<cfset currentPage.addLevel(navigation.title, navigation.navTitle, arguments.theURL.getCurrent(), navigation.path, navigation.contentPath) />
+			<cfset currentPage.addLevel(locate.title, locate.navTitle, arguments.theURL.getCurrent(), locate.path) />
 		</cfloop>
 		
 		<cfreturn currentPage />

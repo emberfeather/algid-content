@@ -17,7 +17,82 @@
 	</head>
 	<body>
 		<div class="container_12">
+			<div class="grid_12 no-print">
+				<cfset options = {
+						navClasses = ['menu horizontal float-right']
+					} />
+				
+				<cfoutput>#template.getNavigation(cgi.server_name, 2, 'action', options, session.managers.singleton.getUser())#</cfoutput>
+				
+				<cfset options = {
+						navClasses = ['menu horizontal']
+					} />
+				
+				<cfoutput>#template.getNavigation(cgi.server_name, 1, 'main', options, session.managers.singleton.getUser())#</cfoutput>
+				
+				<div class="clear"><!-- clear --></div>
+			</div>
+			
+			<div class="clear"><!-- clear --></div>
+			
+			<div id="breadcrumb" class="grid_12 no-print">
+				<cfoutput>#template.getBreadcrumb()#</cfoutput>
+				
+				<div class="clear"><!-- clear --></div>
+			</div>
+			
+			<div class="grid_12 no-print">
+				<cfset showingNavigation = false />
+				<cfset navLevel = template.getLevel() />
+				
+				<cfif navLevel gt 1>
+					<cfset options = {
+							navClasses = ['submenu horizontal float-right']
+						} />
+					
+					<cfset subNav = trim(template.getNavigation( cgi.server_name, navLevel + 1, 'action', options, session.managers.singleton.getUser())) />
+					
+					<cfset showingNavigation = showingNavigation or subNav neq '' />
+					
+					<cfoutput>#subNav#</cfoutput>
+				</cfif>
+				
+				<cfset options = {
+						navClasses = ['submenu horizontal']
+					} />
+				
+				<cfset subNav = trim(template.getNavigation( cgi.server_name, navLevel + 1, 'main', options, session.managers.singleton.getUser())) />
+				
+				<cfset showingNavigation = showingNavigation or subNav neq '' />
+				
+				<cfoutput>#subNav#</cfoutput>
+				
+				<!--- If there is not any navigation showing then show the actions for the current level --->
+				<cfif navLevel gt 1 and not showingNavigation>
+					<cfif navLevel gt 2>
+						<cfset options = {
+								navClasses = ['submenu horizontal float-right']
+							} />
+						
+						<cfoutput>#template.getNavigation( cgi.server_name, navLevel, 'action', options, session.managers.singleton.getUser())#</cfoutput>
+					</cfif>
+					
+					<cfset options = {
+							navClasses = ['submenu horizontal']
+						} />
+					
+					<cfoutput>#template.getNavigation( cgi.server_name, navLevel, 'main', options, session.managers.singleton.getUser())#</cfoutput>
+				</cfif>
+				
+				<div class="clear"><!-- clear --></div>
+			</div>
+			
 			<cfinclude template="partial.cfm" />
+			
+			<!--- TODO Remove --->
+			<div class="grid_12 align-center">
+				<cfoutput>#createUUID()#</cfoutput>
+			</div>
 			
 			<div class="grid_12 align-center">
 				Powered by <a href="http://github.com/Zoramite/algid" title="Algid CFML Framework">Algid</a>.
