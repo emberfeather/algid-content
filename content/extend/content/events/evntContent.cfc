@@ -50,6 +50,10 @@
 		var parser = '';
 		var type = '';
 		
+		if(arguments.content.getTypeID() eq '') {
+			return;
+		}
+		
 		// Get the parser type for content
 		type = 'parser' & arguments.content.getType().getType();
 		

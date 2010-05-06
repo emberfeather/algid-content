@@ -145,16 +145,18 @@
 					<cfset content.addPaths(path) />
 				</cfloop>
 				
-				<!--- Retrieve the content type object --->
-				<cfquery name="results" datasource="#variables.datasource.name#">
-					SELECT "typeID", "type"
-					FROM "#variables.datasource.prefix#content"."type"
-					WHERE "typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#content.getTypeID()#" />::uuid
-				</cfquery>
-				
 				<cfset type = variables.transport.theApplication.factories.transient.getModTypeForContent( i18n, locale ) />
 				
-				<cfset objectSerial.deserialize(results, type) />
+				<cfif content.getTypeID() neq ''>
+					<!--- Retrieve the content type object --->
+					<cfquery name="results" datasource="#variables.datasource.name#">
+						SELECT "typeID", "type"
+						FROM "#variables.datasource.prefix#content"."type"
+						WHERE "typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#content.getTypeID()#" />::uuid
+					</cfquery>
+					
+					<cfset objectSerial.deserialize(results, type) />
+				</cfif>
 				
 				<cfset content.setType(type) />
 			</cfif>
@@ -435,12 +437,14 @@
 						"contentID",
 						"domainID",
 						"title",
-						"content"
+						"content", 
+						"updatedOn"
 					) VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getContentID()#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getDomainID()#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTitle()#" />,
-						<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.content.getContent()#" />
+						<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.content.getContent()#" />,
+						now()
 					)
 				</cfquery>
 			</cftransaction>

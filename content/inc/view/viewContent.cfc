@@ -182,21 +182,48 @@
 	</cffunction>
 	
 	<cffunction name="filter" access="public" returntype="string" output="false">
-		<cfargument name="filter" type="struct" default="#{}#" />
+		<cfargument name="params" type="struct" default="#{}#" />
+		<cfargument name="domains" type="query" required="true" />
+		<cfargument name="types" type="query" required="true" />
 		
-		<cfset var filter = '' />
+		<cfset var filterVertical = '' />
 		<cfset var options = '' />
 		<cfset var results = '' />
 		
-		<cfset filter = variables.transport.theApplication.factories.transient.getFilterVertical(variables.transport.theApplication.managers.singleton.getI18N()) />
+		<cfset filterVertical = variables.transport.theApplication.factories.transient.getFilterVertical(variables.transport.theApplication.managers.singleton.getI18N()) />
 		
 		<!--- Add the resource bundle for the view --->
-		<cfset filter.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		<cfset filterVertical.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<!--- Search --->
-		<cfset filter.addFilter('search') />
+		<cfset filterVertical.addFilter('search') />
 		
-		<cfreturn filter.toHTML(variables.transport.theRequest.managers.singleton.getURL()) />
+		<!--- Domain --->
+		<cfif arguments.domains.recordCount>
+			<cfset options = variables.transport.theApplication.factories.transient.getOptions() />
+			
+			<cfloop query="arguments.domains">
+				<cfset options.addOption(arguments.domains.domain, arguments.domains.domain) />
+			</cfloop>
+			
+			<cfset filterVertical.addFilter('domain', options) />
+		</cfif>
+		
+		<!--- Type --->
+		<cfif arguments.types.recordCount>
+			<cfset options = variables.transport.theApplication.factories.transient.getOptions() />
+			
+			<!--- TODO use i18n --->
+			<cfset options.addOption('Any type', '') />
+			
+			<cfloop query="arguments.types">
+				<cfset options.addOption(arguments.types.type, arguments.types.typeID.toString()) />
+			</cfloop>
+			
+			<cfset filterVertical.addFilter('type', options) />
+		</cfif>
+		
+		<cfreturn filterVertical.toHTML(variables.transport.theRequest.managers.singleton.getURL(), arguments.params) />
 	</cffunction>
 	
 	<cffunction name="datagrid" access="public" returntype="string" output="false">
