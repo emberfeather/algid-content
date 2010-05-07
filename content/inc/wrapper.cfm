@@ -104,7 +104,6 @@
 	
 	<cftry>
 		<cfset template.setContent(content.getContentHtml()) />
-		<cfset template.addLevel(content.getTitle(), '', theUrl.get()) />
 		
 		<cfcatch type="any">
 			<!--- TODO log the exception --->
