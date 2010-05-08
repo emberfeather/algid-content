@@ -226,6 +226,10 @@
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'type') and arguments.filter.type neq ''>
+				AND c."typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.type#" />::uuid
+			</cfif>
+			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="updatedOn">

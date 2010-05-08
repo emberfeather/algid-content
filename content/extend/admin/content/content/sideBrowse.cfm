@@ -4,7 +4,7 @@
 		'domain' = theURL.search('domain'),
 		'orderBy' = 'path',
 		'search' = theURL.search('search'),
-		'type' = theURL.search('domain')
+		'type' = theURL.search('type')
 	} />
 
 <!--- Check for no specified domain --->
