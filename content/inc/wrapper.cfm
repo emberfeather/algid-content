@@ -75,6 +75,9 @@
 		<cfif paths.recordCount eq 1>
 			<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 			
+			<!--- Trigger the before show event --->
+			<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
+			
 			<!--- Put the content in the cache --->
 			<cfset cacheContent.put(filter.domain & filter.path, content) />
 		<cfelse>
@@ -88,6 +91,9 @@
 					<cfset content = cacheContent.get( filter.domain & paths.path ) />
 				<cfelse>
 					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+					
+					<!--- Trigger the before show event --->
+					<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
 					
 					<!--- Put the error page in the cache --->
 					<cfset cacheContent.put(filter.domain & paths.path, content) />

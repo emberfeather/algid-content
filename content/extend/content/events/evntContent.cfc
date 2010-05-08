@@ -40,36 +40,6 @@
 	}
 	
 	/**
-	 * Parse the content to generate the contentHtml.
-	 */
-	/* required transport */
-	/* required currUser */
-	/* required content */
-	public void function afterRead( struct transport, component currUser, component content ) {
-		var html = '';
-		var parser = '';
-		var type = '';
-		
-		if(arguments.content.getTypeID() eq '') {
-			return;
-		}
-		
-		// Get the parser type for content
-		type = 'parser' & arguments.content.getType().getType();
-		
-		// If we know what parser to use then use it
-		if(arguments.transport.theApplication.managers.singleton.has(type)) {
-			parser = arguments.transport.theApplication.managers.singleton.get(type);
-			
-			// Parse the raw markup
-			html = parser.toHtml(arguments.content.getContent());
-			
-			// Store it as the html content
-			arguments.content.setContentHtml(html);
-		}
-	}
-	
-	/**
 	 * Remove the cached paths after the save including paths removed from the content.
 	 */
 	/* required transport */
@@ -108,6 +78,35 @@
 		
 		// TODO use i18n
 		eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+	}
+	
+	/**
+	 * Parse the content to generate the contentHtml.
+	 */
+	/* required transport */
+	/* required content */
+	public void function beforeDisplay( struct transport, component content ) {
+		var html = '';
+		var parser = '';
+		var type = '';
+		
+		if(arguments.content.getTypeID() eq '') {
+			return;
+		}
+		
+		// Get the parser type for content
+		type = 'parser' & arguments.content.getType().getType();
+		
+		// If we know what parser to use then use it
+		if(arguments.transport.theApplication.managers.singleton.has(type)) {
+			parser = arguments.transport.theApplication.managers.singleton.get(type);
+			
+			// Parse the raw markup
+			html = parser.toHtml(arguments.content.getContent());
+			
+			// Store it as the html content
+			arguments.content.setContentHtml(html);
+		}
 	}
 </cfscript>
 </cfcomponent>
