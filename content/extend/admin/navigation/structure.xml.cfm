@@ -4,6 +4,8 @@
 		<add position="action"/>
 		<edit/>
 		<archive/>
+		
+		<navigation position="main"/>
 	</content>
 	<admin>
 		<content position="main">
