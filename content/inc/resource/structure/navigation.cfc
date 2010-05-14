@@ -36,6 +36,9 @@
 		<cfquery name="navigation" datasource="#variables.datasource.name#">
 			SELECT c."contentID", p."path", c."title", p."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", p."orderBy"
 			FROM "#variables.datasource.prefix#content"."content" c
+			JOIN "#variables.datasource.prefix#content"."domain" d
+				ON c."domainID" = d."domainID"
+					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
 			JOIN "#variables.datasource.prefix#content"."navigation" n
@@ -46,7 +49,8 @@
 				ON pa."attributeID" = a."attributeID"
 			LEFT JOIN "#variables.datasource.prefix#content"."attributeOption" ao
 				ON pa."attributeOptionID" = ao."attributeOptionID"
-			WHERE n."level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.level#" />
+			WHERE 
+				n."level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.level#" />
 				AND p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentPath#%" />
 				AND n."navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navPosition#" />
 			
@@ -71,6 +75,7 @@
 	</cffunction>
 	
 	<cffunction name="locatePage" access="public" returntype="component" output="false">
+		<cfargument name="domain" type="string" required="true" />
 		<cfargument name="theURL" type="component" required="true" />
 		<cfargument name="locale" type="string" required="true" />
 		<cfargument name="authUser" type="component" required="false" />
@@ -90,6 +95,9 @@
 		<cfquery name="locate"  datasource="#variables.datasource.name#">
 			SELECT p."path", c."title", p."title" AS "navTitle"
 			FROM "#variables.datasource.prefix#content"."content" c
+			JOIN "#variables.datasource.prefix#content"."domain" d
+				ON c."domainID" = d."domainID"
+					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
 			WHERE "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arrayToList(paths)#" list="true" />)

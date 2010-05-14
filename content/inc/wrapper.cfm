@@ -41,7 +41,7 @@
 			]
 		} />
 	
-	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale(), options) />
+	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale(), options) />
 	
 	<!--- Include minified files for production --->
 	<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
@@ -66,49 +66,49 @@
 	<!--- Use the plugin cache to pull the content from the cache first --->
 	<cfset cacheContent = transport.theApplication.managers.plugin.getContent().getCache().getContent() />
 	
-	<cfif cacheContent.has( filter.domain & filter.path )>
-		<cfset content = cacheContent.get( filter.domain & filter.path ) />
-	<cfelse>
-		<!--- The content is not cached, retrieve it --->
-		<cfset paths = servContent.getPaths( filter ) />
-		
-		<cfif paths.recordCount eq 1>
-			<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
-			
-			<!--- Trigger the before show event --->
-			<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
-			
-			<!--- Put the content in the cache --->
-			<cfset cacheContent.put(filter.domain & filter.path, content) />
+	<cftry>
+		<cfif cacheContent.has( filter.domain & filter.path )>
+			<cfset content = cacheContent.get( filter.domain & filter.path ) />
 		<cfelse>
-			<cfset filter.keyAlongPath = '404' />
-			
+			<!--- The content is not cached, retrieve it --->
 			<cfset paths = servContent.getPaths( filter ) />
 			
-			<cfif paths.recordCount gt 0>
-				<!--- Use the cache for the error page --->
-				<cfif cacheContent.has( filter.domain & paths.path )>
-					<cfset content = cacheContent.get( filter.domain & paths.path ) />
-				<cfelse>
-					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
-					
-					<!--- Trigger the before show event --->
-					<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
-					
-					<!--- Put the error page in the cache --->
-					<cfset cacheContent.put(filter.domain & paths.path, content) />
-				</cfif>
-			<cfelse>
-				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
+			<cfif paths.recordCount eq 1>
+				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 				
-				<!--- Page not found and no 404 page along the path --->
-				<cfset content.setTitle('404 Not Found') />
-				<cfset content.setContent('404... content not found!') />
+				<!--- Trigger the before show event --->
+				<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
+				
+				<!--- Put the content in the cache --->
+				<cfset cacheContent.put(filter.domain & filter.path, content) />
+			<cfelse>
+				<cfset filter.keyAlongPath = '404' />
+				
+				<cfset paths = servContent.getPaths( filter ) />
+				
+				<cfif paths.recordCount gt 0>
+					<!--- Use the cache for the error page --->
+					<cfif cacheContent.has( filter.domain & paths.path )>
+						<cfset content = cacheContent.get( filter.domain & paths.path ) />
+					<cfelse>
+						<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+						
+						<!--- Trigger the before show event --->
+						<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
+						
+						<!--- Put the error page in the cache --->
+						<cfset cacheContent.put(filter.domain & paths.path, content) />
+					</cfif>
+				<cfelse>
+					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
+					
+					<!--- Page not found and no 404 page along the path --->
+					<cfset content.setTitle('404 Not Found') />
+					<cfset content.setContent('404... content not found!') />
+				</cfif>
 			</cfif>
 		</cfif>
-	</cfif>
-	
-	<cftry>
+		
 		<cfset template.setContent(content.getContentHtml()) />
 		
 		<cfcatch type="any">

@@ -22,13 +22,13 @@
 						navClasses = ['menu horizontal float-right']
 					} />
 				
-				<cfoutput>#template.getNavigation(cgi.server_name, 2, 'action', options, session.managers.singleton.getUser())#</cfoutput>
+				<cfoutput>#template.getNavigation(transport.theCgi.server_name, 2, 'action', options, session.managers.singleton.getUser())#</cfoutput>
 				
 				<cfset options = {
 						navClasses = ['menu horizontal']
 					} />
 				
-				<cfoutput>#template.getNavigation(cgi.server_name, 1, 'main', options, session.managers.singleton.getUser())#</cfoutput>
+				<cfoutput>#template.getNavigation(transport.theCgi.server_name, 1, 'main', options, session.managers.singleton.getUser())#</cfoutput>
 				
 				<div class="clear"><!-- clear --></div>
 			</div>
@@ -50,7 +50,7 @@
 							navClasses = ['submenu horizontal float-right']
 						} />
 					
-					<cfset subNav = trim(template.getNavigation( cgi.server_name, navLevel + 1, 'action', options, session.managers.singleton.getUser())) />
+					<cfset subNav = trim(template.getNavigation( transport.theCgi.server_name, navLevel + 1, 'action', options, session.managers.singleton.getUser())) />
 					
 					<cfset showingNavigation = showingNavigation or subNav neq '' />
 					
@@ -61,7 +61,7 @@
 						navClasses = ['submenu horizontal']
 					} />
 				
-				<cfset subNav = trim(template.getNavigation( cgi.server_name, navLevel + 1, 'main', options, session.managers.singleton.getUser())) />
+				<cfset subNav = trim(template.getNavigation( transport.theCgi.server_name, navLevel + 1, 'main', options, session.managers.singleton.getUser())) />
 				
 				<cfset showingNavigation = showingNavigation or subNav neq '' />
 				
@@ -74,14 +74,14 @@
 								navClasses = ['submenu horizontal float-right']
 							} />
 						
-						<cfoutput>#template.getNavigation( cgi.server_name, navLevel, 'action', options, session.managers.singleton.getUser())#</cfoutput>
+						<cfoutput>#template.getNavigation( transport.theCgi.server_name, navLevel, 'action', options, session.managers.singleton.getUser())#</cfoutput>
 					</cfif>
 					
 					<cfset options = {
 							navClasses = ['submenu horizontal']
 						} />
 					
-					<cfoutput>#template.getNavigation( cgi.server_name, navLevel, 'main', options, session.managers.singleton.getUser())#</cfoutput>
+					<cfoutput>#template.getNavigation( transport.theCgi.server_name, navLevel, 'main', options, session.managers.singleton.getUser())#</cfoutput>
 				</cfif>
 				
 				<div class="clear"><!-- clear --></div>
