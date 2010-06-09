@@ -14,6 +14,8 @@
 		<cfset var navigation = '' />
 		<cfset var result = '' />
 		<cfset var results = '' />
+		<cfset var servContent = '' />
+		<cfset var servDomain = '' />
 		<cfset var theURL = '' />
 		
 		<cfset app = arguments.transport.theApplication.managers.singleton.getApplication() />
@@ -21,7 +23,7 @@
 		<cfset theUrl = arguments.transport.theApplication.factories.transient.getUrlForAdmin('', { start = app.getPath() & admin.getPath() & '?' } ) />
 		
 		<!--- Use the search term to find the matches --->
-		<cfset servContent = arguments.transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+		<cfset servContent = arguments.transport.theApplication.factories.transient.getServContentForContent(arguments.transport.theApplication.managers.singleton.getApplication().getDSUpdate(), arguments.transport) />
 		
 		<cfset filter = {
 			'orderBy' = 'path',
@@ -30,18 +32,18 @@
 		
 		<cfset results = servContent.getContents( filter ) />
 		
-		<cfset theUrl.setSearch('_base', '/content/edit') />
+		<cfset theUrl.setContent('_base', '/content/edit') />
 		
 		<!--- Add the found results to the main search results --->
 		<cfloop query="results">
-			<cfset theUrl.setSearch('content', toString(results['contentID'])) />
+			<cfset theUrl.setContent('content', toString(results['contentID'])) />
 			
 			<cfset result = arguments.transport.theApplication.factories.transient.getModSearchResultForAdmin( i18n, locale ) />
 			
 			<cfset result.setTitle(results['title']) />
 			<cfset result.setDescription(results['path']) />
 			<cfset result.setCategory('Content') />
-			<cfset result.setLink(theUrl.getSearch(false)) />
+			<cfset result.setLink(theUrl.getContent(false)) />
 			
 			<cfset arguments.results.addResults(result) />
 		</cfloop>
@@ -55,14 +57,37 @@
 		
 		<!--- Add the found results to the main search results --->
 		<cfloop query="results">
-			<cfset theUrl.setSearch('content', toString(results['contentID'])) />
+			<cfset theUrl.setContent('content', toString(results['contentID'])) />
 			
 			<cfset result = arguments.transport.theApplication.factories.transient.getModSearchResultForAdmin( i18n, locale ) />
 			
 			<cfset result.setTitle(results['path']) />
 			<cfset result.setDescription(results['title']) />
 			<cfset result.setCategory('Content') />
-			<cfset result.setLink(theUrl.getSearch(false)) />
+			<cfset result.setLink(theUrl.getContent(false)) />
+			
+			<cfset arguments.results.addResults(result) />
+		</cfloop>
+		
+		<cfset servDomain = arguments.transport.theApplication.factories.transient.getServDomainForContent(arguments.transport.theApplication.managers.singleton.getApplication().getDSUpdate(), arguments.transport) />
+		
+		<cfset filter = {
+			'search' = arguments.term
+		} />
+		
+		<cfset results = servDomain.getDomains( filter ) />
+		
+		<cfset theUrl.setDomain('_base', '/admin/domain/edit') />
+		
+		<!--- Add the found results to the main search results --->
+		<cfloop query="results">
+			<cfset theUrl.setDomain('domain', toString(results['domainID'])) />
+			
+			<cfset result = arguments.transport.theApplication.factories.transient.getModSearchResultForAdmin( i18n, locale ) />
+			
+			<cfset result.setTitle(results['domain']) />
+			<cfset result.setCategory('Domain') />
+			<cfset result.setLink(theUrl.getDomain(false)) />
 			
 			<cfset arguments.results.addResults(result) />
 		</cfloop>
