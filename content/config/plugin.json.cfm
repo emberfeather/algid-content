@@ -8,6 +8,7 @@
 		"parserTWiki": "cf-compendium.inc.resource.parse.parseTWiki"
 	},
 	"applicationTransients": {
+		"apiContentForContent": "plugins.content.inc.api.apiContent",
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"modAttributeForContent": "plugins.content.inc.model.modAttribute",
 		"modAttributeOptionForContent": "plugins.content.inc.model.modAttributeOption",
@@ -39,6 +40,7 @@
 	"key": "content",
 	"path": "",
 	"prerequisites": {
+		"api": "0.1.1",
 		"algid": "0.1.1",
 		"tagger": "0.1.1",
 		"user": "0.1.1"

@@ -347,6 +347,9 @@
 			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
 				<!--- Find any content along the path --->
 				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
+			<cfelseif structKeyExists(arguments.filter, 'searchPath')>
+				<!--- Match a path part --->
+				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter.searchPath)#%" />
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
