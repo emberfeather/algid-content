@@ -8,6 +8,7 @@
 		"parserTWiki": "cf-compendium.inc.resource.parse.parseTWiki"
 	},
 	"applicationTransients": {
+		"apiContentForContent": "plugins.content.inc.api.apiContent",
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"modAttributeForContent": "plugins.content.inc.model.modAttribute",
 		"modAttributeOptionForContent": "plugins.content.inc.model.modAttributeOption",

@@ -36,3 +36,5 @@
 	
 	<cfset theURL.redirectRedirect() />
 </cfif>
+
+<cfset template.addScripts('../plugins/content/script/contentEdit.js') />
