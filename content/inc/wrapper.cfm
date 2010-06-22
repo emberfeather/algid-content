@@ -79,8 +79,10 @@
 				<!--- Trigger the before show event --->
 				<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
 				
-				<!--- Put the content in the cache --->
-				<cfset cacheContent.put(filter.domain & filter.path, content) />
+				<!--- Check if the content should be cached --->
+				<cfif content.getDoCaching()>
+					<cfset cacheContent.put(filter.domain & filter.path, content) />
+				</cfif>
 			<cfelse>
 				<cfset filter.keyAlongPath = '404' />
 				
@@ -96,8 +98,10 @@
 						<!--- Trigger the before show event --->
 						<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
 						
-						<!--- Put the error page in the cache --->
-						<cfset cacheContent.put(filter.domain & paths.path, content) />
+						<!--- Check if the content should be cached --->
+						<cfif content.getDoCaching()>
+							<cfset cacheContent.put(filter.domain & paths.path, content) />
+						</cfif>
 					</cfif>
 				<cfelse>
 					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
@@ -128,8 +132,10 @@
 				<cfelse>
 					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), contents.contentID.toString() ) />
 					
-					<!--- Put the error page in the cache --->
-					<cfset cacheContent.put(filter.domain & contents.path, content) />
+					<!--- Check if the content should be cached --->
+					<cfif content.getDoCaching()>
+						<cfset cacheContent.put(filter.domain & contents.path, content) />
+					</cfif>
 				</cfif>
 			<cfelse>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
