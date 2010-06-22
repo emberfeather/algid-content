@@ -25,6 +25,15 @@
 				attribute = 'createdOn'
 			) />
 		
+		<!--- Do Caching --->
+		<cfset addAttribute(
+				attribute = 'doCaching',
+				defaultValue = true,
+				validation = {
+					isBoolean = true
+				}
+			) />
+		
 		<!--- Domain ID --->
 		<cfset addAttribute(
 				attribute = 'domainID'
