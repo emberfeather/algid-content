@@ -92,7 +92,7 @@
 		<cfset paths = explodePath(currentPath eq '' ? variables.defaultRoot : currentPath) />
 		
 		<!--- Query for the exact pages that match the paths --->
-		<cfquery name="locate"  datasource="#variables.datasource.name#">
+		<cfquery name="locate" datasource="#variables.datasource.name#">
 			SELECT p."path", c."title", p."title" AS "navTitle"
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
@@ -101,12 +101,7 @@
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
 			WHERE "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arrayToList(paths)#" list="true" />)
-			
-			<!--- TODO Add in locale Support --->
-				<!--- AND "locale" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.locale#" /> --->
-			
 			<!--- TODO add in authUser type permission checking --->
-			
 			ORDER BY path ASC
 		</cfquery>
 		
