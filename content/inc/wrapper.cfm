@@ -37,7 +37,7 @@
 	<cfset options = {
 			scripts = [
 				'https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
-				'https://ajax.googleapis.com/ajax/libs/jqueryui/1/jqueryui.min.js'
+				'https://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js'
 			]
 		} />
 	
