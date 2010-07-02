@@ -267,50 +267,53 @@
 	<cffunction name="getPath" access="public" returntype="component" output="false">
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="identifier" type="string" required="true" />
+		<cfargument name="path" type="string" required="true" />
 		
 		<cfset var i18n = '' />
-		<cfset var path = '' />
+		<cfset var currPath = '' />
 		<cfset var paths = '' />
 		
 		<!--- Retrieve the paths from the content --->
 		<cfset paths = arguments.content.getPaths() />
 		
 		<!--- Check for an id match --->
-		<cfloop array="#paths#" index="path">
-			<cfif path.getPathID() eq identifier>
+		<cfloop array="#paths#" index="currPath">
+			<cfif currPath.getPathID() eq arguments.identifier>
 				<!--- Mark as used --->
 				<!--- TODO figure out a better way of doing this... --->
-				<cfset path.set__isUsed(true) />
+				<cfset currPath.set__isUsed(true) />
 				
-				<cfreturn path />
+				<cfset currPath.setPath(arguments.path) />
+				
+				<cfreturn currPath />
 			</cfif>
 		</cfloop>
 		
 		<!--- Check for existing path with same path --->
-		<cfloop array="#paths#" index="path">
-			<cfif path.getPath() eq identifier>
+		<cfloop array="#paths#" index="currPath">
+			<cfif currPath.getPath() eq arguments.path>
 				<!--- Mark as used --->
 				<!--- TODO figure out a better way of doing this... --->
-				<cfset path.set__isUsed(true) />
+				<cfset currPath.set__isUsed(true) />
 				
-				<cfreturn path />
+				<cfreturn currPath />
 			</cfif>
 		</cfloop>
 		
 		<!--- Not found so create a new path --->
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		
-		<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		<cfset currPath = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
 		
 		<!--- Set the contentID and default title --->
-		<cfset path.setContentID(arguments.content.getContentID()) />
-		<cfset path.setPath(identifier) />
-		<cfset path.setTitle(arguments.content.getTitle()) />
+		<cfset currPath.setContentID(arguments.content.getContentID()) />
+		<cfset currPath.setPath(arguments.path) />
+		<cfset currPath.setTitle(arguments.content.getTitle()) />
 		
 		<!--- Add to the content object --->
-		<cfset arguments.content.addPaths(path) />
+		<cfset arguments.content.addPaths(currPath) />
 		
-		<cfreturn path />
+		<cfreturn currPath />
 	</cffunction>
 	
 	<cffunction name="getPaths" access="public" returntype="query" output="false">
