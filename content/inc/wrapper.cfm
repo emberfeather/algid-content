@@ -110,6 +110,9 @@
 					<cfset content.setTitle('404 Not Found') />
 					<cfset content.setContent('404... content not found!') />
 				</cfif>
+				
+				<!--- Add to the template levels so it appears on the page titles --->
+				<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 			</cfif>
 		</cfif>
 		
@@ -140,10 +143,14 @@
 			<cfelse>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
 				
+					<cfset content.setTitle('500 Server Error') />
 				<cfset content.setContent('500... Internal server error!') />
 			</cfif>
 			
 			<cfset template.setContent(content.getContent()) />
+			
+			<!--- Add to the template levels so it appears on the page titles --->
+			<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 		</cfcatch>
 	</cftry>
 	
