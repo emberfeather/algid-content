@@ -119,7 +119,23 @@
 		<cfset template.setContent(content.getContentHtml()) />
 		
 		<cfcatch type="any">
-			<!--- TODO log the exception --->
+			<!--- Track the exception --->
+			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
+				<cftry>
+					<cfset errorLogger = transport.theApplication.managers.singleton.getErrorLog() />
+					
+					<cfset errorLogger.log(argumentCollection = arguments) />
+					
+					<cfcatch type="any">
+						<!--- Failed to log error, send report of unlogged error --->
+						<!--- TODO Send Unlogged Error --->
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- Dump out the error --->
+				<cfdump var="#arguments.exception#" />
+				<cfabort />
+			</cfif>
 			
 			<cfset filter.keyAlongPath = '500' />
 			<cfset filter.orderBy = 'path' />
