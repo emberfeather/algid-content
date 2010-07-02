@@ -84,6 +84,8 @@
 					<cfset cacheContent.put(filter.domain & filter.path, content) />
 				</cfif>
 			<cfelse>
+				<cfheader statuscode="404" statustext="Content not found" />
+				
 				<cfset filter.keyAlongPath = '404' />
 				
 				<cfset paths = servContent.getPaths( filter ) />
@@ -119,6 +121,8 @@
 		<cfset template.setContent(content.getContentHtml()) />
 		
 		<cfcatch type="any">
+			<cfheader statuscode="500" statustext="Internal Server Error" />
+			
 			<!--- Track the exception --->
 			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
 				<cftry>
