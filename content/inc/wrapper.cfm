@@ -110,13 +110,32 @@
 					<cfset content.setTitle('404 Not Found') />
 					<cfset content.setContent('404... content not found!') />
 				</cfif>
+				
+				<!--- Add to the template levels so it appears on the page titles --->
+				<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 			</cfif>
 		</cfif>
 		
 		<cfset template.setContent(content.getContentHtml()) />
 		
 		<cfcatch type="any">
-			<!--- TODO log the exception --->
+			<!--- Track the exception --->
+			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
+				<cftry>
+					<cfset errorLogger = transport.theApplication.managers.singleton.getErrorLog() />
+					
+					<cfset errorLogger.log(argumentCollection = arguments) />
+					
+					<cfcatch type="any">
+						<!--- Failed to log error, send report of unlogged error --->
+						<!--- TODO Send Unlogged Error --->
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<!--- Dump out the error --->
+				<cfdump var="#arguments.exception#" />
+				<cfabort />
+			</cfif>
 			
 			<cfset filter.keyAlongPath = '500' />
 			<cfset filter.orderBy = 'path' />
@@ -140,10 +159,14 @@
 			<cfelse>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
 				
+					<cfset content.setTitle('500 Server Error') />
 				<cfset content.setContent('500... Internal server error!') />
 			</cfif>
 			
 			<cfset template.setContent(content.getContent()) />
+			
+			<!--- Add to the template levels so it appears on the page titles --->
+			<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 		</cfcatch>
 	</cftry>
 	
