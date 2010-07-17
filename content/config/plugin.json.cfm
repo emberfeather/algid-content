@@ -1,11 +1,5 @@
 {
 	"applicationSingletons": {
-		"parserConfluence": "cf-compendium.inc.resource.parse.parseConfluence",
-		"parserMarkdown": "cf-compendium.inc.resource.parse.parseMarkdown",
-		"parserMediaWiki": "cf-compendium.inc.resource.parse.parseMediaWiki",
-		"parserTextile": "cf-compendium.inc.resource.parse.parseTextile",
-		"parserTracWiki": "cf-compendium.inc.resource.parse.parseTracWiki",
-		"parserTWiki": "cf-compendium.inc.resource.parse.parseTWiki"
 	},
 	"applicationTransients": {
 		"apiContentForContent": "plugins.content.inc.api.apiContent",
@@ -42,6 +36,7 @@
 	"prerequisites": {
 		"api": "0.1.1",
 		"algid": "0.1.1",
+		"parser": "0.1.0",
 		"tagger": "0.1.1",
 		"user": "0.1.1"
 	},
