@@ -48,6 +48,11 @@
 		var pathPart = '';
 		var i = '';
 		
+		// Handle the root path possibility
+		if(arguments.path eq '/') {
+			pathList = listAppend(pathList, '/');
+		}
+		
 		// If provided a key then prepend a slash so it can be added to the end of the pathPart
 		if(arguments.key != '') {
 			arguments.key = '/' & arguments.key;

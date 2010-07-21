@@ -17,6 +17,7 @@
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
 		"servContentForContent": "plugins.content.inc.service.servContent",
 		"servDomainForContent": "plugins.content.inc.service.servDomain",
+		"servThemeForContent": "plugins.content.inc.service.servTheme",
 		"servTypeForContent": "plugins.content.inc.service.servType",
 		"templateForContent": "plugins.content.inc.resource.structure.template",
 		"viewContentForContent": "plugins.content.inc.view.viewContent",

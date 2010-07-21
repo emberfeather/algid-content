@@ -177,9 +177,27 @@
 	<cfset profiler.stop('content') />
 	
 	<cfset profiler.start('theme') />
+	
+	<!--- Determine which theme to use based upon the domain/path combination --->
+	<cfset theme = transport.theApplication.managers.plugin.getContent().getDefaultTheme() />
+	
+	<cfset servTheme = transport.theApplication.factories.transient.getServThemeForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+	
+	<!--- Use the theme that is the closest to the current page --->
+	<cfset filter = {
+			alongPath = theUrl.search('_base'),
+			domain = transport.theCgi.server_name,
+			orderBy = 'path',
+			orderSort = 'desc'
+		} />
+	
+	<cfset themes = servTheme.getThemes(filter) />
+	
+	<cfif themes.recordCount gt 0>
+		<cfset theme = themes.directory />
+	</cfif>
 </cfsilent>
 
-<!--- Include the theme --->
-<cfinclude template="/plugins/#transport.theApplication.managers.plugin.getContent().getDefaultTheme()#/#(template.getIsPartial() ? 'partial' : 'index' )#.cfm" />
+<cfinclude template="/plugins/#theme#/#(template.getIsPartial() ? 'partial' : 'index' )#.cfm" />
 
 <cfset profiler.stop('theme') />
