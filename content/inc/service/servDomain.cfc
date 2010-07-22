@@ -45,7 +45,7 @@
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset locale = variables.transport.theSession.managers.singleton.getSession().getLocale() />
 		
-		<cfset domain = variables.transport.theApplication.factories.transient.getModDomainForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		<cfset domain = variables.transport.theApplication.factories.transient.getModDomainForContent( i18n, locale ) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "domainID", "domain", "createdOn", "archivedOn"
@@ -127,6 +127,34 @@
 		</cfquery>
 		
 		<cfreturn results />
+	</cffunction>
+	
+	<cffunction name="getHost" access="public" returntype="component" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="hostname" type="string" required="true" />
+		
+		<cfset var host = '' />
+		<cfset var i18n = '' />
+		<cfset var objectSerial = '' />
+		<cfset var results = '' />
+		
+		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
+		
+		<cfset host = variables.transport.theApplication.factories.transient.getModHostForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		
+		<cfquery name="results" datasource="#variables.datasource.name#">
+			SELECT "hostID", "domainID", "hostname", "isPrimary", "hasSSL"
+			FROM "#variables.datasource.prefix#content"."host"
+			WHERE "hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.hostname#" />
+		</cfquery>
+		
+		<cfif results.recordCount>
+			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			
+			<cfset objectSerial.deserialize(results, host) />
+		</cfif>
+		
+		<cfreturn host />
 	</cffunction>
 	
 	<cffunction name="getHosts" access="public" returntype="query" output="false">

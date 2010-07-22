@@ -20,9 +20,9 @@
 				attribute = 'hostname'
 			) />
 		
-		<!--- Is Master --->
+		<!--- Is Primary --->
 		<cfset addAttribute(
-				attribute = 'isMaster',
+				attribute = 'isPrimary',
 				defaultValue = false
 			) />
 		
