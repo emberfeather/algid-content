@@ -182,7 +182,7 @@
 		
 		<cfset var results = '' />
 		
-		<cfquery name="results" datasource="#variables.datasource.name#">
+		<cfquery name="results" datasource="#variables.datasource.name#" cachedwithin="#createTimeSpan(0, 1, 0, 0)#">
 			SELECT "hostname"
 			FROM "#variables.datasource.prefix#content"."host"
 			WHERE "isPrimary" = <cfqueryparam cfsqltype="cf_sql_bit" value="true" />::boolean
