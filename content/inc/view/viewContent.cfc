@@ -52,7 +52,7 @@
 			<cfset theForm.addElement('hidden', {
 					name = "domainID",
 					label = "domain",
-					value = arguments.domains.domainID
+					value = toString(arguments.domains.domainID)
 				}) />
 		</cfif>
 		
