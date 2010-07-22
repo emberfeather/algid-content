@@ -88,6 +88,8 @@
 				orderBy = 'domain',
 				orderSort = 'asc'
 			} />
+		<cfset var i = '' />
+		<cfset var locale = '' />
 		<cfset var results = '' />
 		
 		<!--- Expand the with defaults --->
