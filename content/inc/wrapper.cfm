@@ -137,7 +137,7 @@
 				<cftry>
 					<cfset errorLogger = transport.theApplication.managers.singleton.getErrorLog() />
 					
-					<cfset errorLogger.log(argumentCollection = arguments) />
+					<cfset errorLogger.log(cfcatch) />
 					
 					<cfcatch type="any">
 						<!--- Failed to log error, send report of unlogged error --->
@@ -146,7 +146,7 @@
 				</cftry>
 			<cfelse>
 				<!--- Dump out the error --->
-				<cfdump var="#arguments.exception#" />
+				<cfdump var="#cfcatch#" />
 				<cfabort />
 			</cfif>
 			
