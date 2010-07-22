@@ -248,7 +248,7 @@
 		<cfif arguments.domain.getDomainID() eq ''>
 			<!--- Check for archived domain --->
 			<cfquery datasource="#variables.datasource.name#" name="results">
-				SELECT "domain", "archivedOn"
+				SELECT "domainID", "domain", "archivedOn"
 				FROM "#variables.datasource.prefix#content"."domain"
 				WHERE
 					"domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomain()#" />
@@ -260,6 +260,8 @@
 					<!--- Duplicate domain --->
 					<cfthrow type="validation" message="Domain name already in use" detail="The '#arguments.domain.getDomain()#' domain already exists." />
 				<cfelse>
+					<cfset arguments.domain.setDomainID(toString(results.domainID)) />
+					
 					<!--- Unarchive the domain --->
 					<cftransaction>
 						<cfquery datasource="#variables.datasource.name#" result="results">
