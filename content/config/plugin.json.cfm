@@ -9,6 +9,7 @@
 		"modContentForContent": "plugins.content.inc.model.modContent",
 		"modDomainForContent": "plugins.content.inc.model.modDomain",
 		"modDraftForContent": "plugins.content.inc.model.modDraft",
+		"modHostForContent": "plugins.content.inc.model.modHost",
 		"modMetaForContent": "plugins.content.inc.model.modMeta",
 		"modPathForContent": "plugins.content.inc.model.modPath",
 		"modResourceForContent": "plugins.content.inc.model.modResource",

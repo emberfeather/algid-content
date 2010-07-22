@@ -20,6 +20,15 @@
 	<cfset theURL = transport.theRequest.managers.singleton.getURL() />
 	<cfset navigation = transport.theApplication.managers.singleton.getContentNavigation() />
 	
+	<cfset servDomain = transport.theApplication.factories.transient.getServDomainForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+	
+	<!--- Redirect hostnames from secondary to primary --->
+	<cfset primaryHostname = servDomain.getPrimaryHostname(transport.theCgi.server_name) />
+	
+	<cfif primaryHostname neq transport.theCgi.server_name>
+		<cflocation url="http#(transport.theCgi.https eq 'on' ? 's' : '')#://#primaryHostname#:#transport.theCgi.server_port##theURL.get(false)#" addtoken="false" />
+	</cfif>
+	
 	<!--- Check for a change to the number of records per page --->
 	<cfif theURL.searchID('numPerPage')>
 		<cfset transport.theSession.numPerPage = theURL.searchID('numPerPage') />

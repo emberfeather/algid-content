@@ -5,30 +5,31 @@
 		
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
+		<!--- Host ID --->
+		<cfset addAttribute(
+				attribute = 'hostID'
+			) />
+		
 		<!--- Domain ID --->
 		<cfset addAttribute(
 				attribute = 'domainID'
 			) />
 		
-		<!--- Archived On --->
+		<!--- Hostname --->
 		<cfset addAttribute(
-				attribute = 'archivedOn'
+				attribute = 'hostname'
 			) />
 		
-		<!--- CreatedOn --->
+		<!--- Is Master --->
 		<cfset addAttribute(
-				attribute = 'createdOn'
+				attribute = 'isMaster',
+				defaultValue = false
 			) />
 		
-		<!--- Domain --->
+		<!--- hasSSL --->
 		<cfset addAttribute(
-				attribute = 'domain'
-			) />
-		
-		<!--- Hosts --->
-		<cfset addAttribute(
-				attribute = 'hosts',
-				defaultValue = []
+				attribute = 'hasSSL',
+				defaultValue = false
 			) />
 		
 		<!--- Set the bundle information for translation --->
