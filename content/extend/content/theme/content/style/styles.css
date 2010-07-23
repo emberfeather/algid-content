@@ -145,8 +145,8 @@ ul, ol {
 	line-height: 2.25em;
 	-moz-border-radius-bottomright: .5em;
 	-moz-border-radius-bottomleft: .5em;
-	-webkit-border-bottom-right-radius: .5em;
-	-webkit-border-bottom-left-radius: .5em;
+	border-bottom-right-radius: .5em;
+	border-bottom-left-radius: .5em;
 }
 
 #breadcrumb a {
@@ -165,7 +165,7 @@ ul, ol {
 .error,
 .success {
 	-moz-border-radius: .5em;
-	-webkit-border-radius: .5em;
+	border-radius: .5em;
 }
 
 /*
@@ -195,7 +195,7 @@ ul, ol {
 .content {
 	background: #fff;
 	-moz-border-radius: .75em;
-	-webkit-border-radius: .75em;
+	border-radius: .75em;
 	margin-bottom: 1em;
 	min-height: 25em;
 }
@@ -203,8 +203,8 @@ ul, ol {
 .pagination a {
 	-moz-border-radius-topright: .5em;
 	-moz-border-radius-topleft: .5em;
-	-webkit-border-top-right-radius: .5em;
-	-webkit-border-top-left-radius: .5em;
+	border-top-right-radius: .5em;
+	border-top-left-radius: .5em;
 }
 
 /*
@@ -216,7 +216,7 @@ ul, ol {
 	padding: 1em;
 	min-height: 1em;
 	-moz-border-radius: .5em;
-	-webkit-border-radius: .5em;
+	border-radius: .5em;
 }
 
 .box h3 {
@@ -268,8 +268,8 @@ ul, ol {
 .menu.horizontal a {
 	-moz-border-radius-topright: .5em;
 	-moz-border-radius-topleft: .5em;
-	-webkit-border-top-right-radius: .5em;
-	-webkit-border-top-left-radius: .5em;
+	border-top-right-radius: .5em;
+	border-top-left-radius: .5em;
 }
 
 .menu.horizontal a.selected,
@@ -284,8 +284,8 @@ ul, ol {
 	color: #0084c2;
 	-moz-border-radius-bottomright: .5em;
 	-moz-border-radius-bottomleft: .5em;
-	-webkit-border-bottom-right-radius: .5em;
-	-webkit-border-bottom-left-radius: .5em;
+	border-bottom-right-radius: .5em;
+	border-bottom-left-radius: .5em;
 }
 
 .menu.horizontal.action a.selected,
