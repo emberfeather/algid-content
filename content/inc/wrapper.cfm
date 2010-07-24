@@ -83,7 +83,7 @@
 			<!--- The content is not cached, retrieve it --->
 			<cfset paths = servContent.getPaths( filter ) />
 			
-			<cfif paths.recordCount eq 1>
+			<cfif paths.recordCount gt 0>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 				
 				<!--- Trigger the before show event --->
