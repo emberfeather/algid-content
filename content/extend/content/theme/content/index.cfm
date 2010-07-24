@@ -94,10 +94,6 @@
 				<cfoutput>#createUUID()#</cfoutput>
 			</div>
 			
-			<div class="grid_12 align-center">
-				Powered by <a href="http://github.com/Zoramite/algid" title="Algid CFML Framework">Algid</a>.
-			</div>
-			
 			<div class="clear"><!-- clear --></div>
 		</div>
 		
