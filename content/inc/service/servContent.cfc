@@ -48,14 +48,12 @@
 		var pathPart = '';
 		var i = '';
 		
-		// Handle the root path possibility
-		if(arguments.path eq '/') {
-			pathList = listAppend(pathList, '/');
-		}
-		
 		// If provided a key then prepend a slash so it can be added to the end of the pathPart
 		if(arguments.key != '') {
 			arguments.key = '/' & arguments.key;
+		} else {
+			// Handle the root path possibility
+			pathList = listAppend(pathList, '/');
 		}
 		
 		// Set the base path in the path list
@@ -218,7 +216,16 @@
 			</cfif>
 			
 			<!--- Check for path specific filters --->
-			<cfif structKeyExists(arguments.filter, 'keyAlongPath')>
+			<cfif structKeyExists(arguments.filter, 'keyAlongPathOrPath')>
+				<!--- Find a key that is along the path --->
+				<cfparam name="arguments.filter.path" default="/" />
+				
+				<!--- Match a specific path or look for a key along the path --->
+				AND (
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+				)
+			<cfelseif structKeyExists(arguments.filter, 'keyAlongPath')>
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
@@ -326,7 +333,7 @@
 		
 		<cfset var defaults = {
 				domain = variables.transport.theCgi.server_name,
-				orderBy = 'title',
+				orderBy = 'path',
 				orderSort = 'desc'
 			} />
 		<cfset var i = '' />
@@ -347,7 +354,16 @@
 			WHERE 1=1
 			
 			<!--- Check for path specific filters --->
-			<cfif structKeyExists(arguments.filter, 'keyAlongPath')>
+			<cfif structKeyExists(arguments.filter, 'keyAlongPathOrPath')>
+				<!--- Find a key that is along the path --->
+				<cfparam name="arguments.filter.path" default="/" />
+				
+				<!--- Match a specific path or look for a key along the path --->
+				AND (
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+				)
+			<cfelseif structKeyExists(arguments.filter, 'keyAlongPath')>
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
@@ -364,7 +380,11 @@
 			</cfif>
 			
 			ORDER BY
-				p."path" #arguments.filter.orderSort#
+				<cfswitch expression="#arguments.filter.orderBy#">
+					<cfdefaultcase>
+						p."path" #arguments.filter.orderSort#
+					</cfdefaultcase>
+				</cfswitch>
 			
 			<cfif structKeyExists(arguments.filter, 'limit')>
 				LIMIT <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.filter.limit#" />

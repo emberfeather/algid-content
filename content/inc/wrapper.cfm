@@ -69,6 +69,7 @@
 	
 	<cfset filter = {
 			domain = transport.theCgi.server_name,
+			keyAlongPathOrPath = '*',
 			path = lcase(theUrl.search('_base'))
 		} />
 	

@@ -87,9 +87,7 @@
 		
 		<!--- Check the base path --->
 		<cfset currentPath = arguments.theURL.search('_base') />
-		
-		<!--- Explode the current path --->
-		<cfset paths = explodePath(currentPath eq '' ? variables.defaultRoot : currentPath) />
+		<cfset currentPath = currentPath eq '' ? variables.defaultRoot : currentPath />
 		
 		<!--- Query for the exact pages that match the paths --->
 		<cfquery name="locate" datasource="#variables.datasource.name#">
@@ -100,8 +98,13 @@
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
-			WHERE "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arrayToList(paths)#" list="true" />)
-			<!--- TODO add in authUser type permission checking --->
+			WHERE 1 = 1
+				AND (
+					"path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath)#" list="true" />)
+					OR "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath, '*')#" list="true" />)
+				)
+				
+				<!--- TODO add in authUser type permission checking --->
 			ORDER BY path ASC
 		</cfquery>
 		
