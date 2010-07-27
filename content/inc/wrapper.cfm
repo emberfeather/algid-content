@@ -208,6 +208,6 @@
 	</cfif>
 </cfsilent>
 
-<cfinclude template="/plugins/#theme#/#(template.getIsPartial() ? 'partial' : 'index' )#.cfm" />
+<cfinclude template="/plugins/#theme#/#template.getTemplate()#.cfm" />
 
 <cfset profiler.stop('theme') />
