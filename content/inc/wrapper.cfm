@@ -86,6 +86,9 @@
 			<cfif paths.recordCount gt 0>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 				
+				<!--- Store the original path requested --->
+				<cfset content.setPathExtra(filter.path, paths.path) />
+				
 				<!--- Trigger the before show event --->
 				<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
 				
@@ -106,6 +109,9 @@
 						<cfset content = cacheContent.get( filter.domain & paths.path ) />
 					<cfelse>
 						<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+						
+						<!--- Store the original path requested --->
+						<cfset content.setPathExtra(filter.path, paths.path) />
 						
 						<!--- Trigger the before show event --->
 						<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
@@ -152,28 +158,33 @@
 			</cfif>
 			
 			<cfset filter.keyAlongPath = '500' />
-			<cfset filter.orderBy = 'path' />
-			<cfset filter.orderSort = 'desc' />
-			<cfset filter.path = 'desc' />
 			
-			<cfset contents = servContent.getContents( filter ) />
+			<!--- The content is not cached, retrieve it --->
+			<cfset paths = servContent.getPaths( filter ) />
 			
-			<cfif contents.recordCount gt 0>
+			<cfif paths.recordCount gt 0>
 				<!--- Use the cache for the error page --->
-				<cfif cacheContent.has( filter.domain & contents.path )>
-					<cfset content = cacheContent.get( filter.domain & contents.path ) />
+				<cfif cacheContent.has( filter.domain & paths.path )>
+					<cfset content = cacheContent.get( filter.domain & paths.path ) />
 				<cfelse>
-					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), contents.contentID.toString() ) />
+					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+					
+					<!--- Store the original path requested --->
+					<cfset content.setPathExtra(filter.path, paths.path) />
+					
+					<!--- Trigger the before show event --->
+					<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
 					
 					<!--- Check if the content should be cached --->
 					<cfif content.getDoCaching()>
-						<cfset cacheContent.put(filter.domain & contents.path, content) />
+						<cfset cacheContent.put(filter.domain & paths.path, content) />
 					</cfif>
 				</cfif>
 			<cfelse>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
 				
-					<cfset content.setTitle('500 Server Error') />
+				<!--- Page not found and no 500 page along the path --->
+				<cfset content.setTitle('500 Server Error') />
 				<cfset content.setContent('500... Internal server error!') />
 			</cfif>
 			
