@@ -52,6 +52,9 @@
 	
 	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale(), options) />
 	
+	<!--- Store in the singletons --->
+	<cfset transport.theRequest.managers.singleton.setTemplate(template) />
+	
 	<!--- Include minified files for production --->
 	<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
 		<cfset template.addScripts('/cf-compendium/script/jquery.cf-compendium-min.js') />
@@ -79,12 +82,16 @@
 	<cftry>
 		<cfif cacheContent.has( filter.domain & filter.path )>
 			<cfset content = cacheContent.get( filter.domain & filter.path ) />
+			
+			<cfset transport.theRequest.managers.singleton.setContent(content) />
 		<cfelse>
 			<!--- The content is not cached, retrieve it --->
 			<cfset paths = servContent.getPaths( filter ) />
 			
 			<cfif paths.recordCount gt 0>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+				
+				<cfset transport.theRequest.managers.singleton.setContent(content) />
 				
 				<!--- Store the original path requested --->
 				<cfset content.setPathExtra(filter.path, paths.path) />
@@ -107,8 +114,12 @@
 					<!--- Use the cache for the error page --->
 					<cfif cacheContent.has( filter.domain & paths.path )>
 						<cfset content = cacheContent.get( filter.domain & paths.path ) />
+						
+						<cfset transport.theRequest.managers.singleton.setContent(content) />
 					<cfelse>
 						<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+						
+						<cfset transport.theRequest.managers.singleton.setContent(content) />
 						
 						<!--- Store the original path requested --->
 						<cfset content.setPathExtra(filter.path, paths.path) />
@@ -123,6 +134,8 @@
 					</cfif>
 				<cfelse>
 					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
+					
+					<cfset transport.theRequest.managers.singleton.setContent(content) />
 					
 					<!--- Page not found and no 404 page along the path --->
 					<cfset content.setTitle('404 Not Found') />
@@ -166,8 +179,12 @@
 				<!--- Use the cache for the error page --->
 				<cfif cacheContent.has( filter.domain & paths.path )>
 					<cfset content = cacheContent.get( filter.domain & paths.path ) />
+					
+					<cfset transport.theRequest.managers.singleton.setContent(content) />
 				<cfelse>
 					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+					
+					<cfset transport.theRequest.managers.singleton.setContent(content) />
 					
 					<!--- Store the original path requested --->
 					<cfset content.setPathExtra(filter.path, paths.path) />
@@ -183,12 +200,14 @@
 			<cfelse>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
 				
+				<cfset transport.theRequest.managers.singleton.setContent(content) />
+				
 				<!--- Page not found and no 500 page along the path --->
 				<cfset content.setTitle('500 Server Error') />
 				<cfset content.setContent('500... Internal server error!') />
 			</cfif>
 			
-			<cfset template.setContent(content.getContent()) />
+			<cfset template.setContent(content.getContentHtml()) />
 			
 			<!--- Add to the template levels so it appears on the page titles --->
 			<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
