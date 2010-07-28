@@ -70,6 +70,7 @@
 		
 		<!--- Prime to blank --->
 		<cfset this.setContentHtml('') />
+		<cfset this.setPathExtra('', '') />
 		
 		<cfreturn this />
 	</cffunction>
@@ -82,6 +83,24 @@
 		// Set both the content and the contentHtml to the value
 		variables.instance['content'] = arguments.value;
 		variables.instance['contentHtml'] = arguments.value;
+	}
+	
+	/**
+	 * When requesting content with a path that is matched by a wildcard
+	 * this function assists in returning finding just the extra 
+	 */
+	public void function setPathExtra( required string requested, required string found ) {
+		var extra = '';
+		
+		if(right(arguments.found, 2) == '/*') {
+			arguments.found = left(arguments.found, len(arguments.found) - len('/*'));
+		}
+		
+		if(len(arguments.requested) gt len(arguments.found)) {
+			extra = right(arguments.requested, len(arguments.requested) - len(arguments.found));
+		}
+		
+		variables.instance['pathExtra'] = extra;
 	}
 </cfscript>
 </cfcomponent>
