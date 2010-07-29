@@ -15,12 +15,16 @@
 			theUrl = url
 		} />
 	
+	<!--- Create and store the services manager --->
+	<cfset services = transport.theApplication.factories.transient.getManagerService(transport) />
+	<cfset transport.theRequest.managers.singleton.setManagerService(services) />
+	
 	<!--- Retrieve the objects --->
 	<cfset i18n = transport.theApplication.managers.singleton.getI18N() />
 	<cfset theURL = transport.theRequest.managers.singleton.getURL() />
 	<cfset navigation = transport.theApplication.managers.singleton.getContentNavigation() />
 	
-	<cfset servDomain = transport.theApplication.factories.transient.getServDomainForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+	<cfset servDomain = services.get('content', 'domain') />
 	
 	<!--- Redirect hostnames from secondary to primary --->
 	<cfset primaryHostname = servDomain.getPrimaryHostname(transport.theCgi.server_name) />
@@ -68,7 +72,7 @@
 	
 	<cfset profiler.start('content') />
 	
-	<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+	<cfset servContent = services.get('content', 'content') />
 	
 	<cfset filter = {
 			domain = transport.theCgi.server_name,
@@ -221,7 +225,7 @@
 	<!--- Determine which theme to use based upon the domain/path combination --->
 	<cfset theme = transport.theApplication.managers.plugin.getContent().getDefaultTheme() />
 	
-	<cfset servTheme = transport.theApplication.factories.transient.getServThemeForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+	<cfset servTheme = services.get('content', 'theme') />
 	
 	<!--- Use the theme that is the closest to the current page --->
 	<cfset filter = {

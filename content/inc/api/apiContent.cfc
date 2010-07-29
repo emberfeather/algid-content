@@ -12,7 +12,7 @@ component extends="plugins.api.inc.resource.base.api" {
 		
 		filter.searchPath = variables.apiRequestBody.path;
 		
-		servContent = variables.transport.theApplication.factories.transient.getServContentForContent(variables.transport.theApplication.managers.singleton.getApplication().getDSUpdate(), variables.transport);
+		servContent = variables.services.get('widget', 'widget');
 		
 		// Retrieve the search results
 		variables.apiResponseBody = servContent.getPaths( filter );

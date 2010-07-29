@@ -1,6 +1,6 @@
-<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
-<cfset servDomain = transport.theApplication.factories.transient.getServDomainForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
-<cfset servType = transport.theApplication.factories.transient.getServTypeForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+<cfset servContent = services.get('content', 'content') />
+<cfset servDomain = services.get('content', 'domain') />
+<cfset servType = services.get('content', 'type') />
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Update the URL and redirect --->

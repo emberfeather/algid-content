@@ -50,7 +50,7 @@
 		var domain = '';
 		var i = '';
 		var paths = '';
-		var servDomain = arguments.transport.theApplication.factories.transient.getServDomainForContent(arguments.transport.theApplication.managers.singleton.getApplication().getDSUpdate(), arguments.transport);
+		var servDomain = getService(arguments.transport, 'content', 'domain');
 		
 		// Get the cache for the content
 		cacheContent = arguments.transport.theApplication.managers.plugin.getContent().getCache().getContent();
