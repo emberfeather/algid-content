@@ -25,8 +25,7 @@
 <cfscript>
 	/* required path */
 	private string function cleanPath(string dirtyPath) {
-		var i18n = variables.transport.theApplication.managers.singleton.getI18N();
-		var path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() );
+		var path = getModel('content', 'path');
 		
 		return path.cleanPath(arguments.dirtyPath);
 	}
@@ -98,8 +97,6 @@
 		
 		<cfset var content = '' />
 		<cfset var i = '' />
-		<cfset var i18n = '' />
-		<cfset var locale = '' />
 		<cfset var objectSerial = '' />
 		<cfset var observer = '' />
 		<cfset var path = '' />
@@ -109,10 +106,7 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
 		
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		<cfset locale = variables.transport.theSession.managers.singleton.getSession().getLocale() />
-		
-		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, locale ) />
+		<cfset content = getModel('content', 'content') />
 		
 		<cfif arguments.contentID neq ''>
 			<cfquery name="results" datasource="#variables.datasource.name#">
@@ -137,7 +131,7 @@
 				</cfquery>
 				
 				<cfloop query="results">
-					<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, locale ) />
+					<cfset path = getModel('content', 'path') />
 					
 					<cfloop list="#structKeyList(results)#" index="i">
 						<cfinvoke component="#path#" method="set#i#">
@@ -148,7 +142,7 @@
 					<cfset content.addPaths(path) />
 				</cfloop>
 				
-				<cfset type = variables.transport.theApplication.factories.transient.getModTypeForContent( i18n, locale ) />
+				<cfset type = getModel('content', 'type') />
 				
 				<cfif content.getTypeID() neq ''>
 					<!--- Retrieve the content type object --->
@@ -281,7 +275,6 @@
 		<cfargument name="identifier" type="string" required="true" />
 		<cfargument name="path" type="string" required="true" />
 		
-		<cfset var i18n = '' />
 		<cfset var currPath = '' />
 		<cfset var paths = '' />
 		
@@ -313,9 +306,7 @@
 		</cfloop>
 		
 		<!--- Not found so create a new path --->
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		
-		<cfset currPath = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		<cfset currPath = getModel('content', 'path') />
 		
 		<!--- Set the contentID and default title --->
 		<cfset currPath.setContentID(arguments.content.getContentID()) />

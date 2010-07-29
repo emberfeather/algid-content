@@ -37,15 +37,10 @@
 		<cfset var domain = '' />
 		<cfset var host = '' />
 		<cfset var i = '' />
-		<cfset var i18n = '' />
-		<cfset var locale = '' />
 		<cfset var objectSerial = '' />
 		<cfset var results = '' />
 		
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		<cfset locale = variables.transport.theSession.managers.singleton.getSession().getLocale() />
-		
-		<cfset domain = variables.transport.theApplication.factories.transient.getModDomainForContent( i18n, locale ) />
+		<cfset domain = getModel('content', 'domain') />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "domainID", "domain", "createdOn", "archivedOn"
@@ -67,7 +62,7 @@
 			</cfquery>
 			
 			<cfloop query="results">
-				<cfset host = variables.transport.theApplication.factories.transient.getModHostForContent( i18n, locale ) />
+				<cfset host = getModel('content', 'host') />
 				
 				<cfloop list="#structKeyList(results)#" index="i">
 					<cfinvoke component="#host#" method="set#i#">
@@ -134,13 +129,10 @@
 		<cfargument name="hostname" type="string" required="true" />
 		
 		<cfset var host = '' />
-		<cfset var i18n = '' />
 		<cfset var objectSerial = '' />
 		<cfset var results = '' />
 		
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		
-		<cfset host = variables.transport.theApplication.factories.transient.getModHostForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		<cfset host = getModel('content', 'host') />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "hostID", "domainID", "hostname", "isPrimary", "hasSSL"

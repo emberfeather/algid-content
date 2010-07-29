@@ -34,12 +34,10 @@
 		<cfargument name="typeID" type="string" required="true" />
 		
 		<cfset var type = '' />
-		<cfset var i18n = '' />
 		<cfset var objectSerial = '' />
 		<cfset var results = '' />
 		
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		<cfset type = variables.transport.theApplication.factories.transient.getModTypeForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		<cfset type = getModel('content', 'type') />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "typeID", "type", "archivedOn"

@@ -25,8 +25,7 @@
 <cfscript>
 	/* required path */
 	private string function cleanPath(string dirtyPath) {
-		var i18n = variables.transport.theApplication.managers.singleton.getI18N();
-		var path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() );
+		var path = getModel('content', 'path');
 		
 		return path.cleanPath(arguments.dirtyPath);
 	}
@@ -63,8 +62,6 @@
 		
 		<cfset var theme = '' />
 		<cfset var i = '' />
-		<cfset var i18n = '' />
-		<cfset var locale = '' />
 		<cfset var objectSerial = '' />
 		<cfset var observer = '' />
 		<cfset var path = '' />
@@ -74,10 +71,7 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'theme') />
 		
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		<cfset locale = variables.transport.theSession.managers.singleton.getSession().getLocale() />
-		
-		<cfset theme = variables.transport.theApplication.factories.transient.getModThemeForContent( i18n, locale ) />
+		<cfset theme = getModel('content', 'theme') />
 		
 		<cfif arguments.themeID neq ''>
 			<cfquery name="results" datasource="#variables.datasource.name#">

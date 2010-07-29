@@ -15,14 +15,19 @@
 			theUrl = url
 		} />
 	
+	<!--- Retrieve the objects --->
+	<cfset i18n = transport.theApplication.managers.singleton.getI18N() />
+	<cfset locale = transport.theSession.managers.singleton.getSession().getLocale() />
+	<cfset theURL = transport.theRequest.managers.singleton.getURL() />
+	<cfset navigation = transport.theApplication.managers.singleton.getContentNavigation() />
+	
 	<!--- Create and store the services manager --->
 	<cfset services = transport.theApplication.factories.transient.getManagerService(transport) />
 	<cfset transport.theRequest.managers.singleton.setManagerService(services) />
 	
-	<!--- Retrieve the objects --->
-	<cfset i18n = transport.theApplication.managers.singleton.getI18N() />
-	<cfset theURL = transport.theRequest.managers.singleton.getURL() />
-	<cfset navigation = transport.theApplication.managers.singleton.getContentNavigation() />
+	<!--- Create and store the model manager --->
+	<cfset models = transport.theApplication.factories.transient.getManagerModel(transport, i18n, locale) />
+	<cfset transport.theRequest.managers.singleton.setManagerModel(models) />
 	
 	<cfset servDomain = services.get('content', 'domain') />
 	
