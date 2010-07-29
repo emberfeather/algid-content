@@ -17,8 +17,6 @@
 		"modTypeForContent": "plugins.content.inc.model.modType",
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
 		"templateForContent": "plugins.content.inc.resource.structure.template",
-		"viewContentForContent": "plugins.content.inc.view.viewContent",
-		"viewDomainForContent": "plugins.content.inc.view.viewDomain",
 		"urlForContent": "cf-compendium.inc.resource.utility.url"
 	},
 	"cacheContent": "",
