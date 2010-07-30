@@ -1,4 +1,4 @@
-<cfset servContent = service.get('content', 'content') />
+<cfset servContent = services.get('content', 'content') />
 
 <!--- Clear the cache --->
 <cfset servContent.clearCache() />
