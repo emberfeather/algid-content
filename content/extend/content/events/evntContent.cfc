@@ -102,7 +102,7 @@
 			parser = arguments.transport.theApplication.managers.singleton.get(type);
 			
 			// Parse the raw markup
-			html = parser.toHtml(arguments.content.getContent());
+			html = parser.toHtml(arguments.content.getContentHtml());
 			
 			// Store it as the html content
 			arguments.content.setContentHtml(html);
