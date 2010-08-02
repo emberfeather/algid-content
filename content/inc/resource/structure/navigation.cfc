@@ -14,6 +14,16 @@
 		<cfreturn this />
 	</cffunction>
 	
+	<cffunction name="cleanPath" access="private" returntype="string" output="false">
+		<cfargument name="path" type="string" required="true" />
+		
+		<cfif right(arguments.path, 2) eq '/*'>
+			<cfset arguments.path = left(arguments.path, len(arguments.path) - 2) />
+		</cfif>
+		
+		<cfreturn arguments.path />
+	</cffunction>
+	
 	<cffunction name="getNav" access="public" returntype="query" output="false">
 		<cfargument name="domain" type="string" required="true" />
 		<cfargument name="level" type="numeric" required="true" />
@@ -113,7 +123,7 @@
 		
 		<cfloop query="locate">
 			<!--- Create the url --->
-			<cfset arguments.theURL.setCurrent('_base', locate.path) />
+			<cfset arguments.theURL.setCurrent('_base', cleanPath(locate.path)) />
 			
 			<!--- Add to the current page --->
 			<cfset currentPage.addLevel(locate.title, locate.navTitle, arguments.theURL.getCurrent(), locate.path) />
