@@ -21,7 +21,7 @@
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modType') />
+		<cfset addBundle('plugins/content/i18n/inc/model', 'modType') />
 		
 		<cfreturn this />
 	</cffunction>

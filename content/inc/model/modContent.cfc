@@ -66,7 +66,7 @@
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modContent') />
+		<cfset addBundle('plugins/content/i18n/inc/model', 'modContent') />
 		
 		<!--- Prime to blank --->
 		<cfset this.setContentHtml('') />

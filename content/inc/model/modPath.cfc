@@ -53,7 +53,7 @@
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modPath') />
+		<cfset addBundle('plugins/content/i18n/inc/model', 'modPath') />
 		
 		<!---
 			Set pattern for valid URL path characters.

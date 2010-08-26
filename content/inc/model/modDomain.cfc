@@ -32,7 +32,7 @@
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modDomain') />
+		<cfset addBundle('plugins/content/i18n/inc/model', 'modDomain') />
 		
 		<cfreturn this />
 	</cffunction>
