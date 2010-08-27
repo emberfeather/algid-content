@@ -52,14 +52,11 @@
 	<cfset profiler.start('template') />
 	
 	<!--- Create template object --->
-	<cfset options = {
-			scripts = [
-				'https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
-				'https://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js'
-			]
-		} />
+	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale()) />
 	
-	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale(), options) />
+	<!--- Add the main jquery scripts with fallbacks --->
+	<cfset template.addScript('https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', { condition = '!window.jQuery', script = '/algid/script/jquery.min.js' }) />
+	<cfset template.addScript('https://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js', { condition = '!window.jQuery.ui', script = '/algid/script/jquery-ui.min.js' }) />
 	
 	<!--- Store in the singletons --->
 	<cfset transport.theRequest.managers.singleton.setTemplate(template) />
