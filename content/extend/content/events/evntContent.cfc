@@ -50,7 +50,7 @@
 		var domain = '';
 		var i = '';
 		var paths = '';
-		var servDomain = arguments.transport.theApplication.factories.transient.getServDomainForContent(arguments.transport.theApplication.managers.singleton.getApplication().getDSUpdate(), arguments.transport);
+		var servDomain = getService(arguments.transport, 'content', 'domain');
 		
 		// Get the cache for the content
 		cacheContent = arguments.transport.theApplication.managers.plugin.getContent().getCache().getContent();
@@ -102,7 +102,7 @@
 			parser = arguments.transport.theApplication.managers.singleton.get(type);
 			
 			// Parse the raw markup
-			html = parser.toHtml(arguments.content.getContent());
+			html = parser.toHtml(arguments.content.getContentHtml());
 			
 			// Store it as the html content
 			arguments.content.setContentHtml(html);

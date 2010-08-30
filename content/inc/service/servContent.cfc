@@ -25,8 +25,7 @@
 <cfscript>
 	/* required path */
 	private string function cleanPath(string dirtyPath) {
-		var i18n = variables.transport.theApplication.managers.singleton.getI18N();
-		var path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() );
+		var path = getModel('content', 'path');
 		
 		return path.cleanPath(arguments.dirtyPath);
 	}
@@ -51,6 +50,9 @@
 		// If provided a key then prepend a slash so it can be added to the end of the pathPart
 		if(arguments.key != '') {
 			arguments.key = '/' & arguments.key;
+		} else {
+			// Handle the root path possibility
+			pathList = listAppend(pathList, '/');
 		}
 		
 		// Set the base path in the path list
@@ -95,8 +97,6 @@
 		
 		<cfset var content = '' />
 		<cfset var i = '' />
-		<cfset var i18n = '' />
-		<cfset var locale = '' />
 		<cfset var objectSerial = '' />
 		<cfset var observer = '' />
 		<cfset var path = '' />
@@ -106,10 +106,7 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
 		
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		<cfset locale = variables.transport.theSession.managers.singleton.getSession().getLocale() />
-		
-		<cfset content = variables.transport.theApplication.factories.transient.getModContentForContent( i18n, locale ) />
+		<cfset content = getModel('content', 'content') />
 		
 		<cfif arguments.contentID neq ''>
 			<cfquery name="results" datasource="#variables.datasource.name#">
@@ -134,7 +131,7 @@
 				</cfquery>
 				
 				<cfloop query="results">
-					<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, locale ) />
+					<cfset path = getModel('content', 'path') />
 					
 					<cfloop list="#structKeyList(results)#" index="i">
 						<cfinvoke component="#path#" method="set#i#">
@@ -145,7 +142,7 @@
 					<cfset content.addPaths(path) />
 				</cfloop>
 				
-				<cfset type = variables.transport.theApplication.factories.transient.getModTypeForContent( i18n, locale ) />
+				<cfset type = getModel('content', 'type') />
 				
 				<cfif content.getTypeID() neq ''>
 					<!--- Retrieve the content type object --->
@@ -213,7 +210,16 @@
 			</cfif>
 			
 			<!--- Check for path specific filters --->
-			<cfif structKeyExists(arguments.filter, 'keyAlongPath')>
+			<cfif structKeyExists(arguments.filter, 'keyAlongPathOrPath')>
+				<!--- Find a key that is along the path --->
+				<cfparam name="arguments.filter.path" default="/" />
+				
+				<!--- Match a specific path or look for a key along the path --->
+				AND (
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+				)
+			<cfelseif structKeyExists(arguments.filter, 'keyAlongPath')>
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
@@ -267,50 +273,50 @@
 	<cffunction name="getPath" access="public" returntype="component" output="false">
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="identifier" type="string" required="true" />
+		<cfargument name="path" type="string" required="true" />
 		
-		<cfset var i18n = '' />
-		<cfset var path = '' />
+		<cfset var currPath = '' />
 		<cfset var paths = '' />
 		
 		<!--- Retrieve the paths from the content --->
 		<cfset paths = arguments.content.getPaths() />
 		
 		<!--- Check for an id match --->
-		<cfloop array="#paths#" index="path">
-			<cfif path.getPathID() eq identifier>
+		<cfloop array="#paths#" index="currPath">
+			<cfif currPath.getPathID() eq arguments.identifier>
 				<!--- Mark as used --->
 				<!--- TODO figure out a better way of doing this... --->
-				<cfset path.set__isUsed(true) />
+				<cfset currPath.set__isUsed(true) />
 				
-				<cfreturn path />
+				<cfset currPath.setPath(arguments.path) />
+				
+				<cfreturn currPath />
 			</cfif>
 		</cfloop>
 		
 		<!--- Check for existing path with same path --->
-		<cfloop array="#paths#" index="path">
-			<cfif path.getPath() eq identifier>
+		<cfloop array="#paths#" index="currPath">
+			<cfif currPath.getPath() eq arguments.path>
 				<!--- Mark as used --->
 				<!--- TODO figure out a better way of doing this... --->
-				<cfset path.set__isUsed(true) />
+				<cfset currPath.set__isUsed(true) />
 				
-				<cfreturn path />
+				<cfreturn currPath />
 			</cfif>
 		</cfloop>
 		
 		<!--- Not found so create a new path --->
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		
-		<cfset path = variables.transport.theApplication.factories.transient.getModPathForContent( i18n, variables.transport.theSession.managers.singleton.getSession().getLocale() ) />
+		<cfset currPath = getModel('content', 'path') />
 		
 		<!--- Set the contentID and default title --->
-		<cfset path.setContentID(arguments.content.getContentID()) />
-		<cfset path.setPath(identifier) />
-		<cfset path.setTitle(arguments.content.getTitle()) />
+		<cfset currPath.setContentID(arguments.content.getContentID()) />
+		<cfset currPath.setPath(arguments.path) />
+		<cfset currPath.setTitle(arguments.content.getTitle()) />
 		
 		<!--- Add to the content object --->
-		<cfset arguments.content.addPaths(path) />
+		<cfset arguments.content.addPaths(currPath) />
 		
-		<cfreturn path />
+		<cfreturn currPath />
 	</cffunction>
 	
 	<cffunction name="getPaths" access="public" returntype="query" output="false">
@@ -318,7 +324,7 @@
 		
 		<cfset var defaults = {
 				domain = variables.transport.theCgi.server_name,
-				orderBy = 'title',
+				orderBy = 'path',
 				orderSort = 'desc'
 			} />
 		<cfset var i = '' />
@@ -339,7 +345,16 @@
 			WHERE 1=1
 			
 			<!--- Check for path specific filters --->
-			<cfif structKeyExists(arguments.filter, 'keyAlongPath')>
+			<cfif structKeyExists(arguments.filter, 'keyAlongPathOrPath')>
+				<!--- Find a key that is along the path --->
+				<cfparam name="arguments.filter.path" default="/" />
+				
+				<!--- Match a specific path or look for a key along the path --->
+				AND (
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+				)
+			<cfelseif structKeyExists(arguments.filter, 'keyAlongPath')>
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
@@ -356,7 +371,11 @@
 			</cfif>
 			
 			ORDER BY
-				p."path" #arguments.filter.orderSort#
+				<cfswitch expression="#arguments.filter.orderBy#">
+					<cfdefaultcase>
+						p."path" #arguments.filter.orderSort#
+					</cfdefaultcase>
+				</cfswitch>
 			
 			<cfif structKeyExists(arguments.filter, 'limit')>
 				LIMIT <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.filter.limit#" />

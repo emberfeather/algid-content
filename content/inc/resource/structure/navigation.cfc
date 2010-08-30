@@ -14,6 +14,16 @@
 		<cfreturn this />
 	</cffunction>
 	
+	<cffunction name="cleanPath" access="private" returntype="string" output="false">
+		<cfargument name="path" type="string" required="true" />
+		
+		<cfif right(arguments.path, 2) eq '/*'>
+			<cfset arguments.path = left(arguments.path, len(arguments.path) - 2) />
+		</cfif>
+		
+		<cfreturn arguments.path />
+	</cffunction>
+	
 	<cffunction name="getNav" access="public" returntype="query" output="false">
 		<cfargument name="domain" type="string" required="true" />
 		<cfargument name="level" type="numeric" required="true" />
@@ -87,12 +97,10 @@
 		
 		<!--- Check the base path --->
 		<cfset currentPath = arguments.theURL.search('_base') />
-		
-		<!--- Explode the current path --->
-		<cfset paths = explodePath(currentPath eq '' ? variables.defaultRoot : currentPath) />
+		<cfset currentPath = currentPath eq '' ? variables.defaultRoot : currentPath />
 		
 		<!--- Query for the exact pages that match the paths --->
-		<cfquery name="locate"  datasource="#variables.datasource.name#">
+		<cfquery name="locate" datasource="#variables.datasource.name#">
 			SELECT p."path", c."title", p."title" AS "navTitle"
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
@@ -100,13 +108,13 @@
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
-			WHERE "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arrayToList(paths)#" list="true" />)
-			
-			<!--- TODO Add in locale Support --->
-				<!--- AND "locale" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.locale#" /> --->
-			
-			<!--- TODO add in authUser type permission checking --->
-			
+			WHERE 1 = 1
+				AND (
+					"path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath)#" list="true" />)
+					OR "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath, '*')#" list="true" />)
+				)
+				
+				<!--- TODO add in authUser type permission checking --->
 			ORDER BY path ASC
 		</cfquery>
 		
@@ -115,7 +123,7 @@
 		
 		<cfloop query="locate">
 			<!--- Create the url --->
-			<cfset arguments.theURL.setCurrent('_base', locate.path) />
+			<cfset arguments.theURL.setCurrent('_base', cleanPath(locate.path)) />
 			
 			<!--- Add to the current page --->
 			<cfset currentPage.addLevel(locate.title, locate.navTitle, arguments.theURL.getCurrent(), locate.path) />

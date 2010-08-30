@@ -1,5 +1,5 @@
-<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
-<cfset servDomain = transport.theApplication.factories.transient.getServDomainForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+<cfset servContent = services.get('content', 'content') />
+<cfset servDomain = services.get('content', 'domain') />
 
 <!--- Check for existing domains --->
 <cfset domains = servDomain.getDomains() />

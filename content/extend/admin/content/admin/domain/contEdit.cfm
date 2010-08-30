@@ -1,4 +1,4 @@
-<cfset viewDomain = transport.theApplication.factories.transient.getViewDomainForContent( transport ) />
+<cfset viewDomain = views.get('content', 'domain') />
 
 <cfoutput>
 	#viewDomain.edit(domain, form)#

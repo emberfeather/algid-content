@@ -15,18 +15,24 @@
 				attribute = 'archivedOn'
 			) />
 		
-		<!--- Domain --->
-		<cfset addAttribute(
-				attribute = 'domain'
-			) />
-		
 		<!--- CreatedOn --->
 		<cfset addAttribute(
 				attribute = 'createdOn'
 			) />
 		
+		<!--- Domain --->
+		<cfset addAttribute(
+				attribute = 'domain'
+			) />
+		
+		<!--- Hosts --->
+		<cfset addAttribute(
+				attribute = 'hosts',
+				defaultValue = []
+			) />
+		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modDomain') />
+		<cfset addBundle('plugins/content/i18n/inc/model', 'modDomain') />
 		
 		<cfreturn this />
 	</cffunction>

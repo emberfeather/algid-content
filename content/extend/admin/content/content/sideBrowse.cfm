@@ -1,4 +1,4 @@
-<cfset viewContent = transport.theApplication.factories.transient.getViewContentForContent( transport ) />
+<cfset viewContent = views.get('content', 'content') />
 
 <cfset filter = {
 		'domain' = theURL.search('domain'),

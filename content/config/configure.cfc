@@ -41,6 +41,7 @@
 	/* required targetPage */
 	public void function onRequestStart(struct theApplication, struct theSession, struct theRequest, string targetPage) {
 		var app = '';
+		var filter = '';
 		var plugin = '';
 		var temp = '';
 		
@@ -56,7 +57,7 @@
 				url['_base'] = '/';
 			}
 			
-			// Create the URL object for all the admin requests
+			// Create the URL object for all the content requests
 			app = arguments.theApplication.managers.singleton.getApplication();
 			plugin = arguments.theApplication.managers.plugin.getContent();
 			temp = arguments.theApplication.factories.transient.getUrlForContent(url, { start = app.getPath() & plugin.getPath() & '?' });
@@ -403,6 +404,7 @@
 				"hostID" uuid NOT NULL,
 				"domainID" uuid NOT NULL,
 				hostname character varying(255) not NULL,
+				"isPrimary" boolean not NULL DEFAULT false,
 				"hasSSL" boolean not NULL DEFAULT false,
 				CONSTRAINT "host_PK" PRIMARY KEY ("hostID"),
 				CONSTRAINT "host_domainID_FK" FOREIGN KEY ("domainID")

@@ -31,7 +31,7 @@
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset setI18NBundle('plugins/content/i18n/inc/model', 'modDraft') />
+		<cfset addBundle('plugins/content/i18n/inc/model', 'modDraft') />
 		
 		<cfreturn this />
 	</cffunction>

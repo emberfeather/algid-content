@@ -23,7 +23,7 @@
 		<cfset theUrl = arguments.transport.theApplication.factories.transient.getUrlForAdmin('', { start = app.getPath() & admin.getPath() & '?' } ) />
 		
 		<!--- Use the search term to find the matches --->
-		<cfset servContent = arguments.transport.theApplication.factories.transient.getServContentForContent(arguments.transport.theApplication.managers.singleton.getApplication().getDSUpdate(), arguments.transport) />
+		<cfset servContent = getService(arguments.transport, 'content', 'content') />
 		
 		<cfset filter = {
 			'orderBy' = 'path',
@@ -69,7 +69,7 @@
 			<cfset arguments.results.addResults(result) />
 		</cfloop>
 		
-		<cfset servDomain = arguments.transport.theApplication.factories.transient.getServDomainForContent(arguments.transport.theApplication.managers.singleton.getApplication().getDSUpdate(), arguments.transport) />
+		<cfset servDomain = getService(arguments.transport, 'content', 'domain') />
 		
 		<cfset filter = {
 			'search' = arguments.term

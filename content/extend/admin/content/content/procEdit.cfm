@@ -1,5 +1,5 @@
-<cfset servContent = transport.theApplication.factories.transient.getServContentForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
-<cfset servType = transport.theApplication.factories.transient.getServTypeForContent(transport.theApplication.managers.singleton.getApplication().getDSUpdate(), transport) />
+<cfset servContent = services.get('content', 'content') />
+<cfset servType = services.get('content', 'type') />
 
 <!--- Retrieve the object --->
 <cfset content = servContent.getContent( session.managers.singleton.getUser(), theURL.search('content') ) />
@@ -12,13 +12,8 @@
 	<cfloop list="#form.fieldnames#" index="i">
 		<cfif left(i, 4) eq 'path' and not right(i, 3) eq '_id' and trim(form[i]) neq ''>
 			<!--- Check if we were provided an id to edit --->
-			<cfif structKeyExists(form, i & '_id')>
 				<!--- Get the path from the contentID/create a new path --->
-				<cfset servContent.getPath( content, form[i & '_id'] ) />
-			<cfelse>
-				<!--- Create a new path --->
-				<cfset servContent.getPath( content, form[i] ) />
-			</cfif>
+				<cfset servContent.getPath( content, (structKeyExists(form, i & '_id') ? form[i & '_id'] : ''), form[i] ) />
 		</cfif>
 	</cfloop>
 	
