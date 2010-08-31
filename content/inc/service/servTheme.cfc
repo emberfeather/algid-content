@@ -105,6 +105,7 @@
 				orderSort = 'asc',
 				path = ''
 			} />
+		<cfset var hasExtraJoins = '' />
 		<cfset var i = '' />
 		<cfset var pathPart = '' />
 		<cfset var results = '' />
@@ -112,18 +113,27 @@
 		<!--- Expand the with defaults --->
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
+		<cfset hasExtraJoins = arguments.filter.domain neq '' or arguments.filter.alongPath neq '' or arguments.filter.path neq '' />
+		
+		<!--- Only sort on the path when there is a path to sort --->
+		<cfif arguments.filter.orderBy eq 'path' and not hasExtraJoins>
+			<cfset arguments.filter.orderBy = '' />
+		</cfif>
+		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT t."themeID", p."path", t."theme", t."directory", t."levels", t."isPublic", t."archivedOn"
+			SELECT t."themeID", t."theme", t."directory", t."levels", t."isPublic", t."archivedOn"<cfif hasExtraJoins>, p."path"</cfif>
 			FROM "#variables.datasource.prefix#content"."theme" AS t
 			
-			<cfif arguments.filter.domain neq '' or arguments.filter.alongPath neq '' or arguments.filter.path neq ''>
+			<cfif hasExtraJoins>
 				JOIN "#variables.datasource.prefix#content"."path" AS p
 					ON t."themeID" = p."themeID"
 				JOIN "#variables.datasource.prefix#content"."content" AS c
 					ON c."contentID" = p."contentID"
-				JOIN "#variables.datasource.prefix#content"."domain" AS d
-					ON c."domainID" = d."domainID"
-						AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+				<cfif arguments.filter.domain neq ''>
+					JOIN "#variables.datasource.prefix#content"."domain" AS d
+						ON c."domainID" = d."domainID"
+							AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+				</cfif>
 			</cfif>
 			
 			WHERE 1=1
@@ -131,20 +141,25 @@
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				AND (
 					t."theme" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
-					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					<cfif hasExtraJoins>
+						OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					</cfif>
 				)
 			</cfif>
 			
-			<!--- Check for path specific filters --->
-			<cfif arguments.filter.alongPath neq ''>
-				<!--- Find any theme along the path --->
-				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
-			<cfelseif arguments.filter.path neq ''>
-				<!--- Match a specific path --->
-				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+			<cfif hasExtraJoins>
+				<!--- Check for path specific filters --->
+				<cfif arguments.filter.alongPath neq ''>
+					<!--- Find any theme along the path --->
+					AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
+				<cfelseif arguments.filter.path neq ''>
+					<!--- Match a specific path --->
+					AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+				</cfif>
 			</cfif>
 			
 			ORDER BY
+			
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="path">
 					p."path" #arguments.filter.orderSort#
@@ -162,6 +177,65 @@
 				OFFSET <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.filter.offset#" />
 			</cfif>
 		</cfquery>
+		
+		<cfreturn results />
+	</cffunction>
+	
+	<cffunction name="readThemes" access="public" returntype="array" output="false">
+		<cfargument name="plugin" type="string" default="" />
+		
+		<cfset var availablePlugins = '' />
+		<cfset var basePath = '' />
+		<cfset var currentPlugin = '' />
+		<cfset var currentThemes = '' />
+		<cfset var fileContent = '' />
+		<cfset var objectSerial = '' />
+		<cfset var results = [] />
+		<cfset var themes = '' />
+		<cfset var theme = '' />
+		<cfset var themePath = '' />
+		
+		<!--- Retrieve the current themes for comparison --->
+		<cfset currentThemes = getThemes() />
+		
+		<!--- Check that the plugin in active if filtering for a specific one --->
+		<cfset availablePlugins = transport.theApplication.managers.singleton.getApplication().getPluginsBy(arguments.plugin) />
+		
+		<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+		
+		<cfloop array="#availablePlugins#" index="currentPlugin">
+			<cfset basePath = '/plugins/#currentPlugin#/extend/content/theme' />
+			
+			<cfif directoryExists(basePath)>
+				<cfdirectory action="list" directory="#basePath#" type="dir" name="themes" />
+				
+				<cfloop query="themes">
+					<cfset fileContent = deserializeJSON(fileRead(basePath & '/' & themes.name & '/theme.json.cfm')) />
+					
+					<cfset theme = getModel('content', 'theme') />
+					
+					<cfset objectSerial.deserialize(fileContent, theme) />
+					
+					<cfset themePath = currentPlugin & '/extend/content/theme/' & themes.name />
+					
+					<!--- Set some non-file settings --->
+					<cfset theme.setDirectory(themePath) />
+					<cfset theme.setLevels(arrayLen(fileContent.navigation)) />
+					
+					<!--- If the theme is currently in the system add in missing bits --->
+					<cfloop query="currentThemes">
+						<cfif themePath eq currentThemes.directory>
+							<cfset theme.setThemeID(currentThemes.themeID.toString()) />
+							<cfset theme.setArchivedOn(currentThemes.archivedOn) />
+							
+							<cfbreak />
+						</cfif>
+					</cfloop>
+					
+					<cfset arrayAppend(results, theme) />
+				</cfloop>
+			</cfif>
+		</cfloop>
 		
 		<cfreturn results />
 	</cffunction>
