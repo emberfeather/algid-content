@@ -196,7 +196,11 @@
 		<cfset var themePath = '' />
 		
 		<!--- Retrieve the current themes for comparison --->
-		<cfset currentThemes = getThemes() />
+		<cfquery name="currentThemes" datasource="#variables.datasource.name#">
+			SELECT t."themeID", t."theme", t."directory", t."levels", t."isPublic", t."archivedOn"
+			FROM "#variables.datasource.prefix#content"."theme" AS t
+			ORDER BY t."theme"
+		</cfquery>
 		
 		<!--- Check that the plugin in active if filtering for a specific one --->
 		<cfset availablePlugins = transport.theApplication.managers.singleton.getApplication().getPluginsBy(arguments.plugin) />
