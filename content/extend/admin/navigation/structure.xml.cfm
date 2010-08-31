@@ -14,6 +14,12 @@
 				<clear position="action"/>
 				<delete/>
 			</caching>
+			<theme position="main">
+				<list position="action"/>
+				<add position="action"/>
+				<update/>
+				<delete/>
+			</theme>
 		</content>
 		<domain position="main">
 			<list position="action"/>
