@@ -1,5 +1,5 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
-	<cffunction name="archiveTheme" access="public" returntype="component" output="false">
+	<cffunction name="archiveTheme" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="theme" type="component" required="true" />
 		
@@ -17,7 +17,14 @@
 		<!--- Before Archive Event --->
 		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.theme) />
 		
-		<!--- TODO Archive the content --->
+		<!--- Archive the theme --->
+		<cftransaction>
+			<cfquery datasource="#variables.datasource.name#">
+				UPDATE "#variables.datasource.prefix#content"."theme"
+				SET "archivedOn" = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+				WHERE "themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getThemeID()#" />::uuid
+			</cfquery>
+		</cftransaction>
 		
 		<!--- After Archive Event --->
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.theme) />
@@ -158,6 +165,10 @@
 				</cfif>
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'isArchived')>
+				and t."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
+			</cfif>
+			
 			ORDER BY
 			
 			<cfswitch expression="#arguments.filter.orderBy#">
@@ -181,8 +192,68 @@
 		<cfreturn results />
 	</cffunction>
 	
+	<cffunction name="readThemeFromDisk" access="private" returntype="struct" output="false">
+		<cfargument name="plugin" type="string" default="" />
+		<cfargument name="theme" type="string" default="" />
+		
+		<cfset var basePath = '' />
+		<cfset var fileContent = '' />
+		
+		<cfset basePath = '/plugins/#arguments.plugin#/extend/content/theme' />
+		
+		<cfset fileContent = deserializeJSON(fileRead(basePath & '/' & arguments.theme & '/theme.json.cfm')) />
+		
+		<cfset fileContent.directory = arguments.plugin & '/extend/content/theme/' & arguments.theme />
+		<cfset fileContent.levels = arrayLen(fileContent.navigation) />
+		
+		<cfreturn fileContent />
+	</cffunction>
+	
+	<cffunction name="readTheme" access="public" returntype="component" output="false">
+		<cfargument name="plugin" type="string" default="" />
+		<cfargument name="themeDirectory" type="string" default="" />
+		
+		<cfset var currentPlugin = '' />
+		<cfset var currentThemes = '' />
+		<cfset var fileContent = '' />
+		<cfset var objectSerial = '' />
+		<cfset var results = [] />
+		<cfset var themes = '' />
+		<cfset var theme = '' />
+		<cfset var themePath = '' />
+		
+		<!--- Check that the plugin in active if filtering for a specific one --->
+		<cfset availablePlugins = transport.theApplication.managers.singleton.getApplication().getPluginsBy(arguments.plugin) />
+		
+		<cfset theme = getModel('content', 'theme') />
+		
+		<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+		
+		<cfloop array="#availablePlugins#" index="currentPlugin">
+			<cfset fileContent = readThemeFromDisk(currentPlugin, arguments.themeDirectory) />
+			
+			<cfset objectSerial.deserialize(fileContent, theme) />
+			
+			<cfset theme.setPlugin(currentPlugin) />
+			<cfset theme.setThemeDirectory(arguments.themeDirectory) />
+			
+			<!--- Retrieve the current themes for comparison --->
+			<cfquery name="currentThemes" datasource="#variables.datasource.name#">
+				SELECT t."themeID", t."archivedOn"
+				FROM "#variables.datasource.prefix#content"."theme" AS t
+				WHERE t."directory" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#theme.getDirectory()#" />
+			</cfquery>
+			
+			<cfset theme.setThemeID(currentThemes.themeID.toString()) />
+			<cfset theme.setArchivedOn(currentThemes.archivedOn) />
+		</cfloop>
+		
+		<cfreturn theme />
+	</cffunction>
+	
 	<cffunction name="readThemes" access="public" returntype="array" output="false">
 		<cfargument name="plugin" type="string" default="" />
+		<cfargument name="filter" type="struct" default="#{}#" />
 		
 		<cfset var availablePlugins = '' />
 		<cfset var basePath = '' />
@@ -202,7 +273,7 @@
 			ORDER BY t."theme"
 		</cfquery>
 		
-		<!--- Check that the plugin in active if filtering for a specific one --->
+		<!--- Check that the plugin is active if filtering for a specific one --->
 		<cfset availablePlugins = transport.theApplication.managers.singleton.getApplication().getPluginsBy(arguments.plugin) />
 		
 		<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
@@ -214,27 +285,57 @@
 				<cfdirectory action="list" directory="#basePath#" type="dir" name="themes" />
 				
 				<cfloop query="themes">
-					<cfset fileContent = deserializeJSON(fileRead(basePath & '/' & themes.name & '/theme.json.cfm')) />
+					<cfset fileContent = readThemeFromDisk(currentPlugin, themes.name) />
 					
 					<cfset theme = getModel('content', 'theme') />
 					
 					<cfset objectSerial.deserialize(fileContent, theme) />
 					
-					<cfset themePath = currentPlugin & '/extend/content/theme/' & themes.name />
-					
-					<!--- Set some non-file settings --->
-					<cfset theme.setDirectory(themePath) />
-					<cfset theme.setLevels(arrayLen(fileContent.navigation)) />
+					<cfset theme.setPlugin(currentPlugin) />
+					<cfset theme.setThemeDirectory(themes.name) />
 					
 					<!--- If the theme is currently in the system add in missing bits --->
 					<cfloop query="currentThemes">
-						<cfif themePath eq currentThemes.directory>
+						<cfif fileContent.directory eq currentThemes.directory>
 							<cfset theme.setThemeID(currentThemes.themeID.toString()) />
 							<cfset theme.setArchivedOn(currentThemes.archivedOn) />
 							
 							<cfbreak />
 						</cfif>
 					</cfloop>
+					
+					<!--- Check if we are filtering by archived status --->
+					<cfif structKeyExists(arguments.filter, 'isArchived')
+						and (
+							(arguments.filter.isArchived eq true and theme.getArchivedOn() eq '')
+							or (arguments.filter.isArchived eq false and theme.getArchivedOn() neq '')
+						)>
+						<cfbreak />
+					</cfif>
+					
+					<!--- Check if we are filtering by existing status --->
+					<cfif structKeyExists(arguments.filter, 'isExisting')
+						and (
+							(
+								arguments.filter.isExisting eq true 
+								and theme.getThemeID() eq ''
+							) or (
+								arguments.filter.isExisting eq false
+								and theme.getThemeID() neq ''
+								and theme.getArchivedOn() eq ''
+							)
+						)>
+						<cfbreak />
+					</cfif>
+					
+					<!--- Check if we are filtering by search term --->
+					<cfif structKeyExists(arguments.filter, 'search')
+						and not (
+							reFindNoCase('.*' & arguments.filter.search & '.*', theme.getTheme())
+							or reFindNoCase('.*' & arguments.filter.search & '.*', theme.getDirectory())
+						)>
+						<cfbreak />
+					</cfif>
 					
 					<cfset arrayAppend(results, theme) />
 				</cfloop>
@@ -249,6 +350,7 @@
 		<cfargument name="theme" type="component" required="true" />
 		
 		<cfset var i = '' />
+		<cfset var isArchived = '' />
 		<cfset var observer = '' />
 		<cfset var results = '' />
 		<cfset var path = '' />
@@ -263,26 +365,41 @@
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.theme) />
 		
 		<cfif arguments.theme.getThemeID() neq ''>
-			<!--- Before Update Event --->
-			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.theme) />
+			<cfquery name="isArchived" datasource="#variables.datasource.name#">
+				SELECT "archivedOn"
+				FROM "#variables.datasource.prefix#content"."theme"
+				WHERE "themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getThemeID()#" />::uuid
+			</cfquery>
+			
+			<cfif isArchived.archivedOn eq ''>
+				<!--- Before Update Event --->
+				<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.theme) />
+			<cfelse>
+				<!--- Before Unarchive Event --->
+				<cfset observer.beforeUnarchive(variables.transport, arguments.currUser, arguments.theme) />
+			</cfif>
 			
 			<cftransaction>
 				<cfquery datasource="#variables.datasource.name#">
 					UPDATE "#variables.datasource.prefix#content"."theme"
 					SET
-						"typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getTypeID()#" null="#arguments.theme.getTypeID() eq ''#" />::uuid,
-						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getDomainID()#" />::uuid,
-						"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getTitle()#" />,
-						"theme" = <cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.theme.getTheme()#" />,
-						"updatedOn" = now(),
+						"theme" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getTheme()#" />,
+						"directory" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getDirectory()#" />,
+						"levels" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.theme.getLevels()#" />,
+						"isPublic" = <cfqueryparam cfsqltype="cf_sql_bit" value="#arguments.theme.getIsPublic()#" />::boolean,
 						"archivedOn" = NULL
 					WHERE
 						"themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getThemeID()#" />::uuid
 				</cfquery>
 			</cftransaction>
 			
-			<!--- After Update Event --->
-			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.theme) />
+			<cfif isArchived.archivedOn eq ''>
+				<!--- After Update Event --->
+				<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.theme) />
+			<cfelse>
+				<!--- After Unarchive Event --->
+				<cfset observer.afterUnarchive(variables.transport, arguments.currUser, arguments.theme) />
+			</cfif>
 		<cfelse>
 			<!--- Before Create Event --->
 			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.theme) />
@@ -295,16 +412,16 @@
 				<cfquery datasource="#variables.datasource.name#">
 					INSERT INTO "#variables.datasource.prefix#content"."theme" (
 						"themeID",
-						"domainID",
-						"title",
-						"theme", 
-						"updatedOn"
+						"theme",
+						"directory",
+						"levels",
+						"isPublic"
 					) VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getThemeID()#" />::uuid,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getDomainID()#" />::uuid,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getTitle()#" />,
-						<cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.theme.getTheme()#" />,
-						now()
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getTheme()#" />,
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.theme.getDirectory()#" />,
+						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.theme.getLevels()#" />,
+						<cfqueryparam cfsqltype="cf_sql_bit" value="#arguments.theme.getIsPublic()#" />::boolean
 					)
 				</cfquery>
 			</cftransaction>

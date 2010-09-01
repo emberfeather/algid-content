@@ -40,4 +40,12 @@
 		
 		<cfreturn this />
 	</cffunction>
+	
+	<cffunction name="getPlugin" access="public" returntype="string" output="false">
+		<cfreturn listFirst(this.getDirectory(), '/') />
+	</cffunction>
+	
+	<cffunction name="getThemeKey" access="public" returntype="string" output="false">
+		<cfreturn listLast(this.getDirectory(), '/') />
+	</cffunction>
 </cfcomponent>

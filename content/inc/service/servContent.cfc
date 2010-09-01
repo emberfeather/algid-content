@@ -239,6 +239,10 @@
 				AND c."typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.type#" />::uuid
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'isArchived')>
+				and c."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
+			</cfif>
+			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="updatedOn">

@@ -18,7 +18,7 @@
 				<list position="action"/>
 				<add position="action"/>
 				<update/>
-				<delete/>
+				<archive/>
 			</theme>
 		</content>
 		<domain position="main">

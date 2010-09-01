@@ -12,13 +12,10 @@
 <cfif theUrl.search('theme') neq ''>
 	<cfset theme = servTheme.getTheme( transport.theSession.managers.singleton.getUser(), theUrl.search('theme')) />
 	
-	<!--- Reread the theme from the file system --->
-	<cfset theme = servTheme.readTheme( theme.getPlugin(), theme.getThemeKey() ) />
-	
-	<cfset servTheme.setTheme( transport.theSession.managers.singleton.getUser(), theme ) />
+	<cfset servTheme.archiveTheme( transport.theSession.managers.singleton.getUser(), theme ) />
 	
 	<!--- Add a success message --->
-	<cfset transport.theSession.managers.singleton.getSuccess().addMessages('The theme ''' & theme.getTheme() & ''' was successfully updated.') />
+	<cfset transport.theSession.managers.singleton.getSuccess().addMessages('The theme ''' & theme.getTheme() & ''' was successfully archived.') />
 	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/admin/content/theme/list') />
@@ -28,7 +25,7 @@
 </cfif>
 
 <!--- Add a error message --->
-<cfset transport.theSession.managers.singleton.getError().addMessages('No theme was given to be updated.') />
+<cfset transport.theSession.managers.singleton.getError().addMessages('No theme was given to be archived.') />
 
 <!--- Redirect --->
 <cfset theURL.setRedirect('_base', '/admin/content/theme/list') />
