@@ -244,6 +244,6 @@
 	</cfif>
 </cfsilent>
 
-<cfinclude template="/plugins/#theme#/#template.getTemplate()#.cfm" />
+<cfinclude template="/plugins/#theme#/template/#template.getTemplate()#.cfm" />
 
 <cfset profiler.stop('theme') />
