@@ -1,4 +1,5 @@
 <cfset servTheme = services.get('content', 'theme') />
+<cfset servNavigation = services.get('content', 'navigation') />
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Update the URL and redirect --->
@@ -16,6 +17,11 @@
 	<cfset theme = servTheme.readTheme( theme.getPlugin(), theme.getThemeKey() ) />
 	
 	<cfset servTheme.setTheme( transport.theSession.managers.singleton.getUser(), theme ) />
+	
+	<!--- Update the navigation --->
+	<cfloop array="#theme.getNavigation()#" index="i">
+		<cfset servNavigation.setNavigation(transport.theSession.managers.singleton.getUser(), i) />
+	</cfloop>
 	
 	<!--- Add a success message --->
 	<cfset transport.theSession.managers.singleton.getSuccess().addMessages('The theme ''' & theme.getTheme() & ''' was successfully updated.') />

@@ -70,13 +70,9 @@
 		<cfset var theme = '' />
 		<cfset var i = '' />
 		<cfset var objectSerial = '' />
-		<cfset var observer = '' />
 		<cfset var path = '' />
 		<cfset var results = '' />
 		<cfset var type = '' />
-		
-		<!--- Get the event observer --->
-		<cfset observer = getPluginObserver('content', 'theme') />
 		
 		<cfset theme = getModel('content', 'theme') />
 		
@@ -95,9 +91,6 @@
 				<cfset objectSerial.deserialize(results, theme) />
 			</cfif>
 		</cfif>
-		
-		<!--- After Read Event --->
-		<cfset observer.afterRead(variables.transport, arguments.currUser, theme) />
 		
 		<cfreturn theme />
 	</cffunction>
@@ -192,63 +185,92 @@
 		<cfreturn results />
 	</cffunction>
 	
-	<cffunction name="readThemeFromDisk" access="private" returntype="struct" output="false">
+	<cffunction name="readThemeFromDisk" access="private" returntype="component" output="false">
 		<cfargument name="plugin" type="string" default="" />
-		<cfargument name="theme" type="string" default="" />
+		<cfargument name="themeKey" type="string" default="" />
 		
-		<cfset var basePath = '' />
+		<cfset var allNavigation = [] />
+		<cfset var currentNavigation = '' />
+		<cfset var currentTheme = '' />
 		<cfset var fileContent = '' />
+		<cfset var i = '' />
+		<cfset var j = '' />
+		<cfset var level = '' />
+		<cfset var placement = '' />
+		<cfset var navigation = '' />
+		<cfset var objectSerial = '' />
+		<cfset var theme = '' />
 		
-		<cfset basePath = '/plugins/#arguments.plugin#/extend/content/theme' />
+		<cfset theme = getModel('content', 'theme') />
 		
-		<cfset fileContent = deserializeJSON(fileRead(basePath & '/' & arguments.theme & '/theme.json.cfm')) />
+		<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
 		
-		<cfset fileContent.directory = arguments.plugin & '/extend/content/theme/' & arguments.theme />
+		<cfset fileContent = deserializeJSON(fileRead('/plugins/' & arguments.plugin & '/extend/content/theme/' & arguments.themeKey & '/theme.json.cfm')) />
+		
+		<cfset fileContent.directory = arguments.plugin & '/extend/content/theme/' & arguments.themeKey />
 		<cfset fileContent.levels = arrayLen(fileContent.navigation) />
 		
-		<cfreturn fileContent />
+		<!--- Retrieve the current theme for comparison --->
+		<cfquery name="currentTheme" datasource="#variables.datasource.name#">
+			SELECT t."themeID", t."archivedOn"
+			FROM "#variables.datasource.prefix#content"."theme" AS t
+			WHERE t."directory" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fileContent.directory#" />
+		</cfquery>
+		
+		<cfset fileContent.themeID = currentTheme.themeID.toString() />
+		<cfset fileContent.archivedOn = currentTheme.archivedOn />
+		
+		<cfset objectSerial.deserialize(fileContent, theme) />
+		
+		<!--- Set some properties for extra use, not really part of the model --->
+		<cfset theme.setPlugin(arguments.plugin) />
+		<cfset theme.setThemeDirectory(arguments.themeKey) />
+		
+		<!--- Create objects out of the navigation information --->
+		<cfloop from="1" to="#arrayLen(fileContent.navigation)#" index="i">
+			<cfloop from="1" to="#arrayLen(fileContent.navigation[i])#" index="j">
+				<cfset navigation = getModel('content', 'navigation') />
+				
+				<cfset fileContent.navigation[i][j].themeID = currentTheme.themeID />
+				<cfset fileContent.navigation[i][j].level = i />
+				
+				<!--- Retrieve the current theme for comparison --->
+				<cfquery name="currentNavigation" datasource="#variables.datasource.name#">
+					SELECT "navigationID"
+					FROM "#variables.datasource.prefix#content"."navigation"
+					WHERE "themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fileContent.navigation[i][j].themeID#" />::uuid
+						AND "navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fileContent.navigation[i][j].navigation#" />
+						AND "level" = <cfqueryparam cfsqltype="cf_sql_smallint" value="#fileContent.navigation[i][j].level#" />
+				</cfquery>
+				
+				<cfset fileContent.navigation[i][j].navigationID = currentNavigation.navigationID />
+				
+				<cfset objectSerial.deserialize(fileContent.navigation[i][j], navigation) />
+				
+				<cfset arrayAppend(allNavigation, navigation) />
+			</cfloop>
+		</cfloop>
+		
+		<cfset theme.setNavigation(allNavigation) />
+		
+		<cfreturn theme />
 	</cffunction>
 	
 	<cffunction name="readTheme" access="public" returntype="component" output="false">
 		<cfargument name="plugin" type="string" default="" />
 		<cfargument name="themeDirectory" type="string" default="" />
 		
+		<cfset var availablePlugins = '' />
 		<cfset var currentPlugin = '' />
-		<cfset var currentThemes = '' />
-		<cfset var fileContent = '' />
-		<cfset var objectSerial = '' />
-		<cfset var results = [] />
-		<cfset var themes = '' />
-		<cfset var theme = '' />
-		<cfset var themePath = '' />
 		
 		<!--- Check that the plugin in active if filtering for a specific one --->
 		<cfset availablePlugins = transport.theApplication.managers.singleton.getApplication().getPluginsBy(arguments.plugin) />
 		
-		<cfset theme = getModel('content', 'theme') />
-		
-		<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
-		
 		<cfloop array="#availablePlugins#" index="currentPlugin">
-			<cfset fileContent = readThemeFromDisk(currentPlugin, arguments.themeDirectory) />
-			
-			<cfset objectSerial.deserialize(fileContent, theme) />
-			
-			<cfset theme.setPlugin(currentPlugin) />
-			<cfset theme.setThemeDirectory(arguments.themeDirectory) />
-			
-			<!--- Retrieve the current themes for comparison --->
-			<cfquery name="currentThemes" datasource="#variables.datasource.name#">
-				SELECT t."themeID", t."archivedOn"
-				FROM "#variables.datasource.prefix#content"."theme" AS t
-				WHERE t."directory" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#theme.getDirectory()#" />
-			</cfquery>
-			
-			<cfset theme.setThemeID(currentThemes.themeID.toString()) />
-			<cfset theme.setArchivedOn(currentThemes.archivedOn) />
+			<cfreturn readThemeFromDisk(currentPlugin, arguments.themeDirectory) />
 		</cfloop>
 		
-		<cfreturn theme />
+		<cfreturn getModel('content', 'theme') />
 	</cffunction>
 	
 	<cffunction name="readThemes" access="public" returntype="array" output="false">
@@ -260,23 +282,13 @@
 		<cfset var currentPlugin = '' />
 		<cfset var currentThemes = '' />
 		<cfset var fileContent = '' />
-		<cfset var objectSerial = '' />
 		<cfset var results = [] />
 		<cfset var themes = '' />
 		<cfset var theme = '' />
 		<cfset var themePath = '' />
 		
-		<!--- Retrieve the current themes for comparison --->
-		<cfquery name="currentThemes" datasource="#variables.datasource.name#">
-			SELECT t."themeID", t."theme", t."directory", t."levels", t."isPublic", t."archivedOn"
-			FROM "#variables.datasource.prefix#content"."theme" AS t
-			ORDER BY t."theme"
-		</cfquery>
-		
 		<!--- Check that the plugin is active if filtering for a specific one --->
 		<cfset availablePlugins = transport.theApplication.managers.singleton.getApplication().getPluginsBy(arguments.plugin) />
-		
-		<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
 		
 		<cfloop array="#availablePlugins#" index="currentPlugin">
 			<cfset basePath = '/plugins/#currentPlugin#/extend/content/theme' />
@@ -285,24 +297,7 @@
 				<cfdirectory action="list" directory="#basePath#" type="dir" name="themes" />
 				
 				<cfloop query="themes">
-					<cfset fileContent = readThemeFromDisk(currentPlugin, themes.name) />
-					
-					<cfset theme = getModel('content', 'theme') />
-					
-					<cfset objectSerial.deserialize(fileContent, theme) />
-					
-					<cfset theme.setPlugin(currentPlugin) />
-					<cfset theme.setThemeDirectory(themes.name) />
-					
-					<!--- If the theme is currently in the system add in missing bits --->
-					<cfloop query="currentThemes">
-						<cfif fileContent.directory eq currentThemes.directory>
-							<cfset theme.setThemeID(currentThemes.themeID.toString()) />
-							<cfset theme.setArchivedOn(currentThemes.archivedOn) />
-							
-							<cfbreak />
-						</cfif>
-					</cfloop>
+					<cfset theme = readThemeFromDisk(currentPlugin, themes.name) />
 					
 					<!--- Check if we are filtering by archived status --->
 					<cfif structKeyExists(arguments.filter, 'isArchived')

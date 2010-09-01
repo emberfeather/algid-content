@@ -22,12 +22,20 @@
 		
 		<!--- Is Public? --->
 		<cfset addAttribute(
-				attribute = 'isPublic'
+				attribute = 'isPublic',
+				defaultValue = false
 			) />
 		
 		<!--- Levels --->
 		<cfset addAttribute(
-				attribute = 'levels'
+				attribute = 'levels',
+				defaultValue = 0
+			) />
+		
+		<!--- Navigation --->
+		<cfset addAttribute(
+				attribute = 'navigation',
+				defaultValue = []
 			) />
 		
 		<!--- Theme --->
