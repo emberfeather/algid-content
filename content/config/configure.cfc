@@ -714,6 +714,20 @@
 			</cfquery>
 		</cfloop>
 	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.2
+	--->
+	<cffunction name="postgreSQL0_1_2" access="public" returntype="void" output="false">
+		<!---
+			TABLES
+		--->
+		
+		<!--- Path Table --->
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path ADD COLUMN "template" character varying(50);
+		</cfquery>
+	</cffunction>
 <cfscript>
 	/* required plugin */
 	public void function update(struct plugin, string installedVersion = '') {
@@ -724,6 +738,18 @@
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
 				postgreSQL0_1_0();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+		
+		// 0.1.2
+		if (versions.compareVersions(arguments.installedVersion, '0.1.2') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_2();
 				
 				break;
 			default:
