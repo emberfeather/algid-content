@@ -2,21 +2,25 @@
 	"isPublic": true,
 	"navigation": [
 		[
-			"topNav": {
+			{
+				"navigation": "top",
 				"allowGroups": false
 			},
-			"leftNav": {
+			{
+				"navigation": "left",
 				"allowGroups": true
 			}
 		],
 		[
-			"topNav": {
+			{
+				"navigation": "top",
 				"allowGroups": false
 			},
-			"leftNav": {
-				"allowGroups": false
+			{
+				"navigation": "left",
+				"allowGroups": true
 			}
 		]
 	],
-	"theme": "Standard"
+	"theme": "Standard 2010"
 }
