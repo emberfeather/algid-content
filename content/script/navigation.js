@@ -3,7 +3,8 @@
  */
 ;(function($){
 	$(function() {
-		sortables = $(".sortable")
+		sortables = $(".sortable");
+		
 		sortables.sortable({
 			connectWith: sortables
 		});

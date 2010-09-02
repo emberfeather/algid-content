@@ -1,10 +1,14 @@
-<h3>Base Path: <span id="basePath" class="editable" contenteditable="true">/path</span></h3>
+<div class="float-right">
+	<select id="theme" name="theme">
+		<option value="ThemeID">Theme Name</option>
+	</select>
+</div>
 
-<h4>Template Name</h4>
+<h3>Base Path: <span id="basePath" class="editable" contenteditable="true">/path</span></h3>
 
 <div class="grid_9 alpha">
 	<div class="grid_3 alpha">
-		<h5>Left Navigation</h5>
+		<h4>Left Navigation</h4>
 		
 		<div class="dragarea">
 			<div class="position position-pos1">
@@ -29,7 +33,7 @@
 	</div>
 	
 	<div class="grid_3">
-		<h5>Top Navigation</h5>
+		<h4>Top Navigation</h4>
 		
 		<div class="dragarea">
 			<div class="position position-pos2">
@@ -54,7 +58,7 @@
 	</div>
 	
 	<div class="grid_3 omega">
-		<h5>Right Navigation</h5>
+		<h4>Right Navigation</h4>
 		
 		<div class="dragarea">
 			<div class="position position-pos3">
@@ -80,7 +84,7 @@
 </div>
 
 <div class="grid_3 omega">
-	<h5>Hidden</h5>
+	<h4>Hidden</h4>
 	
 	<div class="dragarea">
 		<div class="position position-hidden">

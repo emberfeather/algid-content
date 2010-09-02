@@ -4,10 +4,6 @@
 	padding-right: .25em;
 }
 
-.position ul {
-	min-height: 5em;
-}
-
 .position .edit {
 	visibility: hidden;
 }
