@@ -1,5 +1,5 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
-	<cffunction name="archivePath" access="public" returntype="component" output="false">
+	<cffunction name="deletePath" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="path" type="component" required="true" />
 		
@@ -18,7 +18,7 @@
 		<cfset observer.beforeDelete(variables.transport, arguments.currUser, arguments.path) />
 		
 		<!--- Delete the path --->
-		<cfquery name="results" datasource="#variables.datasource.name#">
+		<cfquery datasource="#variables.datasource.name#">
 			DELETE
 			FROM "#variables.datasource.prefix#content"."path"
 			WHERE "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.pathID#" null="#arguments.pathID eq ''#" />::uuid
@@ -26,6 +26,58 @@
 		
 		<!--- After Delete Event --->
 		<cfset observer.afterDelete(variables.transport, arguments.currUser, arguments.path) />
+	</cffunction>
+	
+	<cffunction name="deletePaths" access="public" returntype="void" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="filter" type="struct" required="true" />
+		
+		<cfset var eventLog = '' />
+		<cfset var i = '' />
+		<cfset var observer = '' />
+		
+		<cfparam name="arguments.filter.contentID" default="" />
+		
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'path') />
+		
+		<!--- Get the event log from the transport --->
+		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		
+		<!--- TODO Check user Permissions --->
+		
+		<!--- Before Delete Bulk Event --->
+		<cfset observer.beforeDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
+		
+		<!--- Delete the path --->
+		<cfquery datasource="#variables.datasource.name#">
+			DELETE
+			FROM "#variables.datasource.prefix#content"."path"
+			WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.contentID#" null="#arguments.filter.contentID eq ''#" />::uuid
+			
+			<cfif structKeyExists(arguments.filter, 'in')>
+				AND "pathID" IN (
+					<cfloop from="1" to="#listLen(arguments.filter.in)#" index="i">
+						<cfset id = listGetAt(arguments.filter.in, i) />
+						
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.in)>,</cfif>
+					</cfloop>
+				)
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'notIn')>
+				AND "pathID" NOT IN (
+					<cfloop from="1" to="#listLen(arguments.filter.notIn)#" index="i">
+						<cfset id = listGetAt(arguments.filter.notIn, i) />
+						
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.notIn)>,</cfif>
+					</cfloop>
+				)
+			</cfif>
+		</cfquery>
+		
+		<!--- After Delete Bulk Event --->
+		<cfset observer.afterDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
 	</cffunction>
 <cfscript>
 	/* required path */
@@ -115,10 +167,10 @@
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT p."pathID", p."contentID", p."themeID", p."navigationID", p."path", p."title", p."groupBy", p."orderBy", p."isActive", p."template"
-			FROM "#variables.datasource.prefix#content"."path" AS p
-			JOIN "#variables.datasource.prefix#content"."content" AS c
+			FROM "#variables.datasource.prefix#content"."path" p
+			JOIN "#variables.datasource.prefix#content"."content" c
 				ON c."contentID" = p."contentID"
-			JOIN "#variables.datasource.prefix#content"."domain" AS d
+			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
@@ -163,6 +215,10 @@
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'contentID')>
+				AND p."contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.contentID#" />::uuid
 			</cfif>
 			
 			ORDER BY
@@ -227,7 +283,7 @@
 						"path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
 						"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" />,
 						"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
-						"isActive" = <cfqueryparam cfsqltype="cf_sql_bit" value="#arguments.path.getIsActive()#" />::bit,
+						"isActive" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
 						"template" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" />
 					WHERE
 						"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" />::uuid
@@ -266,7 +322,7 @@
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" />,
 						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
-						<cfqueryparam cfsqltype="cf_sql_bit" value="#arguments.path.getIsActive()#" />::bit,
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" />
 					)
 				</cfquery>
