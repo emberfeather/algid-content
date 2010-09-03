@@ -212,9 +212,16 @@
 			<cfelseif structKeyExists(arguments.filter, 'searchPath')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter.searchPath)#%" />
+			<cfelseif structKeyExists(arguments.filter, 'pathPrefix')>
+				<!--- Match a specific path --->
+				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.pathPrefix))#%" />
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'notPath')>
+				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#cleanPath(arguments.filter.notPath)#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'contentID')>
@@ -281,10 +288,10 @@
 						"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getNavigationID()#" null="#arguments.path.getNavigationID() eq ''#" />::uuid,
 						"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTitle()#" />,
 						"path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
-						"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" />,
+						"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" null="#arguments.path.getGroupBy() eq ''#" />,
 						"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
 						"isActive" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
-						"template" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" />
+						"template" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" null="#arguments.path.getTemplate() eq ''#" />
 					WHERE
 						"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" />::uuid
 				</cfquery>
@@ -320,10 +327,10 @@
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getNavigationID()#" null="#arguments.path.getNavigationID() eq ''#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTitle()#" />,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" />,
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" null="#arguments.path.getGroupBy() eq ''#" />,
 						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" />
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" null="#arguments.path.getTemplate() eq ''#" />
 					)
 				</cfquery>
 			</cftransaction>
