@@ -84,7 +84,7 @@
 								<cfloop query="arguments.hidden">
 									<cfset theUrl.setEdit('content', arguments.hidden.contentID.toString()) />
 									
-									<li>
+									<li data-pathid="#arguments.hidden.pathID#">
 										<cfoutput>
 											<div class="float-right">
 												<a href="#theUrl.getEdit()#" class="edit"><span class="ui-icon ui-icon-pencil"></span></a>
@@ -92,7 +92,7 @@
 											<div class="float-left">
 												<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
 											</div>
-											<div><strong id="pathTitle-#arguments.hidden.pathID.toString()#" contenteditable="true">#arguments.hidden.title#</strong></div>
+											<div><strong class="title" contenteditable="true">#arguments.hidden.title#</strong></div>
 											<div>#arguments.hidden.path#</div>
 										</cfoutput>
 									</li>
