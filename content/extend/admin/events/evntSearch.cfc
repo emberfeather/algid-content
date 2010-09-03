@@ -11,6 +11,7 @@
 		<cfset var i = 0 />
 		<cfset var i18n = arguments.transport.theApplication.managers.singleton.getI18N() />
 		<cfset var locale = arguments.transport.theSession.managers.singleton.getSession().getLocale() />
+		<cfset var models = arguments.transport.theRequest.managers.singleton.getManagerModel() />
 		<cfset var navigation = '' />
 		<cfset var result = '' />
 		<cfset var results = '' />
@@ -38,7 +39,7 @@
 		<cfloop query="results">
 			<cfset theUrl.setContent('content', toString(results['contentID'])) />
 			
-			<cfset result = arguments.transport.theApplication.factories.transient.getModSearchResultForAdmin( i18n, locale ) />
+			<cfset result = models.get('admin', 'searchResult') />
 			
 			<cfset result.setTitle(results['title']) />
 			<cfset result.setDescription(results['path']) />
@@ -59,7 +60,7 @@
 		<cfloop query="results">
 			<cfset theUrl.setContent('content', toString(results['contentID'])) />
 			
-			<cfset result = arguments.transport.theApplication.factories.transient.getModSearchResultForAdmin( i18n, locale ) />
+			<cfset result = models.get('admin', 'searchResult') />
 			
 			<cfset result.setTitle(results['path']) />
 			<cfset result.setDescription(results['title']) />
@@ -83,7 +84,7 @@
 		<cfloop query="results">
 			<cfset theUrl.setDomain('domain', toString(results['domainID'])) />
 			
-			<cfset result = arguments.transport.theApplication.factories.transient.getModSearchResultForAdmin( i18n, locale ) />
+			<cfset result = models.get('admin', 'searchResult') />
 			
 			<cfset result.setTitle(results['domain']) />
 			<cfset result.setCategory('Domain') />
