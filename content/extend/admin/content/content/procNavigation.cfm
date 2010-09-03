@@ -1,4 +1,6 @@
 <cfset servNavigation = services.get('content', 'navigation') />
+<cfset servPath = services.get('content', 'path') />
+<cfset servTheme = services.get('content', 'theme') />
 
 <cfif cgi.request_method eq 'post'>
 	<!--- TODO handle the submission --->

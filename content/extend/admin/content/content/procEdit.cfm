@@ -9,7 +9,7 @@
 	<!--- Process the form submission --->
 	<cfset objectSerial.deserialize(form, content) />
 	
-	<cfset user = session.managers.singleton.getUser() />
+	<cfset user = transport.theSession.managers.singleton.getUser() />
 	
 	<cfset servContent.setContent( user, content ) />
 	
@@ -23,7 +23,11 @@
 			<cfset path = servPath.getPath(user, (structKeyExists(form, i & '_id') ? form[i & '_id'] : '')) />
 			
 			<cfset path.setPath(form[i]) />
-			<cfset path.setContentID(content.getContentID()) />
+			
+			<cfif path.getPathID() eq ''>
+				<cfset path.setContentID(content.getContentID()) />
+				<cfset path.setTitle(content.getTitle()) />
+			</cfif>
 			
 			<cfset servPath.setPath(user, path) />
 			

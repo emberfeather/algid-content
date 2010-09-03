@@ -35,11 +35,8 @@
 		<cfargument name="filter" type="struct" default="#{}#" />
 		
 		<cfset var defaults = {
-				alongPath = '',
-				domain = '',
 				orderBy = 'navigation',
-				orderSort = 'asc',
-				path = ''
+				orderSort = 'asc'
 			} />
 		<cfset var hasExtraJoins = '' />
 		<cfset var i = '' />
@@ -56,6 +53,10 @@
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				AND "navigation" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'level') and isNumeric(arguments.filter.level) and arguments.filter.level gt 0>
+				AND "level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.filter.level#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'themeID') and arguments.filter.themeID neq ''>

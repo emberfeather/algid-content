@@ -220,12 +220,16 @@
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
 			</cfif>
 			
-			<cfif structKeyExists(arguments.filter, 'notPath')>
+			<cfif structKeyExists(arguments.filter, 'notPath') and arguments.filter.notPath neq ''>
 				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#cleanPath(arguments.filter.notPath)#" />
 			</cfif>
 			
-			<cfif structKeyExists(arguments.filter, 'contentID')>
+			<cfif structKeyExists(arguments.filter, 'contentID') and arguments.filter.contentID neq ''>
 				AND p."contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.contentID#" />::uuid
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq ''>
+				AND p."navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.navigationID#" />::uuid
 			</cfif>
 			
 			ORDER BY
