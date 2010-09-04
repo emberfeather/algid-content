@@ -42,8 +42,6 @@
 							
 							searchCache[ request.term ] = data.BODY;
 							
-							window.console.log(data.BODY);
-							
 							response( data.BODY );
 						} else {
 							window.console.error(data.HEAD.errors);
