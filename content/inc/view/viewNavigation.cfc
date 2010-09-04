@@ -59,10 +59,8 @@
 											<li data-pathid="#currentPaths.pathID#">
 												<cfoutput>
 													<div class="float-right">
-														<a href="#theUrl.getEdit()#" class="edit"><span class="ui-icon ui-icon-pencil"></span></a>
-													</div>
-													<div class="float-left">
 														<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+														<a href="#theUrl.getEdit()#" class="edit"><span class="ui-icon ui-icon-pencil"></span></a>
 													</div>
 													<div><strong class="title" contenteditable="true">#currentPaths.title#</strong></div>
 													<div>#currentPaths.path#</div>
@@ -88,10 +86,8 @@
 									<li data-pathid="#arguments.hidden.pathID#">
 										<cfoutput>
 											<div class="float-right">
-												<a href="#theUrl.getEdit()#" class="edit"><span class="ui-icon ui-icon-pencil"></span></a>
-											</div>
-											<div class="float-left">
 												<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+												<a href="#theUrl.getEdit()#" class="edit"><span class="ui-icon ui-icon-pencil"></span></a>
 											</div>
 											<div><strong class="title" contenteditable="true">#arguments.hidden.title#</strong></div>
 											<div>#arguments.hidden.path#</div>

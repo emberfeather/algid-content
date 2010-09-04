@@ -1,1 +1,2 @@
-(function(a){a(function(){sortables=a(".sortable");sortables.sortable({connectWith:sortables})})})(jQuery);
+(function(b){function e(a,c){var d=b(c);d.data("original",d.html())}function f(a){a=b(a.target);a.data("original")!=a.html()&&b.ajax({url:b.algid.admin.options.base.url+b.algid.admin.options.base.api,dataType:"json",type:"post",data:{HEAD:JSON.stringify({plugin:"content",service:"path",action:"renamePath"}),BODY:JSON.stringify({title:a.html(),pathID:a.parents("[data-pathID]").attr("data-pathID")})},success:function(c){c.HEAD.result||window.console.error(c.HEAD.errors)}})}b(function(){var a=b(".sortable");
+a.sortable({connectWith:a});b(".title",a).each(e).blur(f)})})(jQuery);

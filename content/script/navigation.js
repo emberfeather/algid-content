@@ -19,11 +19,33 @@
 	}
 	
 	function updatePathTitle(event) {
-		var title = $(event.target);
-		var hasChanged = (title.data('original') != title.html());
+		var titleElement = $(event.target);
+		var pathID = '';
 		
-		if(hasChanged) {
-			// TODO API call to change the path's title
+		if(titleElement.data('original') != titleElement.html()) {
+			$.ajax({
+				url: $.algid.admin.options.base.url + $.algid.admin.options.base.api,
+				dataType: 'json',
+				type: 'post',
+				data: {
+					HEAD: JSON.stringify({
+						plugin: 'content',
+						service: 'path',
+						action: 'renamePath'
+					}),
+					BODY: JSON.stringify({
+						title: titleElement.html(),
+						pathID: titleElement.parents('[data-pathID]').attr('data-pathID')
+					})
+				},
+				success: function( data ) {
+					if(data.HEAD.result) {
+						// Successfully changed... now what?
+					} else {
+						window.console.error(data.HEAD.errors);
+					}
+				}
+			});
 		}
 	}
 })(jQuery);
