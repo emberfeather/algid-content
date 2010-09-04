@@ -22,8 +22,9 @@
 			<cfoutput>
 				<div class="float-right">
 					<select id="theme" name="theme">
+						<option value="">{ inherit theme }</option>
 						<cfloop query="arguments.themes">
-							<option value="#arguments.themes.themeID.toString()#">#arguments.themes.theme#</option>
+							<option value="#arguments.themes.themeID.toString()#"<cfif arguments.path.getThemeID() eq arguments.themes.themeID.toString()> selected="selected"</cfif>>#arguments.themes.theme#</option>
 						</cfloop>
 					</select>
 				</div>
