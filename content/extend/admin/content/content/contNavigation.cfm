@@ -32,7 +32,10 @@
 	<cfset currentThemeID = pathThemes.themeID.toString() />
 	
 	<cfif currentThemeID neq ''>
-		<cfset currentLevel = 1 + listLen(pathThemes.path, '/') - listLen(currentPath.getPath(), '/') />
+		<cfset currentLevel = 1 />
+		<cfif pathThemes.path neq currentPath.getPath()>
+			<cfset currentLevel += listLen('/' & right(currentPath.getPath(), len(currentPath.getPath()) - len(pathThemes.path)), '/') />
+		</cfif>
 		
 		<cfbreak />
 	</cfif>
@@ -49,7 +52,8 @@
 <cfset hiddenPaths = servPath.getPaths({
 	navigationID = '',
 	pathPrefix = currentPath.getPath(),
-	notPath = currentPath.getPath()
+	notPath = currentPath.getPath(),
+	oneLevelOnly = true
 }) />
 
 <cfset navigation = servNavigation.getNavigations({
@@ -63,7 +67,8 @@
 	<cfset arrayAppend(paths, servPath.getPaths({
 		navigationID = navigation.navigationID.toString(),
 		pathPrefix = currentPath.getPath(),
-		notPath = currentPath.getPath()
+		notPath = currentPath.getPath(),
+		oneLevelOnly = true
 	})) />
 </cfloop>
 

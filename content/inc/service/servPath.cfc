@@ -153,6 +153,7 @@
 	<cffunction name="getPaths" access="public" returntype="query" output="false">
 		<cfargument name="filter" type="struct" default="#{}#" />
 		
+		<cfset var cleaned = '' />
 		<cfset var defaults = {
 				domain = variables.transport.theCgi.server_name,
 				orderBy = 'title',
@@ -213,8 +214,19 @@
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter.searchPath)#%" />
 			<cfelseif structKeyExists(arguments.filter, 'pathPrefix')>
+				<cfset cleaned = cleanPath(arguments.filter.pathPrefix) />
+				
+				<cfif cleaned NEQ '/'>
+					<cfset cleaned &= '/' />
+				</cfif>
+				
 				<!--- Match a specific path --->
-				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.pathPrefix))#%" />
+				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
+				
+				<!--- Restrict to only the level that is prefixed --->
+				<cfif structKeyExists(arguments.filter, 'oneLevelOnly') and arguments.filter.oneLevelOnly eq true>
+					AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#cleaned#%/%" />
+				</cfif>
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
