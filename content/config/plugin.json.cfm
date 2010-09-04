@@ -2,7 +2,7 @@
 	"applicationSingletons": {
 	},
 	"applicationTransients": {
-		"apiContentForContent": "plugins.content.inc.api.apiContent",
+		"apiPathForContent": "plugins.content.inc.api.apiPath",
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
 		"templateForContent": "plugins.content.inc.resource.structure.template",

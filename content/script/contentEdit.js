@@ -25,7 +25,7 @@
 					data: {
 						HEAD: JSON.stringify({
 							plugin: 'content',
-							service: 'content',
+							service: 'path',
 							action: 'searchPath'
 						}),
 						BODY: JSON.stringify({

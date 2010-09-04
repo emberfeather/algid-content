@@ -2,20 +2,21 @@ component extends="plugins.api.inc.resource.base.api" {
 	public component function searchPath() {
 		var i = '';
 		var filter = {};
-		var servContent = '';
+		var servPath = '';
 		var results = '';
 		
 		// Validate required arguments
 		if( !structKeyExists(variables.apiRequestBody, 'path') ) {
-			throw('validation', 'Missing search path', 'The search requires a path');
+			throw('validation', 'Missing path', 'The search requires a path');
 		}
 		
-		filter.searchPath = variables.apiRequestBody.path;
+		servPath = variables.services.get('content', 'path');
 		
-		servContent = variables.services.get('widget', 'widget');
+		filter.searchPath = variables.apiRequestBody.path;
+		filter.orderBy = 'path';
 		
 		// Retrieve the search results
-		variables.apiResponseBody = servContent.getPaths( filter );
+		variables.apiResponseBody = servPath.getPaths( filter );
 		
 		// Send back some of the request
 		variables.apiResponseHead['path'] = variables.apiRequestBody.path;
