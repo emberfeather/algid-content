@@ -18,20 +18,13 @@
 					return;
 				}
 				
-				$.ajax({
-					url: $.algid.admin.options.base.url + $.algid.admin.options.base.api,
-					dataType: 'json',
-					type: 'post',
-					data: {
-						HEAD: JSON.stringify({
-							plugin: 'content',
-							service: 'path',
-							action: 'searchPath'
-						}),
-						BODY: JSON.stringify({
-							path: request.term
-						})
-					},
+				$.api({
+					plugin: 'content',
+					service: 'path',
+					action: 'searchPath'
+				}, {
+					path: request.term
+				}, {
 					success: function( data ) {
 						if(data.HEAD.result) {
 							// Convert for use with the autocomplete
@@ -44,7 +37,8 @@
 							
 							response( data.BODY );
 						} else {
-							window.console.error(data.HEAD.errors);
+							if (window.console.error)
+								window.console.error(data.HEAD.errors);
 							
 							response( [] );
 						}
