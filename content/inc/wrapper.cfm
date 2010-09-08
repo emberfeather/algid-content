@@ -75,6 +75,7 @@
 	<cfset profiler.start('content') />
 	
 	<cfset servContent = services.get('content', 'content') />
+	<cfset servPath = services.get('content', 'path') />
 	
 	<cfset filter = {
 			domain = transport.theCgi.server_name,
@@ -92,7 +93,7 @@
 			<cfset transport.theRequest.managers.singleton.setContent(content) />
 		<cfelse>
 			<!--- The content is not cached, retrieve it --->
-			<cfset paths = servContent.getPaths( filter ) />
+			<cfset paths = servPath.getPaths( filter ) />
 			
 			<cfif paths.recordCount gt 0>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
