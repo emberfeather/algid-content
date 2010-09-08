@@ -2,23 +2,6 @@
 
 <cfset currentLevel = 1 />
 
-<cfset basePath = theUrl.search('path') />
-
-<cfif basePath eq ''>
-	<cfset basePath = '/' />
-</cfif>
-
-<cfset user = transport.theSession.managers.singleton.getUser() />
-
-<cfset paths = servPath.getPaths({ path = basePath }) />
-<cfset currentPath = servPath.getPath( user, paths.pathID.toString() ) />
-
-<cfif not len(currentPath.getPathID())>
-	<!--- TODO Couldn't find the path --->
-	Invalid Path
-	<cfabort />
-</cfif>
-
 <cfset pathThemes = servTheme.getThemes({
 	alongPath = currentPath.getPath(),
 	orderBy = 'path',
