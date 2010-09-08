@@ -115,7 +115,7 @@
 				
 				<cfset filter.keyAlongPath = '404' />
 				
-				<cfset paths = servContent.getPaths( filter ) />
+				<cfset paths = servPath.getPaths( filter ) />
 				
 				<cfif paths.recordCount gt 0>
 					<!--- Use the cache for the error page --->
@@ -180,7 +180,7 @@
 			<cfset filter.keyAlongPath = '500' />
 			
 			<!--- The content is not cached, retrieve it --->
-			<cfset paths = servContent.getPaths( filter ) />
+			<cfset paths = servPath.getPaths( filter ) />
 			
 			<cfif paths.recordCount gt 0>
 				<!--- Use the cache for the error page --->
