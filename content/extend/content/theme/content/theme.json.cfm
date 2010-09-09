@@ -3,22 +3,22 @@
 	"navigation": [
 		[
 			{
-				"navigation": "top",
+				"navigation": "main",
 				"allowGroups": false
 			},
 			{
-				"navigation": "left",
-				"allowGroups": true
+				"navigation": "action",
+				"allowGroups": false
 			}
 		],
 		[
 			{
-				"navigation": "top",
+				"navigation": "main",
 				"allowGroups": false
 			},
 			{
-				"navigation": "left",
-				"allowGroups": true
+				"navigation": "action",
+				"allowGroups": false
 			}
 		]
 	],
