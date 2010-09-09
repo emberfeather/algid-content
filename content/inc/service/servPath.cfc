@@ -34,6 +34,7 @@
 		
 		<cfset var eventLog = '' />
 		<cfset var i = '' />
+		<cfset var id = '' />
 		<cfset var observer = '' />
 		
 		<cfparam name="arguments.filter.contentID" default="" />
