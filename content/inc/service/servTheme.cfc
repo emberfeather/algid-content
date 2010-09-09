@@ -130,9 +130,9 @@
 				JOIN "#variables.datasource.prefix#content"."content" AS c
 					ON c."contentID" = p."contentID"
 				<cfif arguments.filter.domain neq ''>
-					JOIN "#variables.datasource.prefix#content"."domain" AS d
-						ON c."domainID" = d."domainID"
-							AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+					JOIN "#variables.datasource.prefix#content"."host" AS h
+						ON c."domainID" = h."domainID"
+							AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 				</cfif>
 			</cfif>
 			
@@ -399,7 +399,7 @@
 			<!--- Before Create Event --->
 			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.theme) />
 			
-			<!--- Insert as a new domain --->
+			<!--- Insert as a new record --->
 			<!--- Create the new ID --->
 			<cfset arguments.theme.setThemeID( createUUID() ) />
 			

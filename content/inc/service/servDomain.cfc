@@ -91,24 +91,26 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT "domainID", "domain", "createdOn", "archivedOn"
-			FROM "#variables.datasource.prefix#content"."domain"
+			SELECT d."domainID", d."domain", d."createdOn", d."archivedOn"
+			FROM "#variables.datasource.prefix#content"."domain" d
+			LEFT JOIN "#variables.datasource.prefix#content"."host" h
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				and (
-					"domain" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					d."domain" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					or h."hostname" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
-				and "archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
+				and d."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
 			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfdefaultcase>
-					"domain" #arguments.filter.orderSort#
+					d."domain" #arguments.filter.orderSort#
 				</cfdefaultcase>
 			</cfswitch>
 			

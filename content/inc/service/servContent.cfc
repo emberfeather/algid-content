@@ -160,9 +160,9 @@
 				ON c."contentID" = p."contentID"
 			LEFT JOIN "#variables.datasource.prefix#content"."type" AS t
 				ON c."typeID" = t."typeID"
-			JOIN "#variables.datasource.prefix#content"."domain" AS d
-				ON c."domainID" = d."domainID"
-					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			JOIN "#variables.datasource.prefix#content"."host" AS h
+				ON c."domainID" = h."domainID"
+					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>

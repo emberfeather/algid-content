@@ -172,9 +172,9 @@
 			FROM "#variables.datasource.prefix#content"."path" p
 			JOIN "#variables.datasource.prefix#content"."content" c
 				ON c."contentID" = p."contentID"
-			JOIN "#variables.datasource.prefix#content"."domain" d
-				ON c."domainID" = d."domainID"
-					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			JOIN "#variables.datasource.prefix#content"."host" h
+				ON c."domainID" = h."domainID"
+					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
@@ -324,7 +324,7 @@
 			<!--- Before Create Event --->
 			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.path) />
 			
-			<!--- Insert as a new domain --->
+			<!--- Insert as a new record --->
 			<!--- Create the new ID --->
 			<cfset arguments.path.setPathID( createUUID() ) />
 			
