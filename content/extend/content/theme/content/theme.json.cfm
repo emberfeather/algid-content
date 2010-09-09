@@ -6,16 +6,18 @@
 				"navigation": "main",
 				"allowGroups": false
 			},
-			{
-				"navigation": "action",
-				"allowGroups": false
-			}
 		],
 		[
 			{
 				"navigation": "main",
 				"allowGroups": false
 			},
+			{
+				"navigation": "action",
+				"allowGroups": false
+			}
+		],
+		[
 			{
 				"navigation": "action",
 				"allowGroups": false
