@@ -42,6 +42,12 @@
 				defaultValue = '/'
 			) />
 		
+		<!--- Template --->
+		<cfset addAttribute(
+				attribute = 'template',
+				defaultValue = 'index'
+			) />
+		
 		<!--- Title --->
 		<cfset addAttribute(
 				attribute = 'title'

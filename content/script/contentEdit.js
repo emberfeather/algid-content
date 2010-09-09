@@ -3,13 +3,10 @@
  */
 ;(function($){
 	$(function(){
-		// Setup a cache for the search terms
+		// Setup a cache for the paths
 		var searchCache = {};
 		
-		// Find the path form fields
-		paths = $('input[name^=path]');
-		
-		paths.autocomplete({
+		$('input[name^=path]').autocomplete({
 			source: function(request, response) {
 				// Check if the term has already been searched for
 				if ( request.term in searchCache ) {
@@ -18,20 +15,13 @@
 					return;
 				}
 				
-				$.ajax({
-					url: $.algid.admin.options.base.url + $.algid.admin.options.base.api,
-					dataType: 'json',
-					type: 'post',
-					data: {
-						HEAD: JSON.stringify({
-							plugin: 'content',
-							service: 'content',
-							action: 'searchPath'
-						}),
-						BODY: JSON.stringify({
-							path: request.term
-						})
-					},
+				$.api({
+					plugin: 'content',
+					service: 'path',
+					action: 'searchPath'
+				}, {
+					path: request.term
+				}, {
 					success: function( data ) {
 						if(data.HEAD.result) {
 							// Convert for use with the autocomplete
@@ -42,11 +32,10 @@
 							
 							searchCache[ request.term ] = data.BODY;
 							
-							window.console.log(data.BODY);
-							
 							response( data.BODY );
 						} else {
-							window.console.error(data.HEAD.errors);
+							if (window.console.error)
+								window.console.error(data.HEAD.errors);
 							
 							response( [] );
 						}
