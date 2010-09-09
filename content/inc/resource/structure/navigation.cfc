@@ -44,7 +44,7 @@
 		
 		<!--- Query the navigation query for the page information --->
 		<cfquery name="navigation" datasource="#variables.datasource.name#">
-			SELECT c."contentID", p."path", c."title", p."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", p."orderBy"
+			SELECT c."contentID", p."path", c."title", p."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", p."orderBy", '' AS ids, '' AS vars
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
