@@ -94,6 +94,7 @@
 			SELECT d."domainID", d."domain", d."createdOn", d."archivedOn"
 			FROM "#variables.datasource.prefix#content"."domain" d
 			LEFT JOIN "#variables.datasource.prefix#content"."host" h
+				ON d."domainID" = h."domainID"
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
@@ -110,7 +111,7 @@
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfdefaultcase>
-					d."domain" #arguments.filter.orderSort#
+					h."hostname" #arguments.filter.orderSort#
 				</cfdefaultcase>
 			</cfswitch>
 			
