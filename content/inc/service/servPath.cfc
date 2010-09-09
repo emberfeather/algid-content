@@ -81,14 +81,14 @@
 	</cffunction>
 <cfscript>
 	/* required path */
-	private string function cleanPath(string dirtyPath) {
+	public string function cleanPath(string dirtyPath) {
 		var path = getModel('content', 'path');
 		
 		return path.cleanPath(arguments.dirtyPath);
 	}
 	
 	/* required path */
-	private string function createPathList( string path, string key = '' ) {
+	public string function createPathList( string path, string key = '' ) {
 		var pathList = '';
 		var pathPart = '';
 		var i = '';
@@ -225,7 +225,7 @@
 				
 				<!--- Restrict to only the level that is prefixed --->
 				<cfif structKeyExists(arguments.filter, 'oneLevelOnly') and arguments.filter.oneLevelOnly eq true>
-					AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#cleaned#%/%" />
+					AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
 				</cfif>
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
