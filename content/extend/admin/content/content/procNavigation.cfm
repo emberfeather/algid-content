@@ -3,11 +3,12 @@
 <cfset servTheme = services.get('content', 'theme') />
 
 <cfif cgi.request_method eq 'post'>
-	<!--- TODO handle the submission --->
+	<!--- Update the URL and redirect --->
+	<cfloop list="#form.fieldnames#" index="field">
+		<cfset theURL.set('', field, form[field]) />
+	</cfloop>
 	
-	<!--- Add a success message --->
-	<!--- TODO use i18n --->
-	<cfset session.managers.singleton.getSuccess().addMessages('The navigation for the ''' & ''' path was successfully saved.') />
+	<cfset theURL.redirect() />
 </cfif>
 
 <!--- TODO minimized versions for production --->

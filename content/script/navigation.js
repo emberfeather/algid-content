@@ -1,10 +1,13 @@
 ;(function($){
 	var positions;
-	var basePath;
+	var path;
 	
 	$(function() {
+		// Setup a cache for the paths
+		var searchCache = {};
+		
 		positions = $(".sortable");
-		basePath = $("#basePath");
+		path = $("#path");
 		
 		positions.each(function() {
 			$(this).sortable({
@@ -17,6 +20,48 @@
 		$('.title', positions)
 			.each(storePathTitle)
 			.blur(updatePathTitle); // TODO find a better event to bind on for the contenteditable attribute
+		
+		path.autocomplete({
+			select: function(event, ui) {
+				path.parent().trigger('submit');
+			},
+			source: function(request, response) {
+				// Check if the term has already been searched for
+				if ( request.term in searchCache ) {
+					response( searchCache[ request.term ] );
+					
+					return;
+				}
+				
+				$.api({
+					plugin: 'content',
+					service: 'path',
+					action: 'searchPath'
+				}, {
+					path: request.term
+				}, {
+					success: function( data ) {
+						if(data.HEAD.result) {
+							// Convert for use with the autocomplete
+							for(var i = 0; i < data.BODY.length; i++) {
+								data.BODY[i].value = data.BODY[i].path;
+								data.BODY[i].label = data.BODY[i].path;
+							}
+							
+							searchCache[ request.term ] = data.BODY;
+							
+							response( data.BODY );
+						} else {
+							if (window.console.error)
+								window.console.error(data.HEAD.errors);
+							
+							response( [] );
+						}
+					}
+				});
+			},
+			minLength: 0
+		});
 	});
 	
 	function storePathTitle(index, element) {
@@ -75,7 +120,7 @@
 			service: 'navigation',
 			action: 'setPositions'
 		}, {
-			path: basePath.text(),
+			path: path.val(),
 			positions: navigation
 		}, {
 			success: function( data ) {

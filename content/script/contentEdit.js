@@ -3,13 +3,10 @@
  */
 ;(function($){
 	$(function(){
-		// Setup a cache for the search terms
+		// Setup a cache for the paths
 		var searchCache = {};
 		
-		// Find the path form fields
-		paths = $('input[name^=path]');
-		
-		paths.autocomplete({
+		$('input[name^=path]').autocomplete({
 			source: function(request, response) {
 				// Check if the term has already been searched for
 				if ( request.term in searchCache ) {

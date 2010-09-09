@@ -21,15 +21,27 @@
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<div class="float-right">
-					<select id="theme" name="theme">
-						<option value="">{ inherit theme }</option>
-						<cfloop query="arguments.themes">
-							<option value="#arguments.themes.themeID.toString()#"<cfif arguments.path.getThemeID() eq arguments.themes.themeID.toString()> selected="selected"</cfif>>#arguments.themes.theme#</option>
-						</cfloop>
-					</select>
+					<form action="#theUrl.get()#" method="post">
+						<select id="theme" name="theme">
+							<option value="">{ inherit theme }</option>
+							<cfloop query="arguments.themes">
+								<option value="#arguments.themes.themeID.toString()#"<cfif arguments.path.getThemeID() eq arguments.themes.themeID.toString()> selected="selected"</cfif>>#arguments.themes.theme#</option>
+							</cfloop>
+						</select>
+						
+						<input type="submit" value="Update" class="hidden" />
+					</form>
 				</div>
 				
-				<h3>Path: <span id="basePath" class="editable" contenteditable="true"><cfoutput>#arguments.path.getPath()#</cfoutput></span></h3>
+				<h3>
+					Path:
+					
+					<form action="#theUrl.get()#" method="post">
+						<input type="text" id="path" name="path" value="<cfoutput>#arguments.path.getPath()#</cfoutput>" />
+						
+						<input type="submit" value="Update" class="hidden" />
+					</form>
+				</h3>
 				
 				<div class="grid_9 alpha">
 					<cfloop query="arguments.navigation">

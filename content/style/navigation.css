@@ -1,3 +1,11 @@
+h3 form {
+	display: inline;
+}
+
+h3 input[type=text] {
+	width: 30em;
+}
+
 .position {
 	max-height: 50em;
 	overflow: auto;
