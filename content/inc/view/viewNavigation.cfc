@@ -52,11 +52,11 @@
 							
 							<div class="dragarea">
 								<div class="position">
-									<ul class="sortable">
+									<ul class="sortable" data-navigationID="#arguments.navigation.navigationID.toString()#">
 										<cfloop query="currentPaths">
 											<cfset theUrl.setEdit('content', currentPaths.contentID.toString()) />
 											
-											<li data-pathid="#currentPaths.pathID#">
+											<li id="path_#currentPaths.pathID#" data-pathID="#currentPaths.pathID#">
 												<cfoutput>
 													<div class="float-right">
 														<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
@@ -79,11 +79,11 @@
 					
 					<div class="dragarea">
 						<div class="position">
-							<ul class="sortable">
+							<ul class="sortable" data-navigationID="">
 								<cfloop query="arguments.hidden">
 									<cfset theUrl.setEdit('content', arguments.hidden.contentID.toString()) />
 									
-									<li data-pathid="#arguments.hidden.pathID#">
+									<li id="path_#arguments.hidden.pathID#" data-pathID="#arguments.hidden.pathID#">
 										<cfoutput>
 											<div class="float-right">
 												<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>

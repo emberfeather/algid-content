@@ -154,4 +154,60 @@
 		<!--- After Save Event --->
 		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.navigation) />
 	</cffunction>
+	
+	<cffunction name="setPositions" access="public" returntype="void" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="path" type="component" required="true" />
+		<cfargument name="positions" type="array" required="true" />
+		
+		<cfset var cleaned = '' />
+		<cfset var i = '' />
+		<cfset var j = '' />
+		<cfset var isArchived = '' />
+		<cfset var observer = '' />
+		<cfset var position = '' />
+		<cfset var results = '' />
+		<cfset var servPath = '' />
+		
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'navigation') />
+		
+		<!--- TODO Check user permissions --->
+		
+		<!--- Before Position Event --->
+		<cfset observer.beforePosition(variables.transport, arguments.currUser, arguments.path, arguments.positions) />
+		
+		<cfset servPath = getService('content', 'path') />
+		
+		<cfset cleaned = servPath.cleanPath(arguments.path.getPath()) />
+		
+		<cfif cleaned NEQ '/'>
+			<cfset cleaned &= '/' />
+		</cfif>
+		
+		<cftransaction>
+			<cfloop array="#arguments.positions#" index="position">
+				<cfloop from="1" to="#arrayLen(position.paths)#" index="i">
+					<cfquery datasource="#variables.datasource.name#">
+						UPDATE "#variables.datasource.prefix#content"."path"
+						SET
+							"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" null="#position.navigationID eq ''#" />::uuid,
+							"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#i#" />
+						WHERE
+							"pathID" IN (
+								<!--- Make sure all paths are directly off the base path --->
+								SELECT "pathID"
+								FROM "#variables.datasource.prefix#content"."path"
+								WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
+									AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+							)
+							AND "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i]#" />::uuid
+					</cfquery>
+				</cfloop>
+			</cfloop>
+		</cftransaction>
+		
+		<!--- After Position Event --->
+		<cfset observer.afterPosition(variables.transport, arguments.currUser, arguments.path, arguments.positions) />
+	</cffunction>
 </cfcomponent>

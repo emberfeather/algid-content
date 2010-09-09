@@ -241,7 +241,11 @@
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq ''>
-				AND p."navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.navigationID#" />::uuid
+				<cfif arguments.filter.navigationID eq 'NULL'>
+					AND p."navigationID" IS NULL
+				<cfelse>
+					AND p."navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.navigationID#" />::uuid
+				</cfif>
 			</cfif>
 			
 			ORDER BY

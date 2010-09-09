@@ -33,7 +33,7 @@
 <cfset themes = servTheme.getThemes() />
 
 <cfset hiddenPaths = servPath.getPaths({
-	navigationID = '',
+	navigationID = 'NULL',
 	pathPrefix = currentPath.getPath(),
 	notPath = currentPath.getPath(),
 	oneLevelOnly = true
