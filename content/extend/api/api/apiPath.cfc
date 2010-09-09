@@ -1,19 +1,10 @@
 component extends="plugins.api.inc.resource.base.api" {
-	public component function renamePath() {
+	public component function renamePath(required string pathID, required string title) {
 		var i = '';
 		var filter = {};
 		var servPath = '';
 		var results = '';
 		var user = '';
-		
-		// Validate required arguments
-		if( !structKeyExists(variables.apiRequestBody, 'pathID') ) {
-			throw('validation', 'Missing pathID', 'The rename requires a pathID');
-		}
-		
-		if( !structKeyExists(variables.apiRequestBody, 'title') ) {
-			throw('validation', 'Missing path title', 'The rename requires a path title');
-		}
 		
 		servPath = variables.services.get('content', 'path');
 		user = variables.transport.theSession.managers.singleton.getUser();
@@ -35,16 +26,11 @@ component extends="plugins.api.inc.resource.base.api" {
 		return getApiResponse();
 	}
 	
-	public component function searchPath() {
+	public component function searchPath(required string path) {
 		var i = '';
 		var filter = {};
 		var servPath = '';
 		var results = '';
-		
-		// Validate required arguments
-		if( !structKeyExists(variables.apiRequestBody, 'path') ) {
-			throw('validation', 'Missing path', 'The search requires a path');
-		}
 		
 		servPath = variables.services.get('content', 'path');
 		
