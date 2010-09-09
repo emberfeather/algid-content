@@ -20,6 +20,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
+				<!--- TODO add functionality for changing the theme
 				<div class="float-right">
 					<form action="#theUrl.get()#" method="post">
 						<select id="theme" name="theme">
@@ -32,6 +33,7 @@
 						<input type="submit" value="Update" class="hidden" />
 					</form>
 				</div>
+				--->
 				
 				<h3>
 					Path:
