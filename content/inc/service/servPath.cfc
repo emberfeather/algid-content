@@ -161,6 +161,7 @@
 				orderSort = 'asc'
 			} />
 		<cfset var i = '' />
+		<cfset var id = '' />
 		<cfset var pathPart = '' />
 		<cfset var results = '' />
 		
