@@ -17,6 +17,8 @@
 	
 	<!--- Update the navigation --->
 	<cfloop array="#theme.getNavigation()#" index="i">
+		<cfset i.setThemeID(theme.getThemeID()) />
+		
 		<cfset servNavigation.setNavigation(transport.theSession.managers.singleton.getUser(), i) />
 	</cfloop>
 	

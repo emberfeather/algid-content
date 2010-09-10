@@ -231,19 +231,23 @@
 			<cfloop from="1" to="#arrayLen(fileContent.navigation[i])#" index="j">
 				<cfset navigation = getModel('content', 'navigation') />
 				
-				<cfset fileContent.navigation[i][j].themeID = currentTheme.themeID />
+				<cfset fileContent.navigation[i][j].themeID = currentTheme.themeID.toString() />
 				<cfset fileContent.navigation[i][j].level = i />
 				
 				<!--- Retrieve the current theme for comparison --->
-				<cfquery name="currentNavigation" datasource="#variables.datasource.name#">
-					SELECT "navigationID"
-					FROM "#variables.datasource.prefix#content"."navigation"
-					WHERE "themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fileContent.navigation[i][j].themeID#" />::uuid
-						AND "navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fileContent.navigation[i][j].navigation#" />
-						AND "level" = <cfqueryparam cfsqltype="cf_sql_smallint" value="#fileContent.navigation[i][j].level#" />
-				</cfquery>
-				
-				<cfset fileContent.navigation[i][j].navigationID = currentNavigation.navigationID />
+				<cfif fileContent.navigation[i][j].themeID neq ''>
+					<cfquery name="currentNavigation" datasource="#variables.datasource.name#">
+						SELECT "navigationID"
+						FROM "#variables.datasource.prefix#content"."navigation"
+						WHERE "themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fileContent.navigation[i][j].themeID#" />::uuid
+							AND "navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fileContent.navigation[i][j].navigation#" />
+							AND "level" = <cfqueryparam cfsqltype="cf_sql_smallint" value="#fileContent.navigation[i][j].level#" />
+					</cfquery>
+					
+					<cfset fileContent.navigation[i][j].navigationID = currentNavigation.navigationID />
+				<cfelse>
+					<cfset fileContent.navigation[i][j].navigationID = '' />
+				</cfif>
 				
 				<cfset objectSerial.deserialize(fileContent.navigation[i][j], navigation) />
 				

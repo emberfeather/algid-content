@@ -98,6 +98,9 @@
 			<cfif paths.recordCount gt 0>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 				
+				<!--- Set the template --->
+				<cfset content.setTemplate(paths.template) />
+				
 				<cfset transport.theRequest.managers.singleton.setContent(content) />
 				
 				<!--- Store the original path requested --->
@@ -125,6 +128,9 @@
 						<cfset transport.theRequest.managers.singleton.setContent(content) />
 					<cfelse>
 						<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+						
+						<!--- Set the template --->
+						<cfset content.setTemplate(paths.template) />
 						
 						<cfset transport.theRequest.managers.singleton.setContent(content) />
 						
@@ -155,6 +161,7 @@
 		</cfif>
 		
 		<cfset template.setContent(content.getContentHtml()) />
+		<cfset template.setTemplate(content.getTemplate()) />
 		
 		<cfcatch type="any">
 			<cfheader statuscode="500" statustext="Internal Server Error" />
