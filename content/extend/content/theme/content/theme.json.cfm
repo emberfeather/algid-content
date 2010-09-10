@@ -5,7 +5,7 @@
 			{
 				"navigation": "main",
 				"allowGroups": false
-			},
+			}
 		],
 		[
 			{
