@@ -85,7 +85,6 @@
 		return cacheContent.getAllIds();
 	}
 </cfscript>
-	
 	<cffunction name="getContent" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="contentID" type="string" required="true" />

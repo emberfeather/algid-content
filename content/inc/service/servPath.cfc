@@ -249,6 +249,16 @@
 				</cfif>
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'notIn')>
+				AND p."pathID" NOT IN (
+					<cfloop from="1" to="#listLen(arguments.filter.notIn)#" index="i">
+						<cfset id = listGetAt(arguments.filter.notIn, i) />
+						
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.notIn)>,</cfif>
+					</cfloop>
+				)
+			</cfif>
+			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="updatedOn">

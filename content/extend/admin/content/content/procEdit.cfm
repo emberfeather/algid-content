@@ -1,4 +1,5 @@
 <cfset servContent = services.get('content', 'content') />
+<cfset servDomain = services.get('content', 'domain') />
 <cfset servPath = services.get('content', 'path') />
 <cfset servType = services.get('content', 'type') />
 
@@ -16,6 +17,9 @@
 	<!--- Find/Update all paths --->
 	<cfset usedPaths = '' />
 	
+	<!--- Removed cached content --->
+	<cfset domain = servDomain.getDomain(user, content.getDomainID()) />
+	
 	<cfloop list="#form.fieldnames#" index="i">
 		<cfif left(i, 4) eq 'path' and not right(i, 3) eq '_id' and trim(form[i]) neq ''>
 			<!--- Check if we were provided an id to edit --->
@@ -32,6 +36,9 @@
 			<cfset servPath.setPath(user, path) />
 			
 			<cfset usedPaths = listAppend(usedPaths, path.getPathID()) />
+			
+			<!--- Remove from content cache --->
+			<cfset servContent.deleteCacheKey( domain.getDomain() & path.getPath() ) />
 		</cfif>
 	</cfloop>
 	
@@ -40,6 +47,13 @@
 		contentID = content.getContentID(), 
 		notIn = usedPaths
 	} />
+	
+	<cfset deletedPaths = servPath.getPaths(filter) />
+	
+	<!--- Remove Deleted Paths From Cache --->
+	<cfloop query="deletedPaths">
+		<cfset servContent.deleteCacheKey( domain.getDomain() & deletedPaths.path ) />
+	</cfloop>
 	
 	<cfset servPath.deletePaths(user, filter) />
 	
