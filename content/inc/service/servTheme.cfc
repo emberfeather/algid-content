@@ -149,7 +149,16 @@
 			
 			<cfif hasExtraJoins>
 				<!--- Check for path specific filters --->
-				<cfif arguments.filter.alongPath neq ''>
+				<cfif structKeyExists(arguments.filter, 'keyAlongPathOrPath')>
+					<!--- Find a key that is along the path --->
+					<cfparam name="arguments.filter.path" default="/" />
+					
+					<!--- Match a specific path or look for a key along the path --->
+					AND (
+						LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+						OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+					)
+				<cfelseif arguments.filter.alongPath neq ''>
 					<!--- Find any theme along the path --->
 					AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
 				<cfelseif arguments.filter.path neq ''>

@@ -245,7 +245,8 @@
 	
 	<!--- Use the theme that is the closest to the current page --->
 	<cfset filter = {
-			alongPath = theUrl.search('_base'),
+			keyAlongPathOrPath = '*',
+			path = theUrl.search('_base'),
 			domain = transport.theCgi.server_name,
 			orderBy = 'path',
 			orderSort = 'desc'
