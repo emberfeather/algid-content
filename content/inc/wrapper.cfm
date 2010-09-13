@@ -199,6 +199,9 @@
 				<cfelse>
 					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
 					
+					<!--- Set the template --->
+					<cfset content.setTemplate(paths.template) />
+					
 					<cfset transport.theRequest.managers.singleton.setContent(content) />
 					
 					<!--- Store the original path requested --->
@@ -220,9 +223,11 @@
 				<!--- Page not found and no 500 page along the path --->
 				<cfset content.setTitle('500 Server Error') />
 				<cfset content.setContent('500... Internal server error!') />
+				<cfset content.setTemplate('index') />
 			</cfif>
 			
 			<cfset template.setContent(content.getContentHtml()) />
+			<cfset template.setTemplate(content.getTemplate()) />
 			
 			<!--- Add to the template levels so it appears on the page titles --->
 			<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
