@@ -56,7 +56,7 @@
 	<cfset profiler.start('template') />
 	
 	<!--- Create template object --->
-	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale()) />
+	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, i18n, transport.theSession.managers.singleton.getSession().getLocale()) />
 	
 	<!--- Add the main jquery scripts with fallbacks --->
 	<cfset template.addScript('https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', { condition = '!window.jQuery', script = '/algid/script/jquery-min.js' }) />
