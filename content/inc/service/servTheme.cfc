@@ -30,15 +30,13 @@
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.theme) />
 	</cffunction>
 <cfscript>
-	/* required path */
-	private string function cleanPath(string dirtyPath) {
+	private string function cleanPath( required string dirtyPath ) {
 		var path = getModel('content', 'path');
 		
 		return path.cleanPath(arguments.dirtyPath);
 	}
 	
-	/* required path */
-	private string function createPathList( string path, string key = '' ) {
+	private string function createPathList( required string path, string key = '' ) {
 		var pathList = '';
 		var pathPart = '';
 		var i = '';

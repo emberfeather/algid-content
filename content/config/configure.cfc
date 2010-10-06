@@ -1,8 +1,6 @@
 <cfcomponent extends="algid.inc.resource.plugin.configure" output="false">
 <cfscript>
-	/* required theApplication */
-	/* required targetPage */
-	public boolean function inContent(struct theApplication, string targetPage) {
+	public boolean function inContent(required struct theApplication, required string targetPage) {
 		var path = '';
 		
 		// Get the path to the base
@@ -13,8 +11,7 @@
 		return reFind('^' & path & '[a-zA-Z0-9-\.]*.cfm$', arguments.targetPage) GT 0;
 	}
 	
-	/* required theApplication */
-	public void function onApplicationStart(struct theApplication) {
+	public void function onApplicationStart(required struct theApplication) {
 		var cache = '';
 		var navigation = '';
 		var plugin = '';
@@ -35,11 +32,7 @@
 		plugin.getCache().setContent(cache);
 	}
 	
-	/* required theApplication */
-	/* required theSession */
-	/* required theRequest */
-	/* required targetPage */
-	public void function onRequestStart(struct theApplication, struct theSession, struct theRequest, string targetPage) {
+	public void function onRequestStart(required struct theApplication, required struct theSession, required struct theRequest, required string targetPage) {
 		var app = '';
 		var filter = '';
 		var plugin = '';
@@ -729,8 +722,7 @@
 		</cfquery>
 	</cffunction>
 <cfscript>
-	/* required plugin */
-	public void function update(struct plugin, string installedVersion = '') {
+	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
 		
 		// fresh => 0.1.0

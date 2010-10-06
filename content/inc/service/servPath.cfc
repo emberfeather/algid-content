@@ -81,15 +81,13 @@
 		<cfset observer.afterDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
 	</cffunction>
 <cfscript>
-	/* required path */
-	public string function cleanPath(string dirtyPath) {
+	public string function cleanPath( required string dirtyPath ) {
 		var path = getModel('content', 'path');
 		
 		return path.cleanPath(arguments.dirtyPath);
 	}
 	
-	/* required path */
-	public string function createPathList( string path, string key = '' ) {
+	public string function createPathList( required string path, string key = '' ) {
 		var pathList = '';
 		var pathPart = '';
 		var i = '';

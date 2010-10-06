@@ -72,8 +72,7 @@
 	</cffunction>
 
 <cfscript>
-	/* required value */
-	public string function cleanPath( string value ) {
+	public string function cleanPath( required string value ) {
 		arguments.value = trim(arguments.value);
 		
 		// Convert standard characters
@@ -101,13 +100,11 @@
 		return arguments.value;
 	}
 	
-	/* required value */
-	public void function setPath( string value ) {
+	public void function setPath( required string value ) {
 		variables.instance['path'] = cleanPath(arguments.value);
 	}
 	
-	/* required value */
-	public void function validatePath( string value ) {
+	public void function validatePath( required string value ) {
 		var locate = '';
 		var start = 0;
 		
