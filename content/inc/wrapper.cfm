@@ -84,6 +84,8 @@
 	<cfset filter = {
 			domain = transport.theCgi.server_name,
 			keyAlongPathOrPath = '*',
+			orderBy = 'path',
+			orderSort = 'desc',
 			path = theUrl.search('_base')
 		} />
 	
