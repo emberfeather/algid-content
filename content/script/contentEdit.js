@@ -2,10 +2,10 @@
  *
  */
 ;(function($){
+	// Setup a cache for the paths
+	var searchCache = {};
+	
 	$(function(){
-		// Setup a cache for the paths
-		var searchCache = {};
-		
 		$('input[name^=path]').autocomplete({
 			source: function(request, response) {
 				// Check if the term has already been searched for
@@ -44,5 +44,12 @@
 			},
 			minLength: 0
 		});
+		
+		// Change the richtext editor based upon the selection of the type
+		$('input[name=typeID]').change(function(){
+			$('textarea[name=content]')
+				.addClass('editor-' + $.one20.content.typeMap['type-' + this.value].toLowerCase())
+				.richtext();
+		}).filter(':checked').change();
 	});
 })(jQuery);
