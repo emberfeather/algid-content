@@ -91,7 +91,7 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT d."domainID", d."domain", d."createdOn", d."archivedOn"
+			SELECT DISTINCT d."domainID", d."domain", d."createdOn", d."archivedOn"
 			FROM "#variables.datasource.prefix#content"."domain" d
 			LEFT JOIN "#variables.datasource.prefix#content"."host" h
 				ON d."domainID" = h."domainID"
@@ -111,7 +111,7 @@
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfdefaultcase>
-					h."hostname" #arguments.filter.orderSort#
+					d."domain" #arguments.filter.orderSort#
 				</cfdefaultcase>
 			</cfswitch>
 			
