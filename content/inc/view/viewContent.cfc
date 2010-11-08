@@ -278,7 +278,8 @@
 						'_base' = '/content/edit'
 					}
 				],
-				linkClass = [ 'delete', '' ]
+				linkClass = [ 'delete', '' ],
+				title = 'title'
 			}) />
 		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
