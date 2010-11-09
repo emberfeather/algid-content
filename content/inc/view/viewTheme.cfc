@@ -113,7 +113,8 @@
 						'_base' = '/admin/content/theme/update'
 					}
 				],
-				linkClass = [ 'delete', '' ]
+				linkClass = [ 'delete', '' ],
+				title = 'theme'
 			}) />
 		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
