@@ -16,39 +16,33 @@
 		<cfoutput>#template.getStyles()#</cfoutput>
 	</head>
 	<body>
-		<div class="container_12">
-			<div class="grid_12 no-print">
+		<div class="container_12 respect-float">
+			<div class="grid_12 no-print respect-float">
 				<cfset options = {
-						navClasses = ['menu horizontal float-right']
-					} />
+					navClasses = ['menu horizontal float-right']
+				} />
 				
 				<cfoutput>#template.getNavigation(transport.theCgi.server_name, 2, 'action', options, session.managers.singleton.getUser())#</cfoutput>
 				
 				<cfset options = {
-						navClasses = ['menu horizontal']
-					} />
+					navClasses = ['menu horizontal']
+				} />
 				
 				<cfoutput>#template.getNavigation(transport.theCgi.server_name, 1, 'main', options, session.managers.singleton.getUser())#</cfoutput>
-				
-				<div class="clear"><!-- clear --></div>
 			</div>
 			
-			<div class="clear"><!-- clear --></div>
-			
-			<div id="breadcrumb" class="grid_12 no-print">
+			<div id="breadcrumb" class="grid_12 no-print respect-float">
 				<cfoutput>#template.getBreadcrumb()#</cfoutput>
-				
-				<div class="clear"><!-- clear --></div>
 			</div>
 			
-			<div class="grid_12 no-print">
+			<div class="grid_12 no-print respect-float">
 				<cfset showingNavigation = false />
 				<cfset navLevel = template.getCurrentLevel() />
 				
 				<cfif navLevel gt 1>
 					<cfset options = {
-							navClasses = ['submenu horizontal float-right']
-						} />
+						navClasses = ['submenu horizontal float-right']
+					} />
 					
 					<cfset subNav = trim(template.getNavigation( transport.theCgi.server_name, navLevel + 1, 'action', options, session.managers.singleton.getUser())) />
 					
@@ -58,8 +52,8 @@
 				</cfif>
 				
 				<cfset options = {
-						navClasses = ['submenu horizontal']
-					} />
+					navClasses = ['submenu horizontal']
+				} />
 				
 				<cfset subNav = trim(template.getNavigation( transport.theCgi.server_name, navLevel + 1, 'main', options, session.managers.singleton.getUser())) />
 				
@@ -71,23 +65,21 @@
 				<cfif navLevel gt 1 and not showingNavigation>
 					<cfif navLevel gt 2>
 						<cfset options = {
-								navClasses = ['submenu horizontal float-right']
-							} />
+							navClasses = ['submenu horizontal float-right']
+						} />
 						
 						<cfoutput>#template.getNavigation( transport.theCgi.server_name, navLevel, 'action', options, session.managers.singleton.getUser())#</cfoutput>
 					</cfif>
 					
 					<cfset options = {
-							navClasses = ['submenu horizontal']
-						} />
+						navClasses = ['submenu horizontal']
+					} />
 					
 					<cfoutput>#template.getNavigation( transport.theCgi.server_name, navLevel, 'main', options, session.managers.singleton.getUser())#</cfoutput>
 				</cfif>
-				
-				<div class="clear"><!-- clear --></div>
 			</div>
 			
-			<div class="grid_12">
+			<div class="grid_12 respect-float">
 				<h2><cfoutput>#template.getPageTitle()#</cfoutput></h2>
 				
 				<!--- Show any messages, errors, warnings, or successes --->
@@ -106,8 +98,6 @@
 				<cfset messages = session.managers.singleton.getMessage() />
 				
 				<cfoutput>#messages.toHTML()#</cfoutput>
-				
-				<div class="clear"><!-- clear --></div>
 			</div>
 			
 			<div class="grid_12">
@@ -119,8 +109,6 @@
 			<div class="grid_12 align-center">
 				<cfoutput>#createUUID()#</cfoutput>
 			</div>
-			
-			<div class="clear"><!-- clear --></div>
 		</div>
 		
 		<cfoutput>#template.getScripts()#</cfoutput>
