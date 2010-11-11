@@ -1,7 +1,7 @@
 /**
  *
  */
-;(function($){
+(function($){
 	// Setup a cache for the paths
 	var searchCache = {};
 	
@@ -34,8 +34,9 @@
 							
 							response( data.BODY );
 						} else {
-							if (window.console.error)
+							if (window.console.error) {
 								window.console.error(data.HEAD.errors);
+							}
 							
 							response( [] );
 						}
@@ -52,4 +53,4 @@
 				.richtext();
 		}).filter(':checked').change();
 	});
-})(jQuery);
+}(jQuery));

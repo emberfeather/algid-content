@@ -1,4 +1,4 @@
-;(function($){
+(function($){
 	var positions;
 	var path;
 	
@@ -52,8 +52,9 @@
 							
 							response( data.BODY );
 						} else {
-							if (window.console.error)
+							if (window.console.error) {
 								window.console.error(data.HEAD.errors);
+							}
 							
 							response( [] );
 						}
@@ -74,7 +75,7 @@
 		var titleElement = $(event.target);
 		var pathID = '';
 		
-		if(titleElement.data('original') != titleElement.text()) {
+		if(titleElement.data('original') !== titleElement.text()) {
 			$.api({
 				plugin: 'content',
 				service: 'path',
@@ -84,9 +85,7 @@
 				pathID: titleElement.parents('[data-pathID]').attr('data-pathID')
 			}, {
 				success: function( data ) {
-					if(data.HEAD.result) {
-						// Successfully changed... now what?
-					} else {
+					if(!data.HEAD.result) {
 						window.console.error(data.HEAD.errors);
 					}
 				}
@@ -124,14 +123,12 @@
 			positions: navigation
 		}, {
 			success: function( data ) {
-				if(data.HEAD.result) {
-					// Successfully changed... now what?
-				} else {
-					$('.content').after($('<div />', { html: data.HEAD.errors.HEAD.error.detail }))
-					$('.content').after($('<div />', { html: data.HEAD.errors.HEAD.error.stacktrace }))
+				if(!data.HEAD.result) {
+					$('.content').after($('<div />', { html: data.HEAD.errors.HEAD.error.detail }));
+					$('.content').after($('<div />', { html: data.HEAD.errors.HEAD.error.stacktrace }));
 					window.console.error(data.HEAD.errors);
 				}
 			}
 		});
 	}
-})(jQuery);
+}(jQuery));
