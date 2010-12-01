@@ -17,6 +17,7 @@
 	},
 	"key": "content",
 	"path": "",
+	"plugin": "Content",
 	"prerequisites": {
 		"api": "0.1.1",
 		"algid": "0.1.1",
