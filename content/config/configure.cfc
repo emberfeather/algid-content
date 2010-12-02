@@ -725,6 +725,11 @@
 	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
 		
+		// Check for control of the main application index
+		if(!fileExists('/root/index.cfm')) {
+			fileWrite('/root/index.cfm', '<!--- This application is controlled by the content plugin --->' & chr(10) & '<cfinclude template="/plugins/content/inc/wrapper.cfm" />' & chr(10));
+		}
+		
 		// fresh => 0.1.0
 		if (versions.compareVersions(arguments.installedVersion, '0.1.0') lt 0) {
 			switch (variables.datasource.type) {
