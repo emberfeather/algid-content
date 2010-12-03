@@ -173,8 +173,12 @@
 		<cfcatch type="any">
 			<cfheader statuscode="500" statustext="Internal Server Error" />
 			
-			<!--- Track the exception --->
-			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
+			<!--- Track/dump the exception --->
+			<cfif transport.theApplication.managers.singleton.getApplication().isDevelopment()>
+				<!--- Dump out the error --->
+				<cfdump var="#cfcatch#" />
+				<cfabort />
+			<cfelse>
 				<cftry>
 					<cfset errorLogger = transport.theApplication.managers.singleton.getErrorLog() />
 					
@@ -182,13 +186,10 @@
 					
 					<cfcatch type="any">
 						<!--- Failed to log error, send report of unlogged error --->
+						
 						<!--- TODO Send Unlogged Error --->
 					</cfcatch>
 				</cftry>
-			<cfelse>
-				<!--- Dump out the error --->
-				<cfdump var="#cfcatch#" />
-				<cfabort />
 			</cfif>
 			
 			<cfset filter.keyAlongPath = '500' />

@@ -41,7 +41,7 @@
 		// Only do the following if in the content area
 		if (inContent( arguments.theApplication, arguments.targetPage )) {
 			// Create a profiler object
-			temp = arguments.theApplication.factories.transient.getProfiler(not arguments.theApplication.managers.singleton.getApplication().isProduction());
+			temp = arguments.theApplication.factories.transient.getProfiler(arguments.theApplication.managers.singleton.getApplication().isDevelopment());
 			
 			arguments.theRequest.managers.singleton.setProfiler( temp );
 			
