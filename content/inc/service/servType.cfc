@@ -34,7 +34,7 @@
 		<cfargument name="typeID" type="string" required="true" />
 		
 		<cfset var type = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var results = '' />
 		
 		<cfset type = getModel('content', 'type') />
@@ -46,9 +46,9 @@
 		</cfquery>
 		
 		<cfif results.recordCount>
-			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 			
-			<cfset objectSerial.deserialize(results, type) />
+			<cfset modelSerial.deserialize(results, type) />
 		</cfif>
 		
 		<cfreturn type />

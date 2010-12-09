@@ -67,7 +67,7 @@
 		
 		<cfset var theme = '' />
 		<cfset var i = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var path = '' />
 		<cfset var results = '' />
 		<cfset var type = '' />
@@ -84,9 +84,9 @@
 			</cfquery>
 			
 			<cfif results.recordCount>
-				<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+				<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 				
-				<cfset objectSerial.deserialize(results, theme) />
+				<cfset modelSerial.deserialize(results, theme) />
 			</cfif>
 		</cfif>
 		
@@ -205,12 +205,12 @@
 		<cfset var level = '' />
 		<cfset var placement = '' />
 		<cfset var navigation = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var theme = '' />
 		
 		<cfset theme = getModel('content', 'theme') />
 		
-		<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+		<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 		
 		<cfset fileContent = deserializeJSON(fileRead('/plugins/' & arguments.plugin & '/extend/content/theme/' & arguments.themeKey & '/theme.json.cfm')) />
 		
@@ -227,7 +227,7 @@
 		<cfset fileContent.themeID = currentTheme.themeID.toString() />
 		<cfset fileContent.archivedOn = currentTheme.archivedOn />
 		
-		<cfset objectSerial.deserialize(fileContent, theme) />
+		<cfset modelSerial.deserialize(fileContent, theme) />
 		
 		<!--- Set some properties for extra use, not really part of the model --->
 		<cfset theme.setPlugin(arguments.plugin) />
@@ -256,7 +256,7 @@
 					<cfset fileContent.navigation[i][j].navigationID = '' />
 				</cfif>
 				
-				<cfset objectSerial.deserialize(fileContent.navigation[i][j], navigation) />
+				<cfset modelSerial.deserialize(fileContent.navigation[i][j], navigation) />
 				
 				<cfset arrayAppend(allNavigation, navigation) />
 			</cfloop>

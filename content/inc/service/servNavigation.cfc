@@ -5,7 +5,7 @@
 		
 		<cfset var navigation = '' />
 		<cfset var i = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var path = '' />
 		<cfset var results = '' />
 		<cfset var type = '' />
@@ -22,9 +22,9 @@
 			</cfquery>
 			
 			<cfif results.recordCount>
-				<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+				<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 				
-				<cfset objectSerial.deserialize(results, navigation) />
+				<cfset modelSerial.deserialize(results, navigation) />
 			</cfif>
 		</cfif>
 		

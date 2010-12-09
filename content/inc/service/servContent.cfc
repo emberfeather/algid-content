@@ -91,7 +91,7 @@
 		
 		<cfset var content = '' />
 		<cfset var i = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var observer = '' />
 		<cfset var results = '' />
 		<cfset var type = '' />
@@ -111,9 +111,9 @@
 			</cfquery>
 			
 			<cfif results.recordCount>
-				<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+				<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 				
-				<cfset objectSerial.deserialize(results, content) />
+				<cfset modelSerial.deserialize(results, content) />
 				
 				<cfset type = getModel('content', 'type') />
 				
@@ -125,7 +125,7 @@
 						WHERE "typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#content.getTypeID()#" />::uuid
 					</cfquery>
 					
-					<cfset objectSerial.deserialize(results, type) />
+					<cfset modelSerial.deserialize(results, type) />
 				</cfif>
 				
 				<cfset content.setType(type) />

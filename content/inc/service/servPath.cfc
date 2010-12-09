@@ -119,7 +119,7 @@
 		<cfargument name="pathID" type="string" required="true" />
 		
 		<cfset var i = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var observer = '' />
 		<cfset var path = '' />
 		<cfset var results = '' />
@@ -140,9 +140,9 @@
 			</cfquery>
 			
 			<cfif results.recordCount>
-				<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+				<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 				
-				<cfset objectSerial.deserialize(results, path) />
+				<cfset modelSerial.deserialize(results, path) />
 			</cfif>
 		</cfif>
 		

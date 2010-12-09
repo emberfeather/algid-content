@@ -8,7 +8,7 @@
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Process the form submission --->
-	<cfset objectSerial.deserialize(form, content) />
+	<cfset modelSerial.deserialize(form, content) />
 	
 	<cfset user = transport.theSession.managers.singleton.getUser() />
 	

@@ -37,7 +37,7 @@
 		<cfset var domain = '' />
 		<cfset var host = '' />
 		<cfset var i = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var results = '' />
 		
 		<cfset domain = getModel('content', 'domain') />
@@ -49,9 +49,9 @@
 		</cfquery>
 		
 		<cfif results.recordCount>
-			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 			
-			<cfset objectSerial.deserialize(results, domain) />
+			<cfset modelSerial.deserialize(results, domain) />
 			
 			<!--- Retrieve the domain hosts --->
 			<cfquery name="results" datasource="#variables.datasource.name#">
@@ -132,7 +132,7 @@
 		<cfargument name="hostname" type="string" required="true" />
 		
 		<cfset var host = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var results = '' />
 		
 		<cfset host = getModel('content', 'host') />
@@ -144,9 +144,9 @@
 		</cfquery>
 		
 		<cfif results.recordCount>
-			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 			
-			<cfset objectSerial.deserialize(results, host) />
+			<cfset modelSerial.deserialize(results, host) />
 		</cfif>
 		
 		<cfreturn host />
