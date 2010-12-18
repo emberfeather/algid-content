@@ -1,9 +1,6 @@
 <cfcomponent extends="algid.inc.resource.base.event" output="false">
 <cfscript>
-	/* required transport */
-	/* required currUser */
-	/* required content */
-	public void function afterArchive( struct transport, component currUser, component content ) {
+	public void function afterArchive( required struct transport, required component currUser, required component content ) {
 		var eventLog = '';
 		
 		// Get the event log from the transport
@@ -13,10 +10,7 @@
 		eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
 	}
 	
-	/* required transport */
-	/* required currUser */
-	/* required content */
-	public void function afterCreate( struct transport, component currUser, component content ) {
+	public void function afterCreate( required struct transport, required component currUser, required component content ) {
 		var eventLog = '';
 		
 		// Get the event log from the transport
@@ -26,10 +20,7 @@
 		eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
 	}
 	
-	/* required transport */
-	/* required currUser */
-	/* required content */
-	public void function afterPublish( struct transport, component currUser, component content ) {
+	public void function afterPublish( required struct transport, required component currUser, required component content ) {
 		var eventLog = '';
 		
 		// Get the event log from the transport
@@ -42,10 +33,7 @@
 	/**
 	 * Remove the cached paths after the save including paths removed from the content.
 	 */
-	/* required transport */
-	/* required currUser */
-	/* required content */
-	public void function afterSave( struct transport, component currUser, component content ) {
+	public void function afterSave( required struct transport, required component currUser, required component content ) {
 		var cacheContent = '';
 		var domain = '';
 		var i = '';
@@ -67,10 +55,7 @@
 		}
 	}
 	
-	/* required transport */
-	/* required currUser */
-	/* required content */
-	public void function afterUpdate( struct transport, component currUser, component content ) {
+	public void function afterUpdate( required struct transport, required component currUser, required component content ) {
 		var eventLog = '';
 		
 		// Get the event log from the transport
@@ -83,9 +68,7 @@
 	/**
 	 * Parse the content to generate the contentHtml.
 	 */
-	/* required transport */
-	/* required content */
-	public void function beforeDisplay( struct transport, component content ) {
+	public void function beforeDisplay( required struct transport, required component content ) {
 		var html = '';
 		var parser = '';
 		var type = '';

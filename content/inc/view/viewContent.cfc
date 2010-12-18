@@ -92,11 +92,11 @@
 	
 	<cffunction name="edit" access="public" returntype="string" output="false">
 		<cfargument name="content" type="component" required="true" />
+		<cfargument name="paths" type="query" required="true" />
 		<cfargument name="types" type="query" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var element = '' />
-		<cfset var i = '' />
 		<cfset var i18n = '' />
 		<cfset var path = '' />
 		<cfset var paths = '' />
@@ -140,19 +140,17 @@
 			}) />
 		
 		<!--- Paths --->
-		<cfset paths = arguments.content.getPaths() />
-		
-		<cfloop from="1" to="#arrayLen(paths)#" index="i">
+		<cfloop query="arguments.paths">
 `			<cfset theForm.addElement('text', {
 					class = 'allowDeletion',
-					name = 'path' & i,
+					name = 'path' & arguments.paths.currentRow,
 					label = 'path',
-					value = paths[i].getPath()
+					value = arguments.paths.path
 				}) />
 			
 `			<cfset theForm.addElement('hidden', {
-					name = 'path' & i & '_id',
-					value = paths[i].getPathID()
+					name = 'path' & arguments.paths.currentRow & '_id',
+					value = arguments.paths.pathID.toString()
 				}) />
 		</cfloop>
 		
@@ -280,7 +278,8 @@
 						'_base' = '/content/edit'
 					}
 				],
-				linkClass = [ 'delete', '' ]
+				linkClass = [ 'delete', '' ],
+				title = 'title'
 			}) />
 		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />

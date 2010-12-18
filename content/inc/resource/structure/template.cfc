@@ -2,8 +2,7 @@ component extends="algid.inc.resource.structure.template" {
 	/**
 	 * Used to retrieve the formatted navigation element.
 	 */
-	/* required navPosition */
-	public string function getNavigation( string domain = cgi.server_name, numeric level = 1, any navPosition, struct options = {}, component authUser ) {
+	public string function getNavigation( string domain = cgi.server_name, numeric level = 1, required any navPosition, struct options = {}, component authUser ) {
 		var args = '';
 		var defaults = {
 				numLevels = 1,

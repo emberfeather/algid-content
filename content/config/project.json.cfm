@@ -2,7 +2,6 @@
 	"applicationSingletons": {
 	},
 	"applicationTransients": {
-		"apiContentForContent": "plugins.content.inc.api.apiContent",
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
 		"templateForContent": "plugins.content.inc.resource.structure.template",
@@ -18,6 +17,7 @@
 	},
 	"key": "content",
 	"path": "",
+	"plugin": "Content",
 	"prerequisites": {
 		"api": "0.1.1",
 		"algid": "0.1.1",
@@ -33,5 +33,5 @@
 	},
 	"sessionTransients": {
 	},
-	"version": "0.1.1"
+	"version": "0.1.2"
 }

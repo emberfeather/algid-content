@@ -1,8 +1,6 @@
 <cfcomponent extends="algid.inc.resource.plugin.configure" output="false">
 <cfscript>
-	/* required theApplication */
-	/* required targetPage */
-	public boolean function inContent(struct theApplication, string targetPage) {
+	public boolean function inContent(required struct theApplication, required string targetPage) {
 		var path = '';
 		
 		// Get the path to the base
@@ -13,8 +11,7 @@
 		return reFind('^' & path & '[a-zA-Z0-9-\.]*.cfm$', arguments.targetPage) GT 0;
 	}
 	
-	/* required theApplication */
-	public void function onApplicationStart(struct theApplication) {
+	public void function onApplicationStart(required struct theApplication) {
 		var cache = '';
 		var navigation = '';
 		var plugin = '';
@@ -35,11 +32,7 @@
 		plugin.getCache().setContent(cache);
 	}
 	
-	/* required theApplication */
-	/* required theSession */
-	/* required theRequest */
-	/* required targetPage */
-	public void function onRequestStart(struct theApplication, struct theSession, struct theRequest, string targetPage) {
+	public void function onRequestStart(required struct theApplication, required struct theSession, required struct theRequest, required string targetPage) {
 		var app = '';
 		var filter = '';
 		var plugin = '';
@@ -48,7 +41,7 @@
 		// Only do the following if in the content area
 		if (inContent( arguments.theApplication, arguments.targetPage )) {
 			// Create a profiler object
-			temp = arguments.theApplication.factories.transient.getProfiler(not arguments.theApplication.managers.singleton.getApplication().isProduction());
+			temp = arguments.theApplication.factories.transient.getProfiler(arguments.theApplication.managers.singleton.getApplication().isDevelopment());
 			
 			arguments.theRequest.managers.singleton.setProfiler( temp );
 			
@@ -714,16 +707,46 @@
 			</cfquery>
 		</cfloop>
 	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.2
+	--->
+	<cffunction name="postgreSQL0_1_2" access="public" returntype="void" output="false">
+		<!---
+			TABLES
+		--->
+		
+		<!--- Path Table --->
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path ADD COLUMN "template" character varying(50);
+		</cfquery>
+	</cffunction>
 <cfscript>
-	/* required plugin */
-	public void function update(struct plugin, string installedVersion = '') {
+	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
+		
+		// Check for control of the main application index
+		if(!fileExists('/root/index.cfm')) {
+			fileWrite('/root/index.cfm', '<!--- This application is controlled by the content plugin --->' & chr(10) & '<cfinclude template="/plugins/content/inc/wrapper.cfm" />' & chr(10));
+		}
 		
 		// fresh => 0.1.0
 		if (versions.compareVersions(arguments.installedVersion, '0.1.0') lt 0) {
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
 				postgreSQL0_1_0();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+		
+		// 0.1.2
+		if (versions.compareVersions(arguments.installedVersion, '0.1.2') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_2();
 				
 				break;
 			default:

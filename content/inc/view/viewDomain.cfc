@@ -88,7 +88,8 @@
 						'_base' = '/admin/domain/edit'
 					}
 				],
-				linkClass = [ 'delete', '' ]
+				linkClass = [ 'delete', '' ],
+				title = 'domain'
 			}) />
 		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />

@@ -22,12 +22,20 @@
 		
 		<!--- Is Public? --->
 		<cfset addAttribute(
-				attribute = 'isPublic'
+				attribute = 'isPublic',
+				defaultValue = false
 			) />
 		
 		<!--- Levels --->
 		<cfset addAttribute(
-				attribute = 'levels'
+				attribute = 'levels',
+				defaultValue = 0
+			) />
+		
+		<!--- Navigation --->
+		<cfset addAttribute(
+				attribute = 'navigation',
+				defaultValue = []
 			) />
 		
 		<!--- Theme --->
@@ -39,5 +47,13 @@
 		<cfset addBundle('plugins/content/i18n/inc/model', 'modTheme') />
 		
 		<cfreturn this />
+	</cffunction>
+	
+	<cffunction name="getPlugin" access="public" returntype="string" output="false">
+		<cfreturn listFirst(this.getDirectory(), '/') />
+	</cffunction>
+	
+	<cffunction name="getThemeKey" access="public" returntype="string" output="false">
+		<cfreturn listLast(this.getDirectory(), '/') />
 	</cffunction>
 </cfcomponent>

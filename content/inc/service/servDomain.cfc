@@ -37,7 +37,7 @@
 		<cfset var domain = '' />
 		<cfset var host = '' />
 		<cfset var i = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var results = '' />
 		
 		<cfset domain = getModel('content', 'domain') />
@@ -49,9 +49,9 @@
 		</cfquery>
 		
 		<cfif results.recordCount>
-			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 			
-			<cfset objectSerial.deserialize(results, domain) />
+			<cfset modelSerial.deserialize(results, domain) />
 			
 			<!--- Retrieve the domain hosts --->
 			<cfquery name="results" datasource="#variables.datasource.name#">
@@ -91,24 +91,27 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT "domainID", "domain", "createdOn", "archivedOn"
-			FROM "#variables.datasource.prefix#content"."domain"
+			SELECT DISTINCT d."domainID", d."domain", d."createdOn", d."archivedOn"
+			FROM "#variables.datasource.prefix#content"."domain" d
+			LEFT JOIN "#variables.datasource.prefix#content"."host" h
+				ON d."domainID" = h."domainID"
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				and (
-					"domain" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					d."domain" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					or h."hostname" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
-				and "archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
+				and d."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
 			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfdefaultcase>
-					"domain" #arguments.filter.orderSort#
+					d."domain" #arguments.filter.orderSort#
 				</cfdefaultcase>
 			</cfswitch>
 			
@@ -129,7 +132,7 @@
 		<cfargument name="hostname" type="string" required="true" />
 		
 		<cfset var host = '' />
-		<cfset var objectSerial = '' />
+		<cfset var modelSerial = '' />
 		<cfset var results = '' />
 		
 		<cfset host = getModel('content', 'host') />
@@ -141,9 +144,9 @@
 		</cfquery>
 		
 		<cfif results.recordCount>
-			<cfset objectSerial = variables.transport.theApplication.managers.singleton.getObjectSerial() />
+			<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 			
-			<cfset objectSerial.deserialize(results, host) />
+			<cfset modelSerial.deserialize(results, host) />
 		</cfif>
 		
 		<cfreturn host />

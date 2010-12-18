@@ -25,6 +25,10 @@
 	<cfset services = transport.theApplication.factories.transient.getManagerService(transport) />
 	<cfset transport.theRequest.managers.singleton.setManagerService(services) />
 	
+	<!--- Create and store the view manager --->
+	<cfset views = transport.theApplication.factories.transient.getManagerView(transport) />
+	<cfset transport.theRequest.managers.singleton.setManagerView(views) />
+	
 	<!--- Create and store the model manager --->
 	<cfset models = transport.theApplication.factories.transient.getManagerModel(transport, i18n, locale) />
 	<cfset transport.theRequest.managers.singleton.setManagerModel(models) />
@@ -52,7 +56,7 @@
 	<cfset profiler.start('template') />
 	
 	<!--- Create template object --->
-	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, transport.theSession.managers.singleton.getSession().getLocale()) />
+	<cfset template = transport.theApplication.factories.transient.getTemplateForContent(transport.theCGI.server_name, navigation, theURL, i18n, transport.theSession.managers.singleton.getSession().getLocale()) />
 	
 	<!--- Add the main jquery scripts with fallbacks --->
 	<cfset template.addScript('https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', { condition = '!window.jQuery', script = '/algid/script/jquery-min.js' }) />
@@ -75,11 +79,14 @@
 	<cfset profiler.start('content') />
 	
 	<cfset servContent = services.get('content', 'content') />
+	<cfset servPath = services.get('content', 'path') />
 	
 	<cfset filter = {
 			domain = transport.theCgi.server_name,
 			keyAlongPathOrPath = '*',
-			path = lcase(theUrl.search('_base'))
+			orderBy = 'path',
+			orderSort = 'desc',
+			path = theUrl.search('_base')
 		} />
 	
 	<!--- Use the plugin cache to pull the content from the cache first --->
@@ -92,10 +99,13 @@
 			<cfset transport.theRequest.managers.singleton.setContent(content) />
 		<cfelse>
 			<!--- The content is not cached, retrieve it --->
-			<cfset paths = servContent.getPaths( filter ) />
+			<cfset paths = servPath.getPaths( filter ) />
 			
 			<cfif paths.recordCount gt 0>
 				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+				
+				<!--- Set the template --->
+				<cfset content.setTemplate(paths.template) />
 				
 				<cfset transport.theRequest.managers.singleton.setContent(content) />
 				
@@ -114,7 +124,7 @@
 				
 				<cfset filter.keyAlongPath = '404' />
 				
-				<cfset paths = servContent.getPaths( filter ) />
+				<cfset paths = servPath.getPaths( filter ) />
 				
 				<cfif paths.recordCount gt 0>
 					<!--- Use the cache for the error page --->
@@ -124,6 +134,9 @@
 						<cfset transport.theRequest.managers.singleton.setContent(content) />
 					<cfelse>
 						<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+						
+						<!--- Set the template --->
+						<cfset content.setTemplate(paths.template) />
 						
 						<cfset transport.theRequest.managers.singleton.setContent(content) />
 						
@@ -146,6 +159,7 @@
 					<!--- Page not found and no 404 page along the path --->
 					<cfset content.setTitle('404 Not Found') />
 					<cfset content.setContent('404... content not found!') />
+					<cfset content.setTemplate('index') />
 				</cfif>
 				
 				<!--- Add to the template levels so it appears on the page titles --->
@@ -154,12 +168,17 @@
 		</cfif>
 		
 		<cfset template.setContent(content.getContentHtml()) />
+		<cfset template.setTemplate(content.getTemplate()) />
 		
 		<cfcatch type="any">
 			<cfheader statuscode="500" statustext="Internal Server Error" />
 			
-			<!--- Track the exception --->
-			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
+			<!--- Track/dump the exception --->
+			<cfif transport.theApplication.managers.singleton.getApplication().isDevelopment()>
+				<!--- Dump out the error --->
+				<cfdump var="#cfcatch#" />
+				<cfabort />
+			<cfelse>
 				<cftry>
 					<cfset errorLogger = transport.theApplication.managers.singleton.getErrorLog() />
 					
@@ -167,19 +186,16 @@
 					
 					<cfcatch type="any">
 						<!--- Failed to log error, send report of unlogged error --->
+						
 						<!--- TODO Send Unlogged Error --->
 					</cfcatch>
 				</cftry>
-			<cfelse>
-				<!--- Dump out the error --->
-				<cfdump var="#cfcatch#" />
-				<cfabort />
 			</cfif>
 			
 			<cfset filter.keyAlongPath = '500' />
 			
 			<!--- The content is not cached, retrieve it --->
-			<cfset paths = servContent.getPaths( filter ) />
+			<cfset paths = servPath.getPaths( filter ) />
 			
 			<cfif paths.recordCount gt 0>
 				<!--- Use the cache for the error page --->
@@ -189,6 +205,9 @@
 					<cfset transport.theRequest.managers.singleton.setContent(content) />
 				<cfelse>
 					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
+					
+					<!--- Set the template --->
+					<cfset content.setTemplate(paths.template) />
 					
 					<cfset transport.theRequest.managers.singleton.setContent(content) />
 					
@@ -211,9 +230,11 @@
 				<!--- Page not found and no 500 page along the path --->
 				<cfset content.setTitle('500 Server Error') />
 				<cfset content.setContent('500... Internal server error!') />
+				<cfset content.setTemplate('index') />
 			</cfif>
 			
 			<cfset template.setContent(content.getContentHtml()) />
+			<cfset template.setTemplate(content.getTemplate()) />
 			
 			<!--- Add to the template levels so it appears on the page titles --->
 			<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
@@ -231,7 +252,8 @@
 	
 	<!--- Use the theme that is the closest to the current page --->
 	<cfset filter = {
-			alongPath = theUrl.search('_base'),
+			keyAlongPathOrPath = '*',
+			path = theUrl.search('_base'),
 			domain = transport.theCgi.server_name,
 			orderBy = 'path',
 			orderSort = 'desc'
@@ -244,6 +266,6 @@
 	</cfif>
 </cfsilent>
 
-<cfinclude template="/plugins/#theme#/#template.getTemplate()#.cfm" />
+<cfinclude template="/plugins/#theme#/template/#template.getTemplate()#.cfm" />
 
 <cfset profiler.stop('theme') />

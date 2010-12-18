@@ -21,7 +21,7 @@
 	<!--- Create new content for each title given in the domain --->
 	<cfset numContent = 0 />
 	
-	<cfset user = session.managers.singleton.getUser() />
+	<cfset user = transport.theSession.managers.singleton.getUser() />
 	
 	<!--- Find all titles and create content for each --->
 	<cfloop list="#form.fieldnames#" index="i">
