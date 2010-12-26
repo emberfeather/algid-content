@@ -4,13 +4,13 @@
 <cfset servType = services.get('content', 'type') />
 
 <!--- Retrieve the object --->
-<cfset content = servContent.getContent( session.managers.singleton.getUser(), theURL.search('content') ) />
+<cfset user = transport.theSession.managers.singleton.getUser() />
+
+<cfset content = servContent.getContent( user, theURL.search('content') ) />
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Process the form submission --->
 	<cfset modelSerial.deserialize(form, content) />
-	
-	<cfset user = transport.theSession.managers.singleton.getUser() />
 	
 	<cfset servContent.setContent( user, content ) />
 	
