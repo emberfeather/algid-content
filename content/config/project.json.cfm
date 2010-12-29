@@ -20,7 +20,7 @@
 	"plugin": "Content",
 	"prerequisites": {
 		"api": "0.1.1",
-		"algid": "0.1.1",
+		"algid": "0.1.3",
 		"parser": "0.1.0",
 		"tagger": "0.1.1",
 		"user": "0.1.1"
