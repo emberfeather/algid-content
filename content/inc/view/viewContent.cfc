@@ -251,9 +251,9 @@
 		<cfif rewrite.isEnabled>
 			<cfset options.rewriteBase = rewrite.base />
 			
-			<cfset theUrl = arguments.theApplication.factories.transient.getUrlRewrite(arguments.theUrl, options) />
+			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrlRewrite('', options) />
 		<cfelse>
-			<cfset theUrl = arguments.theApplication.factories.transient.getUrl(arguments.theUrl, options) />
+			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrl('', options) />
 		</cfif>
 		
 		<!--- Add the resource bundle for the view --->
