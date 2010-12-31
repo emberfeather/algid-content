@@ -8,10 +8,10 @@
 		<!--- Include minified files for production --->
 		<cfset midfix = (transport.theApplication.managers.singleton.getApplication().isProduction() ? '-min' : '') />
 		
-		<cfset template.addStyles('plugins/admin/style/960/reset#midfix#.css', 'plugins/admin/style/960/960#midfix#.css"', 'plugins/content/extend/content/theme/content/style/styles#midfix#.css') />
-		<cfset template.addStyle('plugins/content/extend/content/theme/content/style/print#midfix#.css', 'print') />
+		<cfset template.addStyles(transport.theRequest.webRoot & 'plugins/admin/style/960/reset#midfix#.css', transport.theRequest.webRoot & 'plugins/admin/style/960/960#midfix#.css"', transport.theRequest.webRoot & 'plugins/content/extend/content/theme/content/style/styles#midfix#.css') />
+		<cfset template.addStyle(transport.theRequest.webRoot & 'plugins/content/extend/content/theme/content/style/print#midfix#.css', 'print') />
 		
-		<cfset template.addScripts('plugins/content/extend/content/theme/content/script/content#midfix#.js') />
+		<cfset template.addScripts(transport.theRequest.webRoot & 'plugins/content/extend/content/theme/content/script/content#midfix#.js') />
 		
 		<cfoutput>#template.getStyles()#</cfoutput>
 	</head>
