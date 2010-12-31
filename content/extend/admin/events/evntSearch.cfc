@@ -12,6 +12,7 @@
 		<cfset var locale = arguments.transport.theSession.managers.singleton.getSession().getLocale() />
 		<cfset var models = arguments.transport.theRequest.managers.singleton.getManagerModel() />
 		<cfset var navigation = '' />
+		<cfset var options = '' />
 		<cfset var plugin = '' />
 		<cfset var result = '' />
 		<cfset var results = '' />

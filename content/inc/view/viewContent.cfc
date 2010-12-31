@@ -231,6 +231,7 @@
 		<cfset var app = '' />
 		<cfset var datagrid = '' />
 		<cfset var i18n = '' />
+		<cfset var options = '' />
 		<cfset var plugin = '' />
 		<cfset var rewrite = '' />
 		<cfset var theUrl = '' />
