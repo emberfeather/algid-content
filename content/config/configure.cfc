@@ -35,8 +35,11 @@
 	public void function onRequestStart(required struct theApplication, required struct theSession, required struct theRequest, required string targetPage) {
 		var app = '';
 		var filter = '';
+		var options = '';
 		var plugin = '';
+		var rewrite = '';
 		var temp = '';
+		var theUrl = '';
 		
 		// Only do the following if in the content area
 		if (inContent( arguments.theApplication, arguments.targetPage )) {
@@ -53,9 +56,20 @@
 			// Create the URL object for all the content requests
 			app = arguments.theApplication.managers.singleton.getApplication();
 			plugin = arguments.theApplication.managers.plugin.getContent();
-			temp = arguments.theApplication.factories.transient.getUrlForContent(url, { start = app.getPath() & plugin.getPath() & '?' });
 			
-			arguments.theRequest.managers.singleton.setUrl( temp );
+			options = { start = app.getPath() & plugin.getPath() };
+			
+			rewrite = plugin.getRewrite();
+			
+			if(rewrite.isEnabled) {
+				options.rewriteBase = rewrite.base;
+				
+				theUrl = arguments.theApplication.factories.transient.getUrlRewrite(arguments.theUrl, options);
+			} else {
+				theUrl = arguments.theApplication.factories.transient.getUrl(arguments.theUrl, options);
+			}
+			
+			arguments.theRequest.managers.singleton.setUrl( theUrl );
 		}
 	}
 </cfscript>

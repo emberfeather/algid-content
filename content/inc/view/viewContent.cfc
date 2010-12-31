@@ -229,9 +229,10 @@
 		<cfargument name="options" type="struct" default="#{}#" />
 		
 		<cfset var app = '' />
-		<cfset var content = '' />
 		<cfset var datagrid = '' />
 		<cfset var i18n = '' />
+		<cfset var plugin = '' />
+		<cfset var rewrite = '' />
 		<cfset var theUrl = '' />
 		
 		<cfset arguments.options.theURL = variables.transport.theRequest.managers.singleton.getURL() />
@@ -240,8 +241,19 @@
 		
 		<!--- Create a content front-end url --->
 		<cfset app = variables.transport.theApplication.managers.singleton.getApplication() />
-		<cfset content = variables.transport.theApplication.managers.plugin.getContent() />
-		<cfset theUrl = variables.transport.theApplication.factories.transient.getUrlForContent('', { start = app.getPath() & content.getPath() & '?' } ) />
+		<cfset plugin = variables.transport.theApplication.managers.plugin.getContent() />
+		
+		<cfset options = { start = app.getPath() & plugin.getPath() } />
+		
+		<cfset rewrite = plugin.getRewrite() />
+		
+		<cfif rewrite.isEnabled>
+			<cfset options.rewriteBase = rewrite.base />
+			
+			<cfset theUrl = arguments.theApplication.factories.transient.getUrlRewrite(arguments.theUrl, options) />
+		<cfelse>
+			<cfset theUrl = arguments.theApplication.factories.transient.getUrl(arguments.theUrl, options) />
+		</cfif>
 		
 		<!--- Add the resource bundle for the view --->
 		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />

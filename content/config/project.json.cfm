@@ -4,8 +4,7 @@
 	"applicationTransients": {
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
-		"templateForContent": "plugins.content.inc.resource.structure.template",
-		"urlForContent": "cf-compendium.inc.resource.utility.url"
+		"templateForContent": "plugins.content.inc.resource.structure.template"
 	},
 	"cacheContent": "",
 	"defaultTheme": "content/extend/content/theme/content",
@@ -28,6 +27,10 @@
 	"requestSingletons": {
 	},
 	"requestTransients": {
+	},
+	"rewrite": {
+		"isEnabled": false,
+		"base": "_base"
 	},
 	"sessionSingletons": {
 	},
