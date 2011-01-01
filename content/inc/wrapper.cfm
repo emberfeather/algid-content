@@ -83,7 +83,7 @@
 	
 	<cfset filter = {
 			domain = transport.theCgi.server_name,
-			keyAlongPathOrPath = '*',
+			keyAlongPathOrPath = ['', '*'],
 			orderBy = 'path',
 			orderSort = 'desc',
 			path = theUrl.search('_base')
@@ -252,7 +252,7 @@
 	
 	<!--- Use the theme that is the closest to the current page --->
 	<cfset filter = {
-			keyAlongPathOrPath = '*',
+			keyAlongPathOrPath = ['', '*'],
 			path = theUrl.search('_base'),
 			domain = transport.theCgi.server_name,
 			orderBy = 'path',

@@ -1,4 +1,13 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
+<cfscript>
+	public component function init( required struct transport ) {
+		super.init(arguments.transport);
+		
+		variables.path = arguments.transport.theApplication.managers.singleton.getPathForContent();
+		
+		return this;
+	}
+</cfscript>
 	<cffunction name="archiveContent" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
@@ -23,12 +32,6 @@
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
 <cfscript>
-	private string function cleanPath(required string dirtyPath) {
-		var path = getModel('content', 'path');
-		
-		return path.cleanPath(arguments.dirtyPath);
-	}
-	
 	public void function clearCache() {
 		var cacheContent = '';
 		
@@ -37,32 +40,6 @@
 		
 		// Clear the cache
 		cacheContent.clear();
-	}
-	
-	private string function createPathList( required string path, string key = '' ) {
-		var pathList = '';
-		var pathPart = '';
-		var i = '';
-		
-		// If provided a key then prepend a slash so it can be added to the end of the pathPart
-		if(arguments.key != '') {
-			arguments.key = '/' & arguments.key;
-		} else {
-			// Handle the root path possibility
-			pathList = listAppend(pathList, '/');
-		}
-		
-		// Set the base path in the path list
-		pathList = listAppend(pathList, arguments.key);
-		
-		// Make the list from each part of the provided path
-		for( i = 1; i <= listLen(arguments.path, '/'); i++ ) {
-			pathPart = listAppend(pathPart, listGetAt(arguments.path, i, '/'), '/');
-			
-			pathList = listAppend(pathList, '/' & pathPart & arguments.key);
-		}
-		
-		return pathList;
 	}
 	
 	public void function deleteCacheKey( required string key ) {
@@ -188,23 +165,23 @@
 				
 				<!--- Match a specific path or look for a key along the path --->
 				AND (
-					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
-					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
+					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
 				)
 			<cfelseif structKeyExists(arguments.filter, 'keyAlongPath')>
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
-				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
 				<!--- Find any content along the path --->
-				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.alongPath)))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'searchPath')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter.searchPath)#%" />
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
-				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'type') and arguments.filter.type neq ''>

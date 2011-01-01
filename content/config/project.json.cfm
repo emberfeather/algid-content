@@ -1,5 +1,6 @@
 {
 	"applicationSingletons": {
+		"pathForContent": "plugins.content.inc.resource.utility.path"
 	},
 	"applicationTransients": {
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
