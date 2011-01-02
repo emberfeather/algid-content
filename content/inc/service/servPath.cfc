@@ -21,8 +21,6 @@
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
-		<!--- TODO Check user Permissions --->
-		
 		<!--- Before Delete Event --->
 		<cfset observer.beforeDelete(variables.transport, arguments.currUser, arguments.path) />
 		
@@ -53,8 +51,6 @@
 		
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
-		
-		<!--- TODO Check user Permissions --->
 		
 		<!--- Before Delete Bulk Event --->
 		<cfset observer.beforeDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
@@ -199,9 +195,15 @@
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
 				
-				<!--- Restrict to only the level that is prefixed --->
+				<!--- Restrict to only the level that is prefixed but allow for wildcard paths --->
 				<cfif structKeyExists(arguments.filter, 'oneLevelOnly') and arguments.filter.oneLevelOnly eq true>
-					AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+					AND (
+						LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+						OR (
+							LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+							AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+						)
+					)
 				</cfif>
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
