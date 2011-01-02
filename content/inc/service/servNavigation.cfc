@@ -167,19 +167,17 @@
 		<cfset var observer = '' />
 		<cfset var position = '' />
 		<cfset var results = '' />
-		<cfset var servPath = '' />
+		<cfset var pathClean = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'navigation') />
 		
-		<!--- TODO Check user permissions --->
-		
 		<!--- Before Position Event --->
 		<cfset observer.beforePosition(variables.transport, arguments.currUser, arguments.path, arguments.positions) />
 		
-		<cfset servPath = getService('content', 'path') />
+		<cfset pathClean = variables.transport.theApplication.managers.singleton.getPathForContent() />
 		
-		<cfset cleaned = servPath.cleanPath(arguments.path.getPath()) />
+		<cfset cleaned = pathClean.clean(arguments.path.getPath()) />
 		
 		<cfif cleaned NEQ '/'>
 			<cfset cleaned &= '/' />
@@ -195,11 +193,17 @@
 							"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#i#" />
 						WHERE
 							"pathID" IN (
-								<!--- Make sure all paths are directly off the base path --->
+								<!--- Make sure all paths are directly off the base path, including wildcard paths --->
 								SELECT "pathID"
 								FROM "#variables.datasource.prefix#content"."path"
 								WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
-									AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+									AND (
+										LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+										OR (
+											LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+											AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+										)
+									)
 							)
 							AND "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i]#" />::uuid
 					</cfquery>
