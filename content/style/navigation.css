@@ -10,6 +10,7 @@ h3 input[type=text] {
 	max-height: 50em;
 	overflow: auto;
 	padding-right: .25em;
+	cursor: move;
 }
 
 .position .edit {
