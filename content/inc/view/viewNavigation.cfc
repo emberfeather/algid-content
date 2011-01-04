@@ -35,15 +35,13 @@
 				</div>
 				--->
 				
-				<h3>
-					Path:
-					
+				<div class="path">
 					<form action="#theUrl.get()#" method="post">
-						<input type="text" id="path" name="path" value="<cfoutput>#arguments.path.getPath()#</cfoutput>" />
+						<input type="text" id="path" name="path" value="<cfoutput>#arguments.path.getPath()#</cfoutput>" class="inlineEdit" />
 						
 						<input type="submit" value="Update" class="hidden" />
 					</form>
-				</h3>
+				</div>
 				
 				<div class="grid_9 alpha">
 					<cfloop query="arguments.navigation">
@@ -74,8 +72,7 @@
 												<cfoutput>
 													<div><input class="title inlineEdit" value="#currentPaths.title#" /></div>
 													<div class="float-right">
-														<span class="float-right ui-icon ui-icon-arrowthick-2-n-s"></span>
-														<a href="#theUrl.getEdit()#" class="edit float-right"><span class="ui-icon ui-icon-pencil"></span></a>
+														<a href="#theUrl.getEdit()#" class="edit float-right" title="edit"><span class="ui-icon ui-icon-pencil"></span></a>
 													</div>
 													<div>#currentPaths.path#</div>
 												</cfoutput>
@@ -101,8 +98,7 @@
 										<cfoutput>
 											<div><input class="title inlineEdit" value="#arguments.hidden.title#" /></div>
 											<div class="float-right">
-												<span class="float-right ui-icon ui-icon-arrowthick-2-n-s"></span>
-												<a href="#theUrl.getEdit()#" class="edit float-right"><span class="ui-icon ui-icon-pencil"></span></a>
+												<a href="#theUrl.getEdit()#" class="edit float-right" title="edit"><span class="ui-icon ui-icon-pencil"></span></a>
 											</div>
 											<div>#arguments.hidden.path#</div>
 										</cfoutput>

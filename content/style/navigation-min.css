@@ -1,1 +1,1 @@
-h3 form{display:inline;}h3 input[type=text]{width:30em;}.position{max-height:50em;overflow:auto;padding-right:.25em;cursor:move;}.position .edit{visibility:hidden;}.position li:hover .edit{visibility:visible;}.position .inlineEdit{width:100%;}
+.path form{display:inline;}.path input[type=text]{width:100%;font-size:2.5em;padding:.25em .5em;}.position{max-height:50em;overflow:auto;padding-right:.25em;cursor:move;}.position .edit{visibility:hidden;}.position li:hover .edit{visibility:visible;}.position .inlineEdit{width:100%;}

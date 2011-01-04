@@ -9,10 +9,14 @@
 		positions = $(".sortable");
 		path = $("#path");
 		
+		// Prime the previous index for copy purposes
+		updatePreviousIndex();
+		
 		positions.each(function() {
 			$(this).sortable({
 				connectWith: positions,
-				stop: updatePositions
+				update: updatePositions,
+				receive: receivePositions
 			});
 		});
 		
@@ -61,9 +65,28 @@
 					}
 				});
 			},
-			minLength: 0
+			minLength: 1
 		});
 	});
+	
+	function receivePositions(event, ui) {
+		var cloned;
+		var previousIndex;
+		var sender;
+		
+		if(event.ctrlKey == true) {
+			cloned = $(ui.item[0]).clone(true);
+			previousIndex = cloned.data('previousIndex');
+			sender = $(ui.sender[0]);
+			
+			// Insert the clone into the same index it was previously
+			if(previousIndex == 0) {
+				sender.prepend(cloned);
+			} else {
+				$('li:eq(' + (previousIndex - 1) + ')', sender).after(cloned);
+			}
+		}
+	}
 	
 	function storePathTitle(index, element) {
 		var title = $(element);
@@ -127,6 +150,16 @@
 					window.console.error(data.HEAD.errors);
 				}
 			}
+		});
+		
+		updatePreviousIndex();
+	}
+	
+	function updatePreviousIndex() {
+		positions.each(function(){
+			$('li', this).each(function(index){
+				$(this).data('previousIndex', index);
+			});
 		});
 	}
 }(jQuery));
