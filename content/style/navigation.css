@@ -19,3 +19,7 @@ h3 input[type=text] {
 .position li:hover .edit {
 	visibility: visible;
 }
+
+.position .inlineEdit {
+	width: 100%;
+}

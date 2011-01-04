@@ -19,7 +19,7 @@
 		// Set the ground work for the titles
 		$('.title', positions)
 			.each(storePathTitle)
-			.blur(updatePathTitle); // TODO find a better event to bind on for the contenteditable attribute
+			.change(updatePathTitle);
 		
 		path.autocomplete({
 			select: function(event, ui) {
@@ -75,22 +75,20 @@
 		var titleElement = $(event.target);
 		var pathID = '';
 		
-		if(titleElement.data('original') !== titleElement.text()) {
-			$.api({
-				plugin: 'content',
-				service: 'path',
-				action: 'renamePath'
-			}, {
-				title: titleElement.text(),
-				pathID: titleElement.parents('[data-pathID]').attr('data-pathID')
-			}, {
-				success: function( data ) {
-					if(!data.HEAD.result) {
-						window.console.error(data.HEAD.errors);
-					}
+		$.api({
+			plugin: 'content',
+			service: 'path',
+			action: 'renamePath'
+		}, {
+			title: titleElement.val(),
+			pathID: titleElement.parents('[data-pathID]').attr('data-pathID')
+		}, {
+			success: function( data ) {
+				if(!data.HEAD.result) {
+					window.console.error(data.HEAD.errors);
 				}
-			});
-		}
+			}
+		});
 	}
 	
 	function updatePositions(event, ui) {

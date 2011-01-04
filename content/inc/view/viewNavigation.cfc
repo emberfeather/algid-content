@@ -72,11 +72,11 @@
 											
 											<li id="path_#currentPaths.pathID#" data-pathID="#currentPaths.pathID#">
 												<cfoutput>
+													<div><input class="title inlineEdit" value="#currentPaths.title#" /></div>
 													<div class="float-right">
-														<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-														<a href="#theUrl.getEdit()#" class="edit"><span class="ui-icon ui-icon-pencil"></span></a>
+														<span class="float-right ui-icon ui-icon-arrowthick-2-n-s"></span>
+														<a href="#theUrl.getEdit()#" class="edit float-right"><span class="ui-icon ui-icon-pencil"></span></a>
 													</div>
-													<div><strong class="title" contenteditable="true">#currentPaths.title#</strong></div>
 													<div>#currentPaths.path#</div>
 												</cfoutput>
 											</li>
@@ -99,11 +99,11 @@
 									
 									<li id="path_#arguments.hidden.pathID#" data-pathID="#arguments.hidden.pathID#">
 										<cfoutput>
+											<div><input class="title inlineEdit" value="#arguments.hidden.title#" /></div>
 											<div class="float-right">
-												<span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
-												<a href="#theUrl.getEdit()#" class="edit"><span class="ui-icon ui-icon-pencil"></span></a>
+												<span class="float-right ui-icon ui-icon-arrowthick-2-n-s"></span>
+												<a href="#theUrl.getEdit()#" class="edit float-right"><span class="ui-icon ui-icon-pencil"></span></a>
 											</div>
-											<div><strong class="title" contenteditable="true">#arguments.hidden.title#</strong></div>
 											<div>#arguments.hidden.path#</div>
 										</cfoutput>
 									</li>
