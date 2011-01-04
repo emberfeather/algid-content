@@ -238,6 +238,10 @@
 			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
+				<cfcase value="orderBy">
+					p."orderBy" #arguments.filter.orderSort#,
+					c."title" ASC
+				</cfcase>
 				<cfcase value="updatedOn">
 					c."updatedOn" #arguments.filter.orderSort#,
 					c."title" ASC
