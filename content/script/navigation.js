@@ -77,7 +77,7 @@
 			sender = $(ui.sender[0]);
 			
 			// Insert the clone into the same index it was previously
-			if(previousIndex == 0) {
+			if(previousIndex === 0) {
 				sender.prepend(cloned);
 			} else {
 				$('li:eq(' + (previousIndex - 1) + ')', sender).after(cloned);
