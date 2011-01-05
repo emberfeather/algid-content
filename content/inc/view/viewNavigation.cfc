@@ -38,10 +38,8 @@
 				 --->
 				
 				<div class="path">
-					Path:
-					
 					<form action="#theUrl.get()#" method="post">
-						<input type="text" id="path" name="path" value="<cfoutput>#arguments.path.getPath()#</cfoutput>" class="inlineEdit" />
+						<input type="text" id="path" name="path" value="<cfoutput>#arguments.path.getPath()#</cfoutput>" class="inlineEdit" placeholder="Path" />
 						
 						<input type="submit" value="Update" class="hidden" />
 					</form>
