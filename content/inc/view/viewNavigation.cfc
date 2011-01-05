@@ -50,10 +50,10 @@
 				<div class="grid_9 alpha">
 					<cfloop query="arguments.navigation">
 						<cfswitch expression="#arguments.navigation.currentRow mod 3#">
-							<cfcase value="0">
+							<cfcase value="1">
 								<cfset class = 'alpha' />
 							</cfcase>
-							<cfcase value="2">
+							<cfcase value="0">
 								<cfset class = 'omega' />
 							</cfcase>
 							<cfdefaultcase>
