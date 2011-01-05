@@ -225,6 +225,19 @@
 								</cfloop>
 							)
 						</cfif>
+						AND "pathID" IN (
+							<!--- Make sure all paths are directly off the base path, including wildcard paths --->
+							SELECT "pathID"
+							FROM "#variables.datasource.prefix#content"."path"
+							WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
+								AND (
+									LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+									OR (
+										LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+										AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+									)
+								)
+						)
 				</cfquery>
 				
 				<!--- Track which combinations have already been updated --->
