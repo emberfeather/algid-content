@@ -207,109 +207,85 @@
 		
 		<cftransaction>
 			<cfloop array="#arguments.positions#" index="position">
-				<!--- Remove the hidden paths --->
+				<!--- Skip the hidden navigation --->
 				<cfif position.navigationID eq ''>
-					<cfif arrayLen(position.paths)>
-						<cfquery datasource="#variables.datasource.name#">
-							DELETE
-							FROM "#variables.datasource.prefix#content"."bPath2Navigation"
-							WHERE
-								"pathID" IN (
-									<cfloop from="1" to="#arrayLen(position.paths)#" index="i">
-										<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid<cfif i lt arrayLen(position.paths)>,</cfif>
-									</cfloop>
-								)
-								AND "pathID" IN (
-									<!--- Make sure all paths are directly off the base path, including wildcard paths --->
-									SELECT "pathID"
-									FROM "#variables.datasource.prefix#content"."path"
-									WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
-										AND (
-											LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
-											OR (
-												LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
-												AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
-											)
-										)
-								)
-						</cfquery>
-					</cfif>
-				<cfelse>
-					<!--- Remove any paths that are no longer in the navigation position --->
-					<cfquery datasource="#variables.datasource.name#">
-						DELETE
-						FROM "#variables.datasource.prefix#content"."bPath2Navigation"
-						WHERE
-							"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />::uuid
-							<cfif arrayLen(position.paths)>
-								AND "pathID" NOT IN (
-									<cfloop from="1" to="#arrayLen(position.paths)#" index="i">
-										<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid<cfif i lt arrayLen(position.paths)>,</cfif>
-									</cfloop>
-								)
-							</cfif>
-					</cfquery>
-					
-					<!--- Track which combinations have already been updated --->
-					<cfset saved[position.navigationID] = {} />
-					
-					<cfloop from="1" to="#arrayLen(position.paths)#" index="i">
-						<!--- Make sure we have not already tried to update/insert this position --->
-						<cfif not structKeyExists(saved[position.navigationID], position.paths[i].pathID)>
-							<cfset saved[position.navigationID][position.paths[i].pathID] = 1 />
-							<!--- Check if the path and navigation combo exist --->
-							<cfquery name="verify" dbtype="query">
-								SELECT pathID
-								FROM results
-								WHERE navigationID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />
-									AND pathID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />
-							</cfquery>
-							
-							<cfif verify.recordCount>
-								<cfquery datasource="#variables.datasource.name#">
-									UPDATE "#variables.datasource.prefix#content"."bPath2Navigation"
-									SET
-										"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].title#" />,
-										"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].groupBy#" />,
-										"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#i#" />
-									WHERE
-										"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />::uuid
-										AND "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid
-										AND "pathID" IN (
-											<!--- Make sure all paths are directly off the base path, including wildcard paths --->
-											SELECT "pathID"
-											FROM "#variables.datasource.prefix#content"."path"
-											WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
-												AND (
-													LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
-													OR (
-														LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
-														AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
-													)
-												)
-										)
-								</cfquery>
-							<cfelse>
-								<cfquery datasource="#variables.datasource.name#">
-									INSERT INTO "#variables.datasource.prefix#content"."bPath2Navigation"
-									(
-										"pathID",
-										"navigationID",
-										"title",
-										"groupBy",
-										"orderBy"
-									) VALUES (
-										<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid,
-										<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />::uuid,
-										<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].title#" />,
-										<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].groupBy#" />,
-										<cfqueryparam cfsqltype="cf_sql_integer" value="#i#" />
-									)
-								</cfquery>
-							</cfif>
-						</cfif>
-					</cfloop>
+					<cfcontinue />
 				</cfif>
+				
+				<!--- Remove any paths that are no longer in the navigation position --->
+				<cfquery datasource="#variables.datasource.name#">
+					DELETE
+					FROM "#variables.datasource.prefix#content"."bPath2Navigation"
+					WHERE
+						"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />::uuid
+						<cfif arrayLen(position.paths)>
+							AND "pathID" NOT IN (
+								<cfloop from="1" to="#arrayLen(position.paths)#" index="i">
+									<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid<cfif i lt arrayLen(position.paths)>,</cfif>
+								</cfloop>
+							)
+						</cfif>
+				</cfquery>
+				
+				<!--- Track which combinations have already been updated --->
+				<cfset saved[position.navigationID] = {} />
+				
+				<cfloop from="1" to="#arrayLen(position.paths)#" index="i">
+					<!--- Make sure we have not already tried to update/insert this position --->
+					<cfif not structKeyExists(saved[position.navigationID], position.paths[i].pathID)>
+						<cfset saved[position.navigationID][position.paths[i].pathID] = 1 />
+						<!--- Check if the path and navigation combo exist --->
+						<cfquery name="verify" dbtype="query">
+							SELECT pathID
+							FROM results
+							WHERE navigationID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />
+								AND pathID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />
+						</cfquery>
+						
+						<cfif verify.recordCount>
+							<cfquery datasource="#variables.datasource.name#">
+								UPDATE "#variables.datasource.prefix#content"."bPath2Navigation"
+								SET
+									"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].title#" />,
+									"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].groupBy#" />,
+									"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#i#" />
+								WHERE
+									"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />::uuid
+									AND "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid
+									AND "pathID" IN (
+										<!--- Make sure all paths are directly off the base path, including wildcard paths --->
+										SELECT "pathID"
+										FROM "#variables.datasource.prefix#content"."path"
+										WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
+											AND (
+												LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+												OR (
+													LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+													AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+												)
+											)
+									)
+							</cfquery>
+						<cfelse>
+							<cfquery datasource="#variables.datasource.name#">
+								INSERT INTO "#variables.datasource.prefix#content"."bPath2Navigation"
+								(
+									"pathID",
+									"navigationID",
+									"title",
+									"groupBy",
+									"orderBy"
+								) VALUES (
+									<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid,
+									<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.navigationID#" />::uuid,
+									<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].title#" />,
+									<cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].groupBy#" />,
+									<cfqueryparam cfsqltype="cf_sql_integer" value="#i#" />
+								)
+							</cfquery>
+						</cfif>
+					</cfif>
+				</cfloop>
 			</cfloop>
 		</cftransaction>
 		
