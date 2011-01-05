@@ -740,9 +740,9 @@
 	</cffunction>
 	
 	<!---
-		Configures the database for v0.1.4
+		Configures the database for v0.1.3
 	--->
-	<cffunction name="postgreSQL0_1_4" access="public" returntype="void" output="false">
+	<cffunction name="postgreSQL0_1_3" access="public" returntype="void" output="false">
 		<!---
 			TABLES
 		--->
@@ -847,11 +847,11 @@
 			}
 		}
 		
-		// 0.1.4
-		if (versions.compareVersions(arguments.installedVersion, '0.1.4') lt 0) {
+		// 0.1.3
+		if (versions.compareVersions(arguments.installedVersion, '0.1.3') lt 0) {
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
-				postgreSQL0_1_4();
+				postgreSQL0_1_3();
 				
 				break;
 			default:
