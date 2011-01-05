@@ -738,6 +738,82 @@
 			ALTER TABLE "#variables.datasource.prefix#content".path ADD COLUMN "template" character varying(50);
 		</cfquery>
 	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.4
+	--->
+	<cffunction name="postgreSQL0_1_4" access="public" returntype="void" output="false">
+		<!---
+			TABLES
+		--->
+		
+		<!--- Bridge: Path to Navigation Table --->
+		<cfquery datasource="#variables.datasource.name#">
+			CREATE TABLE "#variables.datasource.prefix#content"."bPath2Navigation"
+			(
+				"pathID" uuid NOT NULL,
+				"navigationID" uuid NOT NULL,
+				title character varying(255) NOT NULL,
+				"groupBy" character varying(100),
+				"orderBy" integer NOT NULL DEFAULT 0,
+				CONSTRAINT "bPath2Navigation_pkey" PRIMARY KEY ("pathID", "navigationID"),
+				CONSTRAINT "bPath2Navigation_navigationID_fkey" FOREIGN KEY ("navigationID")
+					REFERENCES "#variables.datasource.prefix#content".navigation ("navigationID") MATCH SIMPLE
+					ON UPDATE CASCADE ON DELETE CASCADE,
+				CONSTRAINT "bPath2Navigation_pathID_fkey" FOREIGN KEY ("pathID")
+					REFERENCES "#variables.datasource.prefix#content".path ("pathID") MATCH SIMPLE
+					ON UPDATE CASCADE ON DELETE CASCADE
+			)
+			WITH (
+				OIDS=FALSE
+			);
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."bPath2Navigation" OWNER TO #variables.datasource.owner#;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			COMMENT ON TABLE "#variables.datasource.prefix#content"."bPath2Navigation" IS 'Bridge for attaching navigations to paths.';
+		</cfquery>
+		
+		<!--- Pull over existing navigation information --->
+		<cfquery datasource="#variables.datasource.name#">
+			INSERT INTO "#variables.datasource.prefix#content"."bPath2Navigation"
+			(
+				"pathID",
+				"navigationID",
+				title,
+				"groupBy",
+				"orderBy"
+			)
+			SELECT
+				"pathID",
+				"navigationID",
+				title,
+				"groupBy",
+				"orderBy"
+			FROM "#variables.datasource.prefix#content"."path"
+			WHERE "navigationID" IS NOT NULL
+		</cfquery>
+		
+		<!--- Remove old columns --->
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN title;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN "groupBy";
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN "orderBy";
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN "navigationID";
+		</cfquery>
+	</cffunction>
 <cfscript>
 	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
@@ -764,6 +840,18 @@
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
 				postgreSQL0_1_2();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+		
+		// 0.1.4
+		if (versions.compareVersions(arguments.installedVersion, '0.1.4') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_4();
 				
 				break;
 			default:
