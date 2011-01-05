@@ -161,11 +161,11 @@
 					<cfset content.setContent('404... content not found!') />
 					<cfset content.setTemplate('index') />
 				</cfif>
-				
-				<!--- Add to the template levels so it appears on the page titles --->
-				<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 			</cfif>
 		</cfif>
+		
+		<!--- Add to the template levels so it appears on the page titles --->
+		<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 		
 		<cfset template.setContent(content.getContentHtml()) />
 		<cfset template.setTemplate(content.getTemplate()) />
