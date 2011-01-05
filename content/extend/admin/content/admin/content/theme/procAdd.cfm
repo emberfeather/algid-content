@@ -15,7 +15,7 @@
 	
 	<cfset servTheme.setTheme( transport.theSession.managers.singleton.getUser(), theme ) />
 	
-	<!--- Update the navigation --->
+	<!--- Set the navigation --->
 	<cfloop array="#theme.getNavigation()#" index="i">
 		<cfset i.setThemeID(theme.getThemeID()) />
 		
