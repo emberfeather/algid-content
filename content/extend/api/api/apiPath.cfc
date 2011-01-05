@@ -9,6 +9,7 @@ component extends="plugins.api.inc.resource.base.api" {
 		
 		filter.searchPath = variables.apiRequestBody.path;
 		filter.orderBy = 'path';
+		filter.showNavigationFields = false;
 		
 		// Retrieve the search results
 		variables.apiResponseBody = servPath.getPaths( filter );

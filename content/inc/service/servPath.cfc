@@ -126,7 +126,8 @@
 		<cfset var defaults = {
 				domain = variables.transport.theCgi.server_name,
 				orderBy = 'title',
-				orderSort = 'asc'
+				orderSort = 'asc',
+				showNavigationFields = true
 			} />
 		<cfset var i = '' />
 		<cfset var id = '' />
@@ -137,7 +138,7 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT p."pathID", p."contentID", p."themeID", bpn."navigationID", p."path", bpn."title", bpn."groupBy", bpn."orderBy", p."isActive", p."template", c."title" AS contentTitle
+			SELECT DISTINCT p."pathID", p."contentID", p."themeID", p."path", p."isActive", p."template", c."title" AS contentTitle<cfif arguments.filter.showNavigationFields>, bpn."navigationID", bpn."title", bpn."groupBy", bpn."orderBy"</cfif>
 			FROM "#variables.datasource.prefix#content"."path" p
 			JOIN "#variables.datasource.prefix#content"."content" c
 				ON c."contentID" = p."contentID"
