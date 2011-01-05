@@ -110,7 +110,7 @@
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
-			JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
 				ON p."pathID" = bpn."pathID"
 			WHERE 1 = 1
 				AND (
