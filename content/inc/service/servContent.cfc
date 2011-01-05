@@ -130,22 +130,24 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT c."contentID", p."path", p."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
-			FROM "#variables.datasource.prefix#content"."content" AS c
-			LEFT JOIN "#variables.datasource.prefix#content"."path" AS p
+			SELECT c."contentID", p."path", bpn."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
+			FROM "#variables.datasource.prefix#content"."content" c
+			LEFT JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
-			LEFT JOIN "#variables.datasource.prefix#content"."type" AS t
+			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+				ON p."pathID" = bpn."pathID"
+			LEFT JOIN "#variables.datasource.prefix#content"."type" t
 				ON c."typeID" = t."typeID"
-			JOIN "#variables.datasource.prefix#content"."host" AS h
+			JOIN "#variables.datasource.prefix#content"."host" h
 				ON c."domainID" = h."domainID"
 					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				AND (
-					p."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					bpn."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 					OR c."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
-					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					OR bpn."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
 			
@@ -199,7 +201,7 @@
 					c."title" ASC
 				</cfcase>
 				<cfcase value="navTitle">
-					p."title" #arguments.filter.orderSort#,
+					bpn."title" #arguments.filter.orderSort#,
 					c."title" #arguments.filter.orderSort#
 				</cfcase>
 				<cfcase value="path">

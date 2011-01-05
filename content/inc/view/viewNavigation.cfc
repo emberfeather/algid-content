@@ -21,7 +21,9 @@
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<!--- TODO add functionality for changing the theme
-				<div class="float-right">
+				<div class="theme float-right">
+					Theme: 
+					
 					<form action="#theUrl.get()#" method="post">
 						<select id="theme" name="theme">
 							<option value="">{ inherit theme }</option>
@@ -33,17 +35,17 @@
 						<input type="submit" value="Update" class="hidden" />
 					</form>
 				</div>
-				--->
+				 --->
 				
-				<h3>
+				<div class="path">
 					Path:
 					
 					<form action="#theUrl.get()#" method="post">
-						<input type="text" id="path" name="path" value="<cfoutput>#arguments.path.getPath()#</cfoutput>" />
+						<input type="text" id="path" name="path" value="<cfoutput>#arguments.path.getPath()#</cfoutput>" class="inlineEdit" />
 						
 						<input type="submit" value="Update" class="hidden" />
 					</form>
-				</h3>
+				</div>
 				
 				<div class="grid_9 alpha">
 					<cfloop query="arguments.navigation">
@@ -74,8 +76,7 @@
 												<cfoutput>
 													<div><input class="title inlineEdit" value="#currentPaths.title#" /></div>
 													<div class="float-right">
-														<span class="float-right ui-icon ui-icon-arrowthick-2-n-s"></span>
-														<a href="#theUrl.getEdit()#" class="edit float-right"><span class="ui-icon ui-icon-pencil"></span></a>
+														<a href="#theUrl.getEdit()#" class="edit float-right" title="edit"><span class="ui-icon ui-icon-pencil"></span></a>
 													</div>
 													<div>#currentPaths.path#</div>
 												</cfoutput>
@@ -99,10 +100,9 @@
 									
 									<li id="path_#arguments.hidden.pathID#" data-pathID="#arguments.hidden.pathID#">
 										<cfoutput>
-											<div><input class="title inlineEdit" value="#arguments.hidden.title#" /></div>
+											<div><input class="title inlineEdit" value="#arguments.hidden.contentTitle#" /></div>
 											<div class="float-right">
-												<span class="float-right ui-icon ui-icon-arrowthick-2-n-s"></span>
-												<a href="#theUrl.getEdit()#" class="edit float-right"><span class="ui-icon ui-icon-pencil"></span></a>
+												<a href="#theUrl.getEdit()#" class="edit float-right" title="edit"><span class="ui-icon ui-icon-pencil"></span></a>
 											</div>
 											<div>#arguments.hidden.path#</div>
 										</cfoutput>
