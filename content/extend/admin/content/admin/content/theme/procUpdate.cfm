@@ -18,6 +18,27 @@
 	
 	<cfset servTheme.setTheme( transport.theSession.managers.singleton.getUser(), theme ) />
 	
+	<!--- Remove old navigation --->
+	<cfset existingNavigation = servNavigation.getNavigations({ themeID: theme.getThemeID() }) />
+	
+	<cfloop query="existingNavigation">
+		<cfset isUsed = false />
+		
+		<cfloop array="#theme.getNavigation()#" index="i">
+			<cfif existingNavigation.level eq i.getLevel() and existingNavigation.navigation eq i.getNavigation()>
+				<cfset isUsed = true />
+				
+				<cfbreak />
+			</cfif>
+		</cfloop>
+		
+		<cfif not isUsed>
+			<cfset oldNavigation = servNavigation.getNavigation(transport.theSession.managers.singleton.getUser(), existingNavigation.navigationID.toString()) />
+			
+			<cfset servNavigation.deleteNavigation(transport.theSession.managers.singleton.getUser(), oldNavigation) />
+		</cfif>
+	</cfloop>
+	
 	<!--- Update the navigation --->
 	<cfloop array="#theme.getNavigation()#" index="i">
 		<cfset servNavigation.setNavigation(transport.theSession.managers.singleton.getUser(), i) />

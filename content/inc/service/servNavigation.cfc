@@ -1,4 +1,28 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
+	<cffunction name="deleteNavigation" access="public" returntype="void" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="navigation" type="component" required="true" />
+		
+		<cfset var observer = '' />
+		
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'navigation') />
+		
+		<!--- Before Delete Event --->
+		<cfset observer.beforeDelete(variables.transport, arguments.currUser, arguments.navigation) />
+		
+		<cftransaction>
+			<cfquery datasource="#variables.datasource.name#">
+				DELETE
+				FROM "#variables.datasource.prefix#content"."navigation"
+				WHERE "navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navigation.getNavigationID()#" />::uuid
+			</cfquery>
+		</cftransaction>
+		
+		<!--- After Delete Event --->
+		<cfset observer.afterDelete(variables.transport, arguments.currUser, arguments.navigation) />
+	</cffunction>
+	
 	<cffunction name="getNavigation" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="navigationID" type="string" required="true" />
@@ -35,9 +59,9 @@
 		<cfargument name="filter" type="struct" default="#{}#" />
 		
 		<cfset var defaults = {
-				orderBy = 'navigation',
-				orderSort = 'asc'
-			} />
+			orderBy = 'navigation',
+			orderSort = 'asc'
+		} />
 		<cfset var hasExtraJoins = '' />
 		<cfset var i = '' />
 		<cfset var pathPart = '' />
@@ -100,8 +124,6 @@
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'navigation') />
-		
-		<!--- TODO Check user permissions --->
 		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.navigation) />

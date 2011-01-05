@@ -343,8 +343,6 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'theme') />
 		
-		<!--- TODO Check user permissions --->
-		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.theme) />
 		
