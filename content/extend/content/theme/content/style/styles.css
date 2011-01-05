@@ -238,14 +238,14 @@ ul, ol {
 	primary navigation
 */
 
-.menu.horizontal,
-.submenu.horizontal {
+.menu.horizontal ul,
+.submenu.horizontal ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.submenu.horizontal {
+.submenu.horizontal ul {
 	margin: 0 1em;
 }
 
