@@ -28,6 +28,8 @@
 		
 		<!--- TODO Archive the content --->
 		
+		<!--- TODO Clear the cache for archived content --->
+		
 		<!--- After Archive Event --->
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
