@@ -38,7 +38,6 @@
 				 --->
 				
 				<div class="path">
-					
 					Path:
 					
 					<form action="#theUrl.get()#" method="post">
@@ -101,7 +100,7 @@
 									
 									<li id="path_#arguments.hidden.pathID#" data-pathID="#arguments.hidden.pathID#">
 										<cfoutput>
-											<div><input class="title inlineEdit" value="#arguments.hidden.title#" /></div>
+											<div><input class="title inlineEdit" value="#arguments.hidden.contentTitle#" /></div>
 											<div class="float-right">
 												<a href="#theUrl.getEdit()#" class="edit float-right" title="edit"><span class="ui-icon ui-icon-pencil"></span></a>
 											</div>

@@ -44,15 +44,17 @@
 		
 		<!--- Query the navigation query for the page information --->
 		<cfquery name="navigation" datasource="#variables.datasource.name#">
-			SELECT c."contentID", p."path", c."title", p."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", p."orderBy", '' AS ids, '' AS vars
+			SELECT c."contentID", p."path", c."title", bpn."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", bpn."orderBy", '' AS ids, '' AS vars
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
+			JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+				ON bpn."pathID" = p."pathID"
 			JOIN "#variables.datasource.prefix#content"."navigation" n
-				ON p."navigationID" = n."navigationID"
+				ON bpn."navigationID" = n."navigationID"
 			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Attribute" pa
 				ON p."pathID" = pa."pathID"
 			LEFT JOIN "#variables.datasource.prefix#content"."attribute" a
@@ -69,12 +71,12 @@
 			
 			<!--- Check if we want to return blank nav titles --->
 			<cfif structKeyExists(arguments.options, 'hideBlankNavTitles') and arguments.options.hideBlankNavTitles eq true>
-				AND p."title" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="" />
+				AND bpn."title" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="" />
 			</cfif>
 			
 			<!--- TODO Permission checking --->
 			
-			ORDER BY p."orderBy" ASC, p."title" ASC
+			ORDER BY bpn."orderBy" ASC, bpn."title" ASC
 		</cfquery>
 		
 		<cfreturn navigation />
@@ -101,21 +103,23 @@
 		
 		<!--- Query for the exact pages that match the paths --->
 		<cfquery name="locate" datasource="#variables.datasource.name#">
-			SELECT p."path", c."title", p."title" AS "navTitle"
+			SELECT p."path", c."title", bpn."title" AS "navTitle"
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
+			JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+				ON p."pathID" = bpn."pathID"
 			WHERE 1 = 1
 				AND (
-					"path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath)#" list="true" />)
-					OR "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath, '*')#" list="true" />)
+					p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath)#" list="true" />)
+					OR p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath, '*')#" list="true" />)
 				)
 				
 				<!--- TODO add in authUser type permission checking --->
-			ORDER BY path ASC
+			ORDER BY p.path ASC
 		</cfquery>
 		
 		<!--- Prime the URL --->

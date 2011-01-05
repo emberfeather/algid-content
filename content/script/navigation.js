@@ -12,18 +12,15 @@
 		// Prime the previous index for copy purposes
 		updatePreviousIndex();
 		
-		positions.each(function() {
-			$(this).sortable({
-				connectWith: positions,
-				update: updatePositions,
-				receive: receivePositions
-			});
+		positions.sortable({
+			connectWith: positions,
+			receive: receivePosition,
+			stop: updatePositions
 		});
 		
 		// Set the ground work for the titles
 		$('.title', positions)
-			.each(storePathTitle)
-			.change(updatePathTitle);
+			.change(updatePositions);
 		
 		path.autocomplete({
 			select: function(event, ui) {
@@ -69,7 +66,7 @@
 		});
 	});
 	
-	function receivePositions(event, ui) {
+	function receivePosition(event, ui) {
 		var cloned;
 		var previousIndex;
 		var sender;
@@ -88,32 +85,6 @@
 		}
 	}
 	
-	function storePathTitle(index, element) {
-		var title = $(element);
-		
-		title.data('original', title.text());
-	}
-	
-	function updatePathTitle(event) {
-		var titleElement = $(event.target);
-		var pathID = '';
-		
-		$.api({
-			plugin: 'content',
-			service: 'path',
-			action: 'renamePath'
-		}, {
-			title: titleElement.val(),
-			pathID: titleElement.parents('[data-pathID]').attr('data-pathID')
-		}, {
-			success: function( data ) {
-				if(!data.HEAD.result) {
-					window.console.error(data.HEAD.errors);
-				}
-			}
-		});
-	}
-	
 	function updatePositions(event, ui) {
 		var navigation = [];
 		
@@ -128,7 +99,12 @@
 			
 			// Remove the path prefix
 			for(i = 0; i < position.paths.length; i++) {
-				position.paths[i] = position.paths[i].substr(5);
+				position.paths[i] = {
+					"pathID": position.paths[i].substr(5),
+					"groupBy": ""
+				};
+				
+				position.paths[i].title = $('[data-pathid=' + position.paths[i].pathID + '] input.title').val();
 			}
 			
 			navigation.push(position);

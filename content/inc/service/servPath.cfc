@@ -104,11 +104,9 @@
 		
 		<cfif arguments.pathID neq ''>
 			<cfquery name="results" datasource="#variables.datasource.name#">
-				SELECT "pathID", "contentID", "themeID", "navigationID", "title", "path", "groupBy", "orderBy", "isActive", "template"
+				SELECT "pathID", "contentID", "themeID", "path", "isActive", "template"
 				FROM "#variables.datasource.prefix#content"."path"
 				WHERE "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.pathID#" null="#arguments.pathID eq ''#" />::uuid
-				
-				<!--- TODO Check for user connection --->
 			</cfquery>
 			
 			<cfif results.recordCount>
@@ -139,18 +137,27 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT p."pathID", p."contentID", p."themeID", p."navigationID", p."path", p."title", p."groupBy", p."orderBy", p."isActive", p."template"
+			SELECT p."pathID", p."contentID", p."themeID", bpn."navigationID", p."path", bpn."title", bpn."groupBy", bpn."orderBy", p."isActive", p."template", c."title" AS contentTitle
 			FROM "#variables.datasource.prefix#content"."path" p
 			JOIN "#variables.datasource.prefix#content"."content" c
 				ON c."contentID" = p."contentID"
 			JOIN "#variables.datasource.prefix#content"."host" h
 				ON c."domainID" = h."domainID"
 					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			<!--- If there is a navigation ID given it means we want a full join --->
+			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq '' and arguments.filter.navigationID neq 'NULL'>
+				JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+					ON p."pathID" = bpn."pathID"
+					AND bpn."navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.navigationID#" />::uuid
+			<cfelse>
+				LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+					ON p."pathID" = bpn."pathID"
+			</cfif>
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				AND (
-					p."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					bpn."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
@@ -210,20 +217,17 @@
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
 			</cfif>
 			
+			<!--- Handle looking for missing navigation --->
+			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq '' and arguments.filter.navigationID eq 'NULL'>
+				AND bpn."navigationID" IS NULL
+			</cfif>
+			
 			<cfif structKeyExists(arguments.filter, 'notPath') and arguments.filter.notPath neq ''>
 				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath)#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'contentID') and arguments.filter.contentID neq ''>
 				AND p."contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.contentID#" />::uuid
-			</cfif>
-			
-			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq ''>
-				<cfif arguments.filter.navigationID eq 'NULL'>
-					AND p."navigationID" IS NULL
-				<cfelse>
-					AND p."navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.navigationID#" />::uuid
-				</cfif>
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notIn')>
@@ -239,7 +243,7 @@
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
 				<cfcase value="orderBy">
-					p."orderBy" #arguments.filter.orderSort#,
+					bpn."orderBy" #arguments.filter.orderSort#,
 					c."title" ASC
 				</cfcase>
 				<cfcase value="updatedOn">
@@ -247,7 +251,7 @@
 					c."title" ASC
 				</cfcase>
 				<cfcase value="title">
-					p."title" #arguments.filter.orderSort#
+					bpn."title" #arguments.filter.orderSort#
 				</cfcase>
 				<cfcase value="path">
 					p."path" #arguments.filter.orderSort#
@@ -297,11 +301,7 @@
 					SET
 						"contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" null="#arguments.path.getContentID() eq ''#" />::uuid,
 						"themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getThemeID()#" null="#arguments.path.getThemeID() eq ''#" />::uuid,
-						"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getNavigationID()#" null="#arguments.path.getNavigationID() eq ''#" />::uuid,
-						"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTitle()#" />,
 						"path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
-						"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" null="#arguments.path.getGroupBy() eq ''#" />,
-						"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
 						"isActive" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
 						"template" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" null="#arguments.path.getTemplate() eq ''#" />
 					WHERE
@@ -325,22 +325,14 @@
 						"pathID",
 						"contentID",
 						"themeID",
-						"navigationID",
-						"title",
 						"path",
-						"groupBy",
-						"orderBy",
 						"isActive",
 						"template"
 					) VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" null="#arguments.path.getPathID() eq ''#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" null="#arguments.path.getContentID() eq ''#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getThemeID()#" null="#arguments.path.getThemeID() eq ''#" />::uuid,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getNavigationID()#" null="#arguments.path.getNavigationID() eq ''#" />::uuid,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTitle()#" />,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" null="#arguments.path.getGroupBy() eq ''#" />,
-						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" null="#arguments.path.getTemplate() eq ''#" />
 					)
