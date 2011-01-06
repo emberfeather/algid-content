@@ -71,7 +71,7 @@
 		var previousIndex;
 		var sender;
 		
-		if(event.ctrlKey === true) {
+		if(event.ctrlKey || event.metaKey || event.which === 2) {
 			cloned = $(ui.item[0]).clone(true);
 			previousIndex = cloned.data('previousIndex');
 			sender = $(ui.sender[0]);
