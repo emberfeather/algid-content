@@ -23,6 +23,7 @@
 			.change(updatePositions);
 		
 		path.autocomplete({
+			delay: 280,
 			select: function(event, ui) {
 				path.parent().trigger('submit');
 			},
