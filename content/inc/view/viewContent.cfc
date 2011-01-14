@@ -38,11 +38,11 @@
 			
 			<!--- Create the options for the select --->
 			<cfloop query="arguments.domains">
-				<cfset element.options.addOption(arguments.domains.domain, arguments.domains.domainID) />
+				<cfset element.options.addOption(arguments.domains.domain, arguments.domains.domainID.toString()) />
 				
 				<!--- Check for the current domain in the options --->
 				<cfif arguments.domains.domain eq variables.transport.theCgi.server_name>
-					<cfset element.value = toString(arguments.domains.domainID) />
+					<cfset element.value = arguments.domains.domainID.toString() />
 				</cfif>
 			</cfloop>
 			
@@ -52,7 +52,7 @@
 			<cfset theForm.addElement('hidden', {
 					name = "domainID",
 					label = "domain",
-					value = toString(arguments.domains.domainID)
+					value = arguments.domains.domainID.toString()
 				}) />
 		</cfif>
 		
@@ -127,7 +127,7 @@
 		
 		<!--- Create the options for the select --->
 		<cfloop query="arguments.types">
-			<cfset element.options.addOption(arguments.types.type, arguments.types.typeID) />
+			<cfset element.options.addOption(arguments.types.type, arguments.types.typeID.toString()) />
 		</cfloop>
 		
 		<cfset theForm.addElement('radio', element) />

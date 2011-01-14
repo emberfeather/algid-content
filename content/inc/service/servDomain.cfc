@@ -255,7 +255,7 @@
 					<!--- Duplicate domain --->
 					<cfthrow type="validation" message="Domain name already in use" detail="The '#arguments.domain.getDomain()#' domain already exists." />
 				<cfelse>
-					<cfset arguments.domain.setDomainID(toString(results.domainID)) />
+					<cfset arguments.domain.setDomainID(results.domainID.toString()) />
 					
 					<!--- Unarchive the domain --->
 					<cftransaction>
