@@ -44,6 +44,12 @@
 			attribute = 'expiresOn'
 		) />
 		
+		<!--- Is Error? --->
+		<cfset addAttribute(
+			attribute = 'isError',
+			defaultValue = false
+		) />
+		
 		<!--- Modified On --->
 		<cfset addAttribute(
 			attribute = 'modifiedOn'

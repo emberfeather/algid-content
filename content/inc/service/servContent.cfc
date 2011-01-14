@@ -35,33 +35,33 @@
 	</cffunction>
 <cfscript>
 	public void function clearCache() {
-		var cacheContent = '';
+		var contentCache = '';
 		
 		// Get the cache for the content
-		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
 		// Clear the cache
-		cacheContent.clear();
+		contentCache.clear();
 	}
 	
 	public void function deleteCacheKey( required string key ) {
-		var cacheContent = '';
+		var contentCache = '';
 		
 		// Get the cache for the content
-		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
 		// Delete from the cache
-		cacheContent.delete( arguments.key );
+		contentCache.delete( arguments.key );
 	}
 	
 	public array function getCacheAllIds() {
-		var cacheContent = '';
+		var contentCache = '';
 		
 		// Get the cache for the content
-		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
 		// Clear the cache
-		return cacheContent.getAllIds();
+		return contentCache.getAllIds();
 	}
 </cfscript>
 	<cffunction name="getContent" access="public" returntype="component" output="false">
@@ -247,7 +247,155 @@
 		<!--- After Publish Event --->
 		<cfset observer.afterPublish(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
-	
+<cfscript>
+	public component function retrieveContent( struct options = {} ) {
+		var content = '';
+		var contentCache = '';
+		var filter = {
+			domain = transport.theCgi.server_name,
+			keyAlongPathOrPath = ['*'],
+			orderBy = 'path',
+			orderSort = 'desc',
+			path = variables.transport.theRequest.managers.singleton.getUrl().search('_base')
+		};
+		var paths = '';
+		var servPath = '';
+		
+		servPath = getService('content', 'path');
+		
+		filter = extend(filter, arguments.options);
+		
+		// Use the plugin cache to pull the content from the cache first
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		
+		try {
+			// Check for cached version
+			if( contentCache.has( filter.domain & filter.path ) ) {
+				content = contentCache.get( filter.domain & filter.path );
+			} else {
+				// The content is not cached, retrieve it
+				paths = servPath.getPaths( filter );
+				
+				if (paths.recordCount gt 0) {
+					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+					
+					// Set the template
+					content.setTemplate(paths.template);
+					
+					// Store the original path requested
+					content.setPathExtra(filter.path, paths.path);
+					
+					// Trigger the before show event
+					transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content);
+					
+					// Check if the content should be cached
+					if (content.getDoCaching()) {
+						contentCache.put(filter.domain & filter.path, content);
+					}
+				} else {
+					getPageContext().getResponse().setStatus(404, 'Content not found');
+					
+					filter.keyAlongPath = '404';
+					
+					paths = servPath.getPaths( filter );
+					
+					if( paths.recordCount gt 0) {
+						// Use the cache for the error page
+						if( contentCache.has( filter.domain & paths.path )) {
+							content = contentCache.get( filter.domain & paths.path );
+						} else {
+							content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+							
+							// Set the template
+							content.setTemplate(paths.template);
+							
+							// Store the original path requested
+							content.setPathExtra(filter.path, paths.path);
+							
+							// Trigger the before show event
+							transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content);
+							
+							// Check if the content should be cached
+							if( content.getDoCaching()) {
+								contentCache.put(filter.domain & paths.path, content);
+							}
+						}
+					} else {
+						content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+						
+						// Page not found and no 404 page along the path
+						content.setTitle('404 Not Found');
+						content.setContent('404... content not found!');
+						content.setTemplate('index');
+					}
+					
+					content.setIsError(true);
+				}
+			}
+		} catch( any err ) {
+			getPageContext().getResponse().setStatus(500, 'Internal Server Error');
+			
+			// Track/dump the exception
+			if (transport.theApplication.managers.singleton.getApplication().isDevelopment() ) {
+				// Dump out the error
+				writeDump(err);
+				
+				abort;
+			} else {
+				try {
+					errorLogger = transport.theApplication.managers.singleton.getErrorLog();
+					
+					errorLogger.log(err);
+				} catch (any err) {
+					// Failed to log error, send report of unlogged error
+					
+					// TODO Send Unlogged Error
+				}
+			}
+			
+			filter.keyAlongPath = '500';
+			
+			// The content is not cached, retrieve it
+			paths = servPath.getPaths( filter );
+			
+			if (paths.recordCount gt 0) {
+				// Use the cache for the error page
+				if ( contentCache.has( filter.domain & paths.path ) ) {
+					content = contentCache.get( filter.domain & paths.path );
+				} else {
+					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+					
+					// Set the template
+					content.setTemplate(paths.template);
+					
+					// Store the original path requested
+					content.setPathExtra(filter.path, paths.path);
+					
+					// Trigger the before show event
+					transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content);
+					
+					// Check if the content should be cached
+					if (content.getDoCaching()) {
+						contentCache.put(filter.domain & paths.path, content);
+					}
+				}
+			} else {
+				content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+				
+				// Page not found and no 500 page along the path
+				content.setTitle('500 Server Error');
+				content.setContent('500... Internal server error!');
+				content.setTemplate('index');
+			}
+			
+			content.setIsError(true);
+		}
+		
+		variables.transport.theRequest.managers.singleton.setContent(content);
+		
+		return content;
+	}
+</cfscript>
 	<cffunction name="setContent" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
