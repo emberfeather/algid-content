@@ -7,63 +7,63 @@
 		
 		<!--- Content ID --->
 		<cfset addAttribute(
-				attribute = 'contentID'
-			) />
+			attribute = 'contentID'
+		) />
 		
 		<!--- Archived On --->
 		<cfset addAttribute(
-				attribute = 'archivedOn'
-			) />
+			attribute = 'archivedOn'
+		) />
 		
 		<!--- Content --->
 		<cfset addAttribute(
-				attribute = 'content'
-			) />
+			attribute = 'content'
+		) />
 		
 		<!--- CreatedOn --->
 		<cfset addAttribute(
-				attribute = 'createdOn'
-			) />
+			attribute = 'createdOn'
+		) />
 		
 		<!--- Do Caching --->
 		<cfset addAttribute(
-				attribute = 'doCaching',
-				defaultValue = true,
-				validation = {
-					isBoolean = true
-				}
-			) />
+			attribute = 'doCaching',
+			defaultValue = true,
+			validation = {
+				isBoolean = true
+			}
+		) />
 		
 		<!--- Domain ID --->
 		<cfset addAttribute(
-				attribute = 'domainID'
-			) />
+			attribute = 'domainID'
+		) />
 		
 		<!--- Expires On --->
 		<cfset addAttribute(
-				attribute = 'expiresOn'
-			) />
+			attribute = 'expiresOn'
+		) />
 		
 		<!--- Modified On --->
 		<cfset addAttribute(
-				attribute = 'modifiedOn'
-			) />
+			attribute = 'modifiedOn'
+		) />
 		
 		<!--- Paths --->
 		<cfset addAttribute(
-				attribute = 'paths',
-				defaultValue = []
-			) />
+			attribute = 'paths',
+			defaultValue = []
+		) />
 		
 		<!--- Title --->
 		<cfset addAttribute(
-				attribute = 'title'
-			) />
+			attribute = 'title'
+		) />
 		
 		<!--- Type ID --->
 		<cfset addAttribute(
-				attribute = 'typeID'
-			) />
+			attribute = 'typeID'
+		) />
 		
 		<!--- Set the bundle information for translation --->
 		<cfset addBundle('plugins/content/i18n/inc/model', 'modContent') />
