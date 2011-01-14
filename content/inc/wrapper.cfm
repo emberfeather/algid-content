@@ -5,15 +5,15 @@
 	
 	<!--- Setup a transport object to transport scopes --->
 	<cfset transport = {
-			theApplication = application,
-			theCGI = cgi,
-			theCookie = cookie,
-			theForm = form,
-			theRequest = request,
-			theServer = server,
-			theSession = session,
-			theUrl = url
-		} />
+		theApplication = application,
+		theCGI = cgi,
+		theCookie = cookie,
+		theForm = form,
+		theRequest = request,
+		theServer = server,
+		theSession = session,
+		theUrl = url
+	} />
 	
 	<!--- Retrieve the objects --->
 	<cfset i18n = transport.theApplication.managers.singleton.getI18N() />
@@ -79,167 +79,16 @@
 	<cfset profiler.start('content') />
 	
 	<cfset servContent = services.get('content', 'content') />
-	<cfset servPath = services.get('content', 'path') />
 	
-	<cfset filter = {
-			domain = transport.theCgi.server_name,
-			keyAlongPathOrPath = ['', '*'],
-			orderBy = 'path',
-			orderSort = 'desc',
-			path = theUrl.search('_base')
-		} />
+	<cfset content = servContent.retrieveContent() />
 	
-	<!--- Use the plugin cache to pull the content from the cache first --->
-	<cfset cacheContent = transport.theApplication.managers.plugin.getContent().getCache().getContent() />
+	<cfif content.getIsError()>
+		<!--- Add to the template levels so it appears on the page titles --->
+		<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
+	</cfif>
 	
-	<cftry>
-		<cfif cacheContent.has( filter.domain & filter.path )>
-			<cfset content = cacheContent.get( filter.domain & filter.path ) />
-			
-			<cfset transport.theRequest.managers.singleton.setContent(content) />
-		<cfelse>
-			<!--- The content is not cached, retrieve it --->
-			<cfset paths = servPath.getPaths( filter ) />
-			
-			<cfif paths.recordCount gt 0>
-				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
-				
-				<!--- Set the template --->
-				<cfset content.setTemplate(paths.template) />
-				
-				<cfset transport.theRequest.managers.singleton.setContent(content) />
-				
-				<!--- Store the original path requested --->
-				<cfset content.setPathExtra(filter.path, paths.path) />
-				
-				<!--- Trigger the before show event --->
-				<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
-				
-				<!--- Check if the content should be cached --->
-				<cfif content.getDoCaching()>
-					<cfset cacheContent.put(filter.domain & filter.path, content) />
-				</cfif>
-			<cfelse>
-				<cfheader statuscode="404" statustext="Content not found" />
-				
-				<cfset filter.keyAlongPath = '404' />
-				
-				<cfset paths = servPath.getPaths( filter ) />
-				
-				<cfif paths.recordCount gt 0>
-					<!--- Use the cache for the error page --->
-					<cfif cacheContent.has( filter.domain & paths.path )>
-						<cfset content = cacheContent.get( filter.domain & paths.path ) />
-						
-						<cfset transport.theRequest.managers.singleton.setContent(content) />
-					<cfelse>
-						<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
-						
-						<!--- Set the template --->
-						<cfset content.setTemplate(paths.template) />
-						
-						<cfset transport.theRequest.managers.singleton.setContent(content) />
-						
-						<!--- Store the original path requested --->
-						<cfset content.setPathExtra(filter.path, paths.path) />
-						
-						<!--- Trigger the before show event --->
-						<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
-						
-						<!--- Check if the content should be cached --->
-						<cfif content.getDoCaching()>
-							<cfset cacheContent.put(filter.domain & paths.path, content) />
-						</cfif>
-					</cfif>
-				<cfelse>
-					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
-					
-					<cfset transport.theRequest.managers.singleton.setContent(content) />
-					
-					<!--- Page not found and no 404 page along the path --->
-					<cfset content.setTitle('404 Not Found') />
-					<cfset content.setContent('404... content not found!') />
-					<cfset content.setTemplate('index') />
-				</cfif>
-				
-				<!--- Add to the template levels so it appears on the page titles --->
-				<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
-			</cfif>
-		</cfif>
-		
-		<cfset template.setContent(content.getContentHtml()) />
-		<cfset template.setTemplate(content.getTemplate()) />
-		
-		<cfcatch type="any">
-			<cfheader statuscode="500" statustext="Internal Server Error" />
-			
-			<!--- Track/dump the exception --->
-			<cfif transport.theApplication.managers.singleton.getApplication().isDevelopment()>
-				<!--- Dump out the error --->
-				<cfdump var="#cfcatch#" />
-				<cfabort />
-			<cfelse>
-				<cftry>
-					<cfset errorLogger = transport.theApplication.managers.singleton.getErrorLog() />
-					
-					<cfset errorLogger.log(cfcatch) />
-					
-					<cfcatch type="any">
-						<!--- Failed to log error, send report of unlogged error --->
-						
-						<!--- TODO Send Unlogged Error --->
-					</cfcatch>
-				</cftry>
-			</cfif>
-			
-			<cfset filter.keyAlongPath = '500' />
-			
-			<!--- The content is not cached, retrieve it --->
-			<cfset paths = servPath.getPaths( filter ) />
-			
-			<cfif paths.recordCount gt 0>
-				<!--- Use the cache for the error page --->
-				<cfif cacheContent.has( filter.domain & paths.path )>
-					<cfset content = cacheContent.get( filter.domain & paths.path ) />
-					
-					<cfset transport.theRequest.managers.singleton.setContent(content) />
-				<cfelse>
-					<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() ) />
-					
-					<!--- Set the template --->
-					<cfset content.setTemplate(paths.template) />
-					
-					<cfset transport.theRequest.managers.singleton.setContent(content) />
-					
-					<!--- Store the original path requested --->
-					<cfset content.setPathExtra(filter.path, paths.path) />
-					
-					<!--- Trigger the before show event --->
-					<cfset transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content) />
-					
-					<!--- Check if the content should be cached --->
-					<cfif content.getDoCaching()>
-						<cfset cacheContent.put(filter.domain & paths.path, content) />
-					</cfif>
-				</cfif>
-			<cfelse>
-				<cfset content = servContent.getContent( transport.theSession.managers.singleton.getUser(), '' ) />
-				
-				<cfset transport.theRequest.managers.singleton.setContent(content) />
-				
-				<!--- Page not found and no 500 page along the path --->
-				<cfset content.setTitle('500 Server Error') />
-				<cfset content.setContent('500... Internal server error!') />
-				<cfset content.setTemplate('index') />
-			</cfif>
-			
-			<cfset template.setContent(content.getContentHtml()) />
-			<cfset template.setTemplate(content.getTemplate()) />
-			
-			<!--- Add to the template levels so it appears on the page titles --->
-			<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
-		</cfcatch>
-	</cftry>
+	<cfset template.setContent(content.getContentHtml()) />
+	<cfset template.setTemplate(content.getTemplate()) />
 	
 	<cfset profiler.stop('content') />
 	
