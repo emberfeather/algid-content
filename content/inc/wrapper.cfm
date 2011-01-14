@@ -5,15 +5,15 @@
 	
 	<!--- Setup a transport object to transport scopes --->
 	<cfset transport = {
-			theApplication = application,
-			theCGI = cgi,
-			theCookie = cookie,
-			theForm = form,
-			theRequest = request,
-			theServer = server,
-			theSession = session,
-			theUrl = url
-		} />
+		theApplication = application,
+		theCGI = cgi,
+		theCookie = cookie,
+		theForm = form,
+		theRequest = request,
+		theServer = server,
+		theSession = session,
+		theUrl = url
+	} />
 	
 	<!--- Retrieve the objects --->
 	<cfset i18n = transport.theApplication.managers.singleton.getI18N() />
