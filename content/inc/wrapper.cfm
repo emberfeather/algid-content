@@ -65,7 +65,11 @@
 	) />
 	
 	<!--- Add the navigation cache --->
-	<cfset template.setNavigationCache(transport.theApplication.managers.plugin.getContent().getCache().getNavigation()) />
+	<cfset cacheManager = transport.theApplication.managers.plugin.getContent().getCache() />
+	
+	<cfif cacheManager.hasNavigation()>
+		<cfset template.setNavigationCache(cacheManager.getNavigation()) />
+	</cfif>
 	
 	<!--- Add the main jquery scripts with fallbacks --->
 	<cfset template.addScript('https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', { condition = '!window.jQuery', script = '/algid/script/jquery-min.js' }) />

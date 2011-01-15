@@ -31,14 +31,18 @@
 		caches = plugin.getCaches();
 		
 		// Create the content cache
-		temp = arguments.theApplication.factories.transient.getCacheContentForContent( caches.content );
-		
-		cacheManager.setContent(temp);
+		if(caches.content != '') {
+			temp = arguments.theApplication.factories.transient.getCacheContentForContent( caches.content );
+			
+			cacheManager.setContent(temp);
+		}
 		
 		// Create the navigation cache
-		temp = arguments.theApplication.factories.transient.getCacheNavigationForContent( caches.navigation );
-		
-		cacheManager.setNavigation(temp);
+		if(caches.navigation != '') {
+			temp = arguments.theApplication.factories.transient.getCacheNavigationForContent( caches.navigation );
+			
+			cacheManager.setNavigation(temp);
+		}
 	}
 	
 	public void function onRequestStart(required struct theApplication, required struct theSession, required struct theRequest, required string targetPage) {
