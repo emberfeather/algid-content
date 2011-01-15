@@ -283,14 +283,34 @@
 		<cfset var results = '' />
 		<cfset var path = '' />
 		<cfset var paths = '' />
+		<cfset var results = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'path') />
 		
-		<!--- TODO Check user permissions --->
-		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.path) />
+		
+		<!--- Make sure that the path is unique to this domain --->
+		<cfquery name="results" datasource="#variables.datasource.name#">
+			SELECT "pathID"
+			FROM "#variables.datasource.prefix#content"."path"
+			WHERE "contentID" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" />::uuid
+				AND "path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />
+				AND "contentID" IN (
+					SELECT "contentID"
+					FROM "#variables.datasource.prefix#content"."content"
+					WHERE "domainID" IN (
+						SELECT "domainID"
+						FROM "#variables.datasource.prefix#content"."content"
+						WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" />::uuid
+					)
+				)
+		</cfquery>
+		
+		<cfif results.recordCount>
+			<cfthrow type="validation" message="The '#arguments.path.getPath()#' path is already in use" detail="The '#arguments.path.getPath()#' path is already in use for the domain" />
+		</cfif>
 		
 		<cfif arguments.path.getPathID() neq ''>
 			<!--- Before Update Event --->
