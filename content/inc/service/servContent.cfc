@@ -21,14 +21,19 @@
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
-		<!--- TODO Check user Permissions --->
-		
 		<!--- Before Archive Event --->
 		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
 		
-		<!--- TODO Archive the content --->
-		
-		<!--- TODO Clear the cache for archived content --->
+		<!--- Archive The Content --->
+		<cftransaction>
+			<cfquery datasource="#variables.datasource.name#">
+				UPDATE "#variables.datasource.prefix#content"."content"
+				SET
+					"archivedOn" = now()
+				WHERE
+					"contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getContentID()#" />::uuid
+			</cfquery>
+		</cftransaction>
 		
 		<!--- After Archive Event --->
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
@@ -122,6 +127,7 @@
 		
 		<cfset var defaults = {
 				domain = variables.transport.theCgi.server_name,
+				isArchived = false,
 				orderBy = 'title',
 				orderSort = 'asc'
 			} />
@@ -408,8 +414,6 @@
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
-		
-		<!--- TODO Check user permissions --->
 		
 		<!--- Retrieve the paths from the content --->
 		<cfset paths = arguments.content.getPaths() />

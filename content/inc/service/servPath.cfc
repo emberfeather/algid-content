@@ -127,6 +127,7 @@
 			domain = variables.transport.theCgi.server_name,
 			orderBy = 'title',
 			orderSort = 'asc',
+			isArchived = false,
 			showNavigationFields = true
 		} />
 		<cfset var i = '' />
@@ -239,6 +240,10 @@
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.notIn)>,</cfif>
 					</cfloop>
 				)
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'isArchived')>
+				and c."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
 			
 			ORDER BY

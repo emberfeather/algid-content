@@ -68,6 +68,34 @@
 	}
 	
 	/**
+	 * Remove the cached paths before the archive including paths removed from the content.
+	 */
+	public void function beforeArchive( required struct transport, required component currUser, required component content ) {
+		var cache = '';
+		var cacheManager = '';
+		var domain = '';
+		var i = '';
+		var paths = '';
+		var servDomain = getService(arguments.transport, 'content', 'domain');
+		var servPath = getService(arguments.transport, 'content', 'path');
+		
+		// Get the cache for the content
+		cacheManager = arguments.transport.theApplication.managers.plugin.getContent().getCache();
+		cache = cacheManager.getContent();
+		
+		// Find the domain for the content
+		domain = servDomain.getDomain( arguments.transport.theSession.managers.singleton.getUser(), arguments.content.getDomainID() );
+		
+		// Get the paths from the content
+		paths = servPath.getPaths({ contentID: arguments.content.getContentID() });
+		
+		// Clear the cache key for each path for the content, including removed paths
+		for( i = 1; i <= paths.recordCount; i++ ) {
+			cache.delete( domain.getDomain() & paths['path'][i].toString() );
+		}
+	}
+	
+	/**
 	 * Parse the content to generate the contentHtml.
 	 */
 	public void function beforeDisplay( required struct transport, required component content ) {
