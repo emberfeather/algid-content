@@ -284,6 +284,7 @@
 		<cfargument name="path" type="component" required="true" />
 		
 		<cfset var i = '' />
+		<cfset var isLevelChanged = false />
 		<cfset var observer = '' />
 		<cfset var results = '' />
 		<cfset var path = '' />
@@ -321,7 +322,28 @@
 			<!--- Before Update Event --->
 			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.path) />
 			
+			<!--- Check if the path changes levels --->
+			<cfquery name="results" datasource="#variables.datasource.name#">
+				SELECT "path"
+				FROM "#variables.datasource.prefix#content"."path"
+				WHERE
+					"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" />::uuid
+			</cfquery>
+			
+			<cfif results.recordCount>
+				<cfset isLevelChanged = variables.path.getLevel( results.path ) != variables.path.getLevel( arguments.path.getPath() ) />
+			</cfif>
+			
 			<cftransaction>
+				<cfif isLevelChanged>
+					<cfquery datasource="#variables.datasource.name#">
+						DELETE
+						FROM "#variables.datasource.prefix#content"."bPath2Navigation"
+						WHERE
+							"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" />::uuid
+					</cfquery>
+				</cfif>
+				
 				<cfquery datasource="#variables.datasource.name#">
 					UPDATE "#variables.datasource.prefix#content"."path"
 					SET

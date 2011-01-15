@@ -70,4 +70,12 @@ component {
 		
 		return pathList;
 	}
+	
+	public numeric function getLevel( required string path ) {
+		var levels = 0;
+		
+		levels = listLen(arguments.path, '/');
+		
+		return levels;
+	}
 }
