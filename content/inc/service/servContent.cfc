@@ -132,7 +132,7 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT c."contentID", p."path", bpn."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
+			SELECT DISTINCT c."contentID", p."path", bpn."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
 			FROM "#variables.datasource.prefix#content"."content" c
 			LEFT JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
