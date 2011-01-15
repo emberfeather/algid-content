@@ -124,11 +124,11 @@
 		
 		<cfset var cleaned = '' />
 		<cfset var defaults = {
-				domain = variables.transport.theCgi.server_name,
-				orderBy = 'title',
-				orderSort = 'asc',
-				showNavigationFields = true
-			} />
+			domain = variables.transport.theCgi.server_name,
+			orderBy = 'title',
+			orderSort = 'asc',
+			showNavigationFields = true
+		} />
 		<cfset var i = '' />
 		<cfset var id = '' />
 		<cfset var pathPart = '' />
