@@ -34,14 +34,16 @@
 	 * Remove the cached paths after the save including paths removed from the content.
 	 */
 	public void function afterSave( required struct transport, required component currUser, required component content ) {
-		var cacheContent = '';
+		var cache = '';
+		var cacheManager = '';
 		var domain = '';
 		var i = '';
 		var paths = '';
 		var servDomain = getService(arguments.transport, 'content', 'domain');
 		
 		// Get the cache for the content
-		cacheContent = arguments.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		cacheManager = arguments.transport.theApplication.managers.plugin.getContent().getCache();
+		cache = cacheManager.getContent();
 		
 		// Find the domain for the content
 		domain = servDomain.getDomain( arguments.transport.theSession.managers.singleton.getUser(), arguments.content.getDomainID() );
@@ -51,7 +53,7 @@
 		
 		// Clear the cache key for each path for the content, including removed paths
 		for( i = 1; i <= arrayLen(paths); i++ ) {
-			cacheContent.delete( domain.getDomain() & paths[i].getPath() )
+			cache.delete( domain.getDomain() & paths[i].getPath() );
 		}
 	}
 	

@@ -24,6 +24,37 @@
 		<cfreturn arguments.path />
 	</cffunction>
 	
+	<cffunction name="createUniqueNavigationKey" access="private" returntype="string" output="false">
+		<cfargument name="domain" type="string" required="true" />
+		<cfargument name="theURL" type="component" required="true" />
+		<cfargument name="level" type="numeric" required="true" />
+		<cfargument name="navPosition" type="any" required="true" />
+		<cfargument name="options" type="struct" default="#{}#" />
+		<cfargument name="locale" type="string" default="en_US" />
+		
+		<cfset var i = '' />
+		<cfset var position = '' />
+		<cfset var uniqueContentID = '' />
+		
+		<cfif isArray(arguments.navPosition)>
+			<cfloop array="#arguments.navPosition#" index="i">
+				<cfset position &= i & '/' />
+			</cfloop>
+			
+			<cfset position = left(position, len(position) - 1) />
+		<cfelse>
+			<cfset position = arguments.navPosition />
+		</cfif>
+		
+		<cfset uniqueContentID = arguments.domain & arguments.theURL.search('_base') & '--' & arguments.locale & '--' & arguments.level & '--' & position />
+		
+		<cfif structKeyExists(arguments.options, 'depth')>
+			<cfset uniqueContentID &= '--depth' & arguments.options.depth />
+		</cfif>
+		
+		<cfreturn uniqueContentID />
+	</cffunction>
+	
 	<cffunction name="getNav" access="public" returntype="query" output="false">
 		<cfargument name="domain" type="string" required="true" />
 		<cfargument name="level" type="numeric" required="true" />
@@ -134,5 +165,38 @@
 		</cfloop>
 		
 		<cfreturn currentPage />
+	</cffunction>
+	
+	<cffunction name="toHTML" access="public" returntype="string" output="false">
+		<cfargument name="domain" type="string" required="true" />
+		<cfargument name="theURL" type="component" required="true" />
+		<cfargument name="level" type="numeric" required="true" />
+		<cfargument name="navPosition" type="any" required="true" />
+		<cfargument name="options" type="struct" default="#{}#" />
+		<cfargument name="locale" type="string" default="en_US" />
+		<cfargument name="authUser" type="component" required="false" />
+		<cfargument name="cache" type="component" required="false" />
+		
+		<cfset var html = '' />
+		<cfset var uniqueKey = '' />
+		
+		<!--- Check for a logged-in user -- NO caching --->
+		<cfif structKeyExists(arguments, 'authUser') and arguments.authUser.isLoggedIn()>
+			<cfreturn super.toHTML(argumentCollection = arguments) />
+		</cfif>
+		
+		<!--- Check is we have a cache to use --->
+		<cfif structKeyExists(arguments, 'cache')>
+			<!--- Determine a unique identification for caching purposes --->
+			<cfset uniqueKey = createUniqueNavigationKey(argumentCollection = arguments) />
+			
+			<cfif not arguments.cache.has(uniqueKey)>
+				<cfset arguments.cache.put(uniqueKey, super.toHtml(argumentCollection = arguments)) />
+			</cfif>
+			
+			<cfreturn arguments.cache.get(uniqueKey) />
+		</cfif>
+		
+		<cfreturn super.toHTML(argumentCollection = arguments) />
 	</cffunction>
 </cfcomponent>

@@ -4,10 +4,14 @@
 	},
 	"applicationTransients": {
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
+		"cacheNavigationForContent": "cf-compendium.inc.resource.storage.cache",
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
 		"templateForContent": "plugins.content.inc.resource.structure.template"
 	},
-	"cacheContent": "",
+	"caches": {
+		"content": "",
+		"navigation": ""
+	},
 	"defaultTheme": "content/extend/content/theme/content",
 	"i18n": {
 		"locales": [

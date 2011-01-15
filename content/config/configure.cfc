@@ -12,10 +12,12 @@
 	}
 	
 	public void function onApplicationStart(required struct theApplication) {
-		var cache = '';
+		var cacheManager = '';
+		var caches = '';
 		var navigation = '';
 		var plugin = '';
 		var storagePath = '';
+		var temp = '';
 		
 		// Get the plugin
 		plugin = arguments.theApplication.managers.plugin.getContent();
@@ -25,11 +27,18 @@
 		
 		arguments.theApplication.managers.singleton.setContentNavigation(navigation);
 		
-		// Create the content cache
-		cache = arguments.theApplication.factories.transient.getCacheContentForContent( plugin.getCacheContent() );
+		cacheManager = plugin.getCache();
+		caches = plugin.getCaches();
 		
-		// Store the cache in the plugin cache manager
-		plugin.getCache().setContent(cache);
+		// Create the content cache
+		temp = arguments.theApplication.factories.transient.getCacheContentForContent( caches.content );
+		
+		cacheManager.setContent(temp);
+		
+		// Create the navigation cache
+		temp = arguments.theApplication.factories.transient.getCacheNavigationForContent( caches.navigation );
+		
+		cacheManager.setNavigation(temp);
 	}
 	
 	public void function onRequestStart(required struct theApplication, required struct theSession, required struct theRequest, required string targetPage) {
