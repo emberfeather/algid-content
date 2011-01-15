@@ -94,6 +94,7 @@
 				ON pa."attributeOptionID" = ao."attributeOptionID"
 			WHERE 
 				n."level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.level#" />
+				AND c."archivedOn" IS NULL
 				AND p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentPath#%" />
 				AND n."navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navPosition#" />
 			
