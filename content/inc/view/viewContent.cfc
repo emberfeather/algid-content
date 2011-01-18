@@ -112,18 +112,18 @@
 		
 		<!--- Title --->
 		<cfset theForm.addElement('text', {
-				name = "title",
-				label = "title",
-				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
-			}) />
+			name = "title",
+			label = "title",
+			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
+		}) />
 		
 		<!--- Type --->
 		<cfset element = {
-				name = "typeID",
-				label = "type",
-				options = variables.transport.theApplication.factories.transient.getOptions(),
-				value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
-			} />
+			name = "typeID",
+			label = "type",
+			options = variables.transport.theApplication.factories.transient.getOptions(),
+			value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
+		} />
 		
 		<!--- Create the options for the select --->
 		<cfloop query="arguments.types">
@@ -134,32 +134,32 @@
 		
 		<!--- Content --->
 		<cfset theForm.addElement('textarea', {
-				name = "content",
-				label = "content",
-				value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )
-			}) />
+			name = "content",
+			label = "content",
+			value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )
+		}) />
 		
 		<!--- Paths --->
 		<cfloop query="arguments.paths">
 `			<cfset theForm.addElement('text', {
-					class = 'allowDeletion',
-					name = 'path' & arguments.paths.currentRow,
-					label = 'path',
-					value = arguments.paths.path
-				}) />
+				class = 'allowDeletion',
+				name = 'path' & arguments.paths.currentRow,
+				label = 'path',
+				value = arguments.paths.path
+			}) />
 			
 `			<cfset theForm.addElement('hidden', {
-					name = 'path' & arguments.paths.currentRow & '_id',
-					value = arguments.paths.pathID.toString()
-				}) />
+				name = 'path' & arguments.paths.currentRow & '_id',
+				value = arguments.paths.pathID.toString()
+			}) />
 		</cfloop>
 		
 		<cfset theForm.addElement('text', {
-				class = 'allowDuplication allowDeletion',
-				name = 'path',
-				label = 'path',
-				value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
-			}) />
+			class = 'allowDuplication allowDeletion',
+			name = 'path',
+			label = 'path',
+			value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
+		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
 	</cffunction>
