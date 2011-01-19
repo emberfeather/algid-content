@@ -14,7 +14,7 @@
 	<cfset servContent.setContent( user, content ) />
 	
 	<!--- Find/Update all paths --->
-	<cfset usedPaths = '' />
+	<cfset usedPaths = [] />
 	
 	<!--- Removed cached content --->
 	<cfset domain = servDomain.getDomain(user, content.getDomainID()) />
@@ -34,7 +34,7 @@
 			
 			<cfset servPath.setPath(user, path) />
 			
-			<cfset usedPaths = listAppend(usedPaths, path.getPathID()) />
+			<cfset arrayAppend(usedPaths, path.getPathID()) />
 			
 			<!--- Remove from content cache --->
 			<cfset servContent.deleteCacheKey( domain.getDomain() & path.getPath() ) />

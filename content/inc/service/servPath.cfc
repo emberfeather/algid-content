@@ -41,7 +41,6 @@
 		
 		<cfset var eventLog = '' />
 		<cfset var i = '' />
-		<cfset var id = '' />
 		<cfset var observer = '' />
 		
 		<cfparam name="arguments.filter.contentID" default="" />
@@ -63,20 +62,16 @@
 			
 			<cfif structKeyExists(arguments.filter, 'in')>
 				AND "pathID" IN (
-					<cfloop from="1" to="#listLen(arguments.filter.in)#" index="i">
-						<cfset id = listGetAt(arguments.filter.in, i) />
-						
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.in)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[i]#" null="#arguments.filter.in[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.in)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notIn')>
 				AND "pathID" NOT IN (
-					<cfloop from="1" to="#listLen(arguments.filter.notIn)#" index="i">
-						<cfset id = listGetAt(arguments.filter.notIn, i) />
-						
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.notIn)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.notIn)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.notIn[i]#" null="#arguments.filter.notIn[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.notIn)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
@@ -131,7 +126,6 @@
 			showNavigationFields = true
 		} />
 		<cfset var i = '' />
-		<cfset var id = '' />
 		<cfset var pathPart = '' />
 		<cfset var results = '' />
 		
@@ -232,18 +226,24 @@
 				AND p."contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.contentID#" />::uuid
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'in')>
+				AND p."pathID" NOT IN (
+					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[i]#" null="#arguments.filter.in[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.in)>,</cfif>
+					</cfloop>
+				)
+			</cfif>
+			
 			<cfif structKeyExists(arguments.filter, 'notIn')>
 				AND p."pathID" NOT IN (
-					<cfloop from="1" to="#listLen(arguments.filter.notIn)#" index="i">
-						<cfset id = listGetAt(arguments.filter.notIn, i) />
-						
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.notIn)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.notIn)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.notIn[i]#" null="#arguments.filter.notIn[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.notIn)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
-				and c."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
+				AND c."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
 			
 			ORDER BY
