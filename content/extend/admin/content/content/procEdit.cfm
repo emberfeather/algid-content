@@ -5,7 +5,6 @@
 
 <!--- Retrieve the object --->
 <cfset user = transport.theSession.managers.singleton.getUser() />
-
 <cfset content = servContent.getContent( user, theURL.search('content') ) />
 
 <cfif cgi.request_method eq 'post'>
