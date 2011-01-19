@@ -1,6 +1,7 @@
 <cfcomponent extends="algid.inc.resource.base.view" output="false">
 	<cffunction name="edit" access="public" returntype="string" output="false">
 		<cfargument name="domain" type="component" required="true" />
+		<cfargument name="hosts" type="query" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var i18n = '' />
@@ -15,10 +16,40 @@
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewDomain') />
 		
 		<cfset theForm.addElement('text', {
-				name = "domain",
-				label = "domain",
-				value = ( structKeyExists(arguments.request, 'domain') ? arguments.request.domain : arguments.domain.getDomain() )
+			name = "domain",
+			label = "domain",
+			value = ( structKeyExists(arguments.request, 'domain') ? arguments.request.domain : arguments.domain.getDomain() )
+		}) />
+		
+		<!--- Hostnames --->
+		<cfloop query="arguments.hosts">
+`			<cfset theForm.addElement('text', {
+				class = 'allowDeletion',
+				name = 'hostname' & arguments.hosts.currentRow,
+				label = 'hostname',
+				value = (
+					(
+						structKeyExists(arguments.request, 'hostname' & arguments.hosts.currentRow)
+						&& structKeyExists(arguments.request, 'hostname' & arguments.hosts.currentRow & '_id')
+						&& arguments.request['hostname' & arguments.hosts.currentRow & '_id'] == arguments.hosts.hostID.toString()
+					)
+					? arguments.request['hostname' & arguments.hosts.currentRow]
+					: arguments.hosts.hostname
+				)
 			}) />
+			
+			<cfset theForm.addElement('hidden', {
+				name = 'hostname' & arguments.hosts.currentRow & '_id',
+				value = arguments.hosts.hostID.toString()
+			}) />
+		</cfloop>
+		
+		<cfset theForm.addElement('text', {
+			class = 'allowDuplication allowDeletion',
+			name = 'hostname',
+			label = 'hostname',
+			value = ( structKeyExists(arguments.request, 'hostname') ? arguments.request.hostname : '' )
+		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
 	</cffunction>

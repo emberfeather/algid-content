@@ -30,6 +30,53 @@
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.domain) />
 	</cffunction>
 	
+	<cffunction name="deleteHosts" access="public" returntype="void" output="false">
+		<cfargument name="currUser" type="component" required="true" />
+		<cfargument name="filter" type="struct" required="true" />
+		
+		<cfset var eventLog = '' />
+		<cfset var i = '' />
+		<cfset var id = '' />
+		<cfset var observer = '' />
+		
+		<cfparam name="arguments.filter.domainID" default="" />
+		
+		<!--- Get the event observer --->
+		<cfset observer = getPluginObserver('content', 'host') />
+		
+		<!--- Get the event log from the transport --->
+		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
+		
+		<!--- Before Delete Bulk Event --->
+		<cfset observer.beforeDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
+		
+		<!--- Delete the host --->
+		<cfquery datasource="#variables.datasource.name#">
+			DELETE
+			FROM "#variables.datasource.prefix#content"."host"
+			WHERE "domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domainID#" null="#arguments.filter.domainID eq ''#" />::uuid
+			
+			<cfif structKeyExists(arguments.filter, 'in')>
+				AND "hostID" IN (
+					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[i]#" null="#arguments.filter.in[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.in)>,</cfif>
+					</cfloop>
+				)
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'notIn')>
+				AND "hostID" NOT IN (
+					<cfloop from="1" to="#arrayLen(arguments.filter.notIn)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.notIn[i]#" null="#arguments.filter.notIn[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.notIn)>,</cfif>
+					</cfloop>
+				)
+			</cfif>
+		</cfquery>
+		
+		<!--- After Delete Bulk Event --->
+		<cfset observer.afterDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
+	</cffunction>
+	
 	<cffunction name="getDomain" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="domainID" type="string" required="true" />
@@ -41,6 +88,10 @@
 		<cfset var results = '' />
 		
 		<cfset domain = getModel('content', 'domain') />
+		
+		<cfif not len(arguments.domainID)>
+			<cfreturn domain />
+		</cfif>
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "domainID", "domain", "createdOn", "archivedOn"
@@ -129,7 +180,7 @@
 	
 	<cffunction name="getHost" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
-		<cfargument name="hostname" type="string" required="true" />
+		<cfargument name="hostID" type="string" required="true" />
 		
 		<cfset var host = '' />
 		<cfset var modelSerial = '' />
@@ -137,10 +188,14 @@
 		
 		<cfset host = getModel('content', 'host') />
 		
+		<cfif not len(arguments.hostID)>
+			<cfreturn host />
+		</cfif>
+		
 		<cfquery name="results" datasource="#variables.datasource.name#">
 			SELECT "hostID", "domainID", "hostname", "isPrimary", "hasSSL"
 			FROM "#variables.datasource.prefix#content"."host"
-			WHERE "hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.hostname#" />
+			WHERE "hostID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.hostID#" />::uuid
 		</cfquery>
 		
 		<cfif results.recordCount>
@@ -324,14 +379,12 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'host') />
 		
-		<!--- TODO Check user permissions --->
-		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.hosts) />
 		
 		<cfloop array="#arguments.hosts#" index="host">
 			<cfif host.getHostID() eq ''>
-				<!--- Check for archived hostname --->
+				<!--- Check for in use hostname --->
 				<cfquery datasource="#variables.datasource.name#" name="results">
 					SELECT "hostname"
 					FROM "#variables.datasource.prefix#content"."host"
@@ -342,7 +395,7 @@
 				<!--- Check if we found an existing hostname --->
 				<cfif results.recordCount gt 0>
 					<!--- Duplicate hostname --->
-					<cfthrow type="validation" message="Hostname name already in use" detail="The '#host.getHostname()#' hostname already exists." />
+					<cfthrow type="validation" message="Hostname '#host.getHostname()#' already in use" detail="The '#host.getHostname()#' hostname already exists." />
 				<cfelse>
 					<!--- Insert as a new hostname --->
 					<!--- Create the new ID --->
