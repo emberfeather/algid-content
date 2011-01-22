@@ -17,8 +17,10 @@
 	<cffunction name="cleanPath" access="private" returntype="string" output="false">
 		<cfargument name="path" type="string" required="true" />
 		
-		<cfif right(arguments.path, 2) eq '/*'>
-			<cfset arguments.path = left(arguments.path, len(arguments.path) - 2) />
+		<cfset var pathLen = len(arguments.path) />
+		
+		<cfif pathLen gt 1 and right(arguments.path, 2) eq '/*'>
+			<cfset arguments.path = left(arguments.path, pathLen - 1) />
 		</cfif>
 		
 		<cfreturn arguments.path />

@@ -96,9 +96,10 @@
 	 */
 	public void function setPathExtra( required string requested, required string found ) {
 		var extra = '';
+		var foundLen = len(arguments.found);
 		
-		if(right(arguments.found, 2) == '/*') {
-			arguments.found = left(arguments.found, len(arguments.found) - len('/*'));
+		if(foundLen > 1 && right(arguments.found, 2) == '/*') {
+			arguments.found = left(arguments.found, foundLen - 1);
 		}
 		
 		if(len(arguments.requested) gt len(arguments.found)) {
