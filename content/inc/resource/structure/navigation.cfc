@@ -20,7 +20,7 @@
 		<cfset var pathLen = len(arguments.path) />
 		
 		<cfif pathLen gt 1 and right(arguments.path, 2) eq '/*'>
-			<cfset arguments.path = left(arguments.path, pathLen - 1) />
+			<cfset arguments.path = (pathLen > 2 ? left(arguments.path, pathLen - 2) : '') />
 		</cfif>
 		
 		<cfreturn arguments.path />

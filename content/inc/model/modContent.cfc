@@ -99,11 +99,13 @@
 		var foundLen = len(arguments.found);
 		
 		if(foundLen > 1 && right(arguments.found, 2) == '/*') {
-			arguments.found = left(arguments.found, foundLen - 1);
+			arguments.found = (foundLen > 2 ? left(arguments.found, foundLen - 2) : '');
+			
+			foundLen = len(arguments.found);
 		}
 		
-		if(len(arguments.requested) gt len(arguments.found)) {
-			extra = right(arguments.requested, len(arguments.requested) - len(arguments.found));
+		if(len(arguments.requested) gt foundLen) {
+			extra = right(arguments.requested, len(arguments.requested) - foundLen);
 		}
 		
 		variables.instance['pathExtra'] = extra;

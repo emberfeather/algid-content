@@ -28,5 +28,11 @@
 		
 		assertEquals('/here/it/is', variables.content.getPathExtra());
 	}
+	
+	public void function testReturnExtraWhenWildcardPathFoundInRoot() {
+		variables.content.setPathExtra('/my/path/here/it/is', '/*');
+		
+		assertEquals('/my/path/here/it/is', variables.content.getPathExtra());
+	}
 </cfscript>
 </cfcomponent>
