@@ -114,6 +114,7 @@
 		<cfset theForm.addElement('text', {
 			name = "title",
 			label = "title",
+			required = true,
 			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
 		}) />
 		
@@ -121,6 +122,7 @@
 		<cfset element = {
 			name = "typeID",
 			label = "type",
+			required = true,
 			options = variables.transport.theApplication.factories.transient.getOptions(),
 			value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
 		} />
