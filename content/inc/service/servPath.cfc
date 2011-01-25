@@ -299,11 +299,13 @@
 		
 		<!--- Make sure that the path is unique to this domain --->
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT "pathID"
-			FROM "#variables.datasource.prefix#content"."path"
-			WHERE "contentID" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" />::uuid
-				AND "path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />
-				AND "contentID" IN (
+			SELECT p."pathID", c."archivedOn"
+			FROM "#variables.datasource.prefix#content"."path" p
+			JOIN "#variables.datasource.prefix#content"."content" c
+				ON p."contentID" = c."contentID"
+			WHERE p."contentID" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" />::uuid
+				AND p."path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />
+				AND p."contentID" IN (
 					SELECT "contentID"
 					FROM "#variables.datasource.prefix#content"."content"
 					WHERE "domainID" IN (
@@ -315,7 +317,17 @@
 		</cfquery>
 		
 		<cfif results.recordCount>
-			<cfthrow type="validation" message="The '#arguments.path.getPath()#' path is already in use" detail="The '#arguments.path.getPath()#' path is already in use for the domain" />
+			<!--- Check if the existing path belonged to archived content --->
+			<cfif results.archivedOn neq ''>
+				<cfquery datasource="#variables.datasource.name#">
+					DELETE
+					FROM "#variables.datasource.prefix#content"."path"
+					WHERE
+						"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#results.pathID.toString()#" />::uuid
+				</cfquery>
+			<cfelse>
+				<cfthrow type="validation" message="The '#arguments.path.getPath()#' path is already in use" detail="The '#arguments.path.getPath()#' path is already in use for the domain" />
+			</cfif>
 		</cfif>
 		
 		<cfif arguments.path.getPathID() neq ''>
