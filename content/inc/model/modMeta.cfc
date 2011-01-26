@@ -6,27 +6,27 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Meta ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'metaID'
 			) />
 		
 		<!--- Content ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'contentID'
 			) />
 		
 		<!--- Name --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'name'
 			) />
 		
 		<!--- Value --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'value'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modMeta') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modMeta') />
 		
 		<cfreturn this />
 	</cffunction>

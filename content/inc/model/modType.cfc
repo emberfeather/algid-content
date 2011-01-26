@@ -6,22 +6,22 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Type ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'typeID'
 			) />
 		
 		<!--- Type --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'type'
 			) />
 		
 		<!--- Archived On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'archivedOn'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modType') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modType') />
 		
 		<cfreturn this />
 	</cffunction>

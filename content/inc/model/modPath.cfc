@@ -6,60 +6,60 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Path ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'pathID'
 			) />
 		
 		<!--- Content ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'contentID'
 			) />
 		
 		<!--- Is Active? --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'isActive'
 			) />
 		
 		<!--- Group By --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'groupBy'
 			) />
 		
 		<!--- Navigation ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'navigationID'
 			) />
 		
 		<!--- Order By --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'orderBy',
 				defaultValue = 0
 			) />
 		
 		<!--- Path --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'path',
 				defaultValue = '/'
 			) />
 		
 		<!--- Template --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'template',
 				defaultValue = 'index'
 			) />
 		
 		<!--- Title --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'title'
 			) />
 		
 		<!--- Theme ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'themeID'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modPath') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modPath') />
 		
 		<!---
 			Set pattern for valid URL path characters.

@@ -6,34 +6,34 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Navigation ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'navigationID'
 			) />
 		
 		<!--- Allow Groups? --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'allowGroups',
 				defaultValue = false
 			) />
 		
 		<!--- Level --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'level',
 				defaultValue = 0
 			) />
 		
 		<!--- Navigation --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'navigation'
 			) />
 		
 		<!--- Theme ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'themeID'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modNavigation') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modNavigation') />
 		
 		<cfreturn this />
 	</cffunction>

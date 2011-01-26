@@ -6,27 +6,27 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Content ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'contentID'
 		) />
 		
 		<!--- Archived On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'archivedOn'
 		) />
 		
 		<!--- Content --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'content'
 		) />
 		
 		<!--- CreatedOn --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'createdOn'
 		) />
 		
 		<!--- Do Caching --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'doCaching',
 			defaultValue = true,
 			validation = {
@@ -35,44 +35,44 @@
 		) />
 		
 		<!--- Domain ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'domainID'
 		) />
 		
 		<!--- Expires On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'expiresOn'
 		) />
 		
 		<!--- Is Error? --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'isError',
 			defaultValue = false
 		) />
 		
 		<!--- Modified On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'modifiedOn'
 		) />
 		
 		<!--- Paths --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'paths',
 			defaultValue = []
 		) />
 		
 		<!--- Title --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'title'
 		) />
 		
 		<!--- Type ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 			attribute = 'typeID'
 		) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modContent') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modContent') />
 		
 		<!--- Prime to blank --->
 		<cfset this.setContentHtml('') />

@@ -6,34 +6,34 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Host ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'hostID'
 			) />
 		
 		<!--- Domain ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'domainID'
 			) />
 		
 		<!--- Hostname --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'hostname'
 			) />
 		
 		<!--- Is Primary --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'isPrimary',
 				defaultValue = false
 			) />
 		
 		<!--- hasSSL --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'hasSSL',
 				defaultValue = false
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modDomain') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modDomain') />
 		
 		<cfreturn this />
 	</cffunction>
