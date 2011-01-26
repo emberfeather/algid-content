@@ -41,22 +41,42 @@
 <cfscript>
 	public void function clearCache() {
 		var contentCache = '';
+		var observer = '';
+		
+		// Get the event observer
+		observer = getPluginObserver('content', 'content');
 		
 		// Get the cache for the content
 		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
+		// Before Cache Clear Event
+		observer.beforeCacheClear(variables.transport);
+		
 		// Clear the cache
 		contentCache.clear();
+		
+		// After Cache Clear Event
+		observer.afterCacheClear(variables.transport);
 	}
 	
 	public void function deleteCacheKey( required string key ) {
 		var contentCache = '';
+		var observer = '';
+		
+		// Get the event observer
+		observer = getPluginObserver('content', 'content');
 		
 		// Get the cache for the content
 		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
+		// Before Cache Key Delete Event
+		observer.beforeCacheKeyDelete(variables.transport, arguments.key);
+		
 		// Delete from the cache
 		contentCache.delete( arguments.key );
+		
+		// After Cache Key Delete Event
+		observer.afterCacheKeyDelete(variables.transport, arguments.key);
 	}
 	
 	public array function getCacheAllIds() {

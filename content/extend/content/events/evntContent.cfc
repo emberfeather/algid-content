@@ -1,5 +1,4 @@
-<cfcomponent extends="algid.inc.resource.base.event" output="false">
-<cfscript>
+component extends="algid.inc.resource.base.event" {
 	public void function afterArchive( required struct transport, required component currUser, required component content ) {
 		var eventLog = '';
 		
@@ -8,6 +7,19 @@
 		
 		// TODO use i18n
 		eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully archived.');
+	}
+	
+	public void function afterCacheClear( required struct transport ) {
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('Content cache cleared successfully.');
+	}
+	
+	public void function afterCacheKeyDelete( required struct transport, required string key ) {
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('Deleted the content cache ''' & arguments.key & ''' key successfully.');
 	}
 	
 	public void function afterCreate( required struct transport, required component currUser, required component content ) {
@@ -18,6 +30,9 @@
 		
 		// TODO use i18n
 		eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully created.');
 	}
 	
 	public void function afterPublish( required struct transport, required component currUser, required component content ) {
@@ -65,6 +80,9 @@
 		
 		// TODO use i18n
 		eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully updated.');
 	}
 	
 	/**
@@ -121,5 +139,4 @@
 			arguments.content.setContentHtml(html);
 		}
 	}
-</cfscript>
-</cfcomponent>
+}

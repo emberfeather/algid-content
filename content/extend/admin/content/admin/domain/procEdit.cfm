@@ -50,9 +50,6 @@
 		<cfset servDomain.setHosts( user, [ host ] ) />
 	</cfif>
 	
-	<!--- Add a success message --->
-	<cfset transport.theSession.managers.singleton.getSuccess().addMessages('The domain ''' & domain.getDomain() & ''' was successfully saved.') />
-	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/admin/domain/list') />
 	<cfset theURL.removeRedirect('domain') />

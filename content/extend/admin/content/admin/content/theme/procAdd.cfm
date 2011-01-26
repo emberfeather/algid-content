@@ -22,9 +22,6 @@
 		<cfset servNavigation.setNavigation(transport.theSession.managers.singleton.getUser(), i) />
 	</cfloop>
 	
-	<!--- Add a success message --->
-	<cfset transport.theSession.managers.singleton.getSuccess().addMessages('The theme ''' & theme.getTheme() & ''' was successfully saved.') />
-	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/admin/content/theme/list') />
 	<cfset theURL.removeRedirect('plugin') />

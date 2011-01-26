@@ -14,9 +14,6 @@
 	
 	<cfset servTheme.archiveTheme( transport.theSession.managers.singleton.getUser(), theme ) />
 	
-	<!--- Add a success message --->
-	<cfset transport.theSession.managers.singleton.getSuccess().addMessages('The theme ''' & theme.getTheme() & ''' was successfully archived.') />
-	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/admin/content/theme/list') />
 	<cfset theURL.removeRedirect('theme') />

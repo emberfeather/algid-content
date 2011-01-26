@@ -56,10 +56,6 @@
 	
 	<cfset servPath.deletePaths(user, filter) />
 	
-	<!--- Add a success message --->
-	<!--- TODO use i18n --->
-	<cfset session.managers.singleton.getSuccess().addMessages('The ''' & content.getTitle() & ''' content was successfully saved.') />
-	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/content/browse') />
 	<cfset theURL.removeRedirect('content') />
