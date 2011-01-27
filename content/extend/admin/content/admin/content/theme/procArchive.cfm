@@ -26,5 +26,4 @@
 
 <!--- Redirect --->
 <cfset theURL.setRedirect('_base', '/admin/content/theme/list') />
-
 <cfset theURL.redirectRedirect() />
