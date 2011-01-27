@@ -284,8 +284,12 @@
 			orderSort = 'desc',
 			path = variables.transport.theRequest.managers.singleton.getUrl().search('_base')
 		};
+		var observer = '';
 		var paths = '';
 		var servPath = '';
+		
+		// Get the event observer
+		observer = getPluginObserver('content', 'content');
 		
 		servPath = getService('content', 'path');
 		
@@ -312,7 +316,7 @@
 					content.setPathExtra(filter.path, paths.path);
 					
 					// Trigger the before show event
-					transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content);
+					observer.beforeDisplay(transport, content);
 					
 					// Check if the content should be cached
 					if (content.getDoCaching()) {
@@ -339,7 +343,7 @@
 							content.setPathExtra(filter.path, paths.path);
 							
 							// Trigger the before show event
-							transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content);
+							observer.beforeDisplay(transport, content);
 							
 							// Check if the content should be cached
 							if( content.getDoCaching()) {
@@ -398,7 +402,7 @@
 					content.setPathExtra(filter.path, paths.path);
 					
 					// Trigger the before show event
-					transport.theApplication.managers.plugin.getContent().getObserver().getContent().beforeDisplay(transport, content);
+					observer.beforeDisplay(transport, content);
 					
 					// Check if the content should be cached
 					if (content.getDoCaching()) {
