@@ -1,0 +1,1 @@
+<cfinclude template="/plugins/content/extend/admin/content/admin/domain/sideEdit.cfm" />

@@ -17,11 +17,44 @@
 	<cffunction name="cleanPath" access="private" returntype="string" output="false">
 		<cfargument name="path" type="string" required="true" />
 		
-		<cfif right(arguments.path, 2) eq '/*'>
-			<cfset arguments.path = left(arguments.path, len(arguments.path) - 2) />
+		<cfset var pathLen = len(arguments.path) />
+		
+		<cfif pathLen gt 1 and right(arguments.path, 2) eq '/*'>
+			<cfset arguments.path = (pathLen gt 2 ? left(arguments.path, pathLen - 2) : '') />
 		</cfif>
 		
 		<cfreturn arguments.path />
+	</cffunction>
+	
+	<cffunction name="createUniqueNavigationKey" access="private" returntype="string" output="false">
+		<cfargument name="domain" type="string" required="true" />
+		<cfargument name="theURL" type="component" required="true" />
+		<cfargument name="level" type="numeric" required="true" />
+		<cfargument name="navPosition" type="any" required="true" />
+		<cfargument name="options" type="struct" default="#{}#" />
+		<cfargument name="locale" type="string" default="en_US" />
+		
+		<cfset var i = '' />
+		<cfset var position = '' />
+		<cfset var uniqueContentID = '' />
+		
+		<cfif isArray(arguments.navPosition)>
+			<cfloop array="#arguments.navPosition#" index="i">
+				<cfset position &= i & '/' />
+			</cfloop>
+			
+			<cfset position = left(position, len(position) - 1) />
+		<cfelse>
+			<cfset position = arguments.navPosition />
+		</cfif>
+		
+		<cfset uniqueContentID = arguments.domain & arguments.theURL.search('_base') & '--' & arguments.locale & '--' & arguments.level & '--' & position />
+		
+		<cfif structKeyExists(arguments.options, 'depth')>
+			<cfset uniqueContentID &= '--depth' & arguments.options.depth />
+		</cfif>
+		
+		<cfreturn uniqueContentID />
 	</cffunction>
 	
 	<cffunction name="getNav" access="public" returntype="query" output="false">
@@ -44,15 +77,17 @@
 		
 		<!--- Query the navigation query for the page information --->
 		<cfquery name="navigation" datasource="#variables.datasource.name#">
-			SELECT c."contentID", p."path", c."title", p."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", p."orderBy", '' AS ids, '' AS vars
+			SELECT c."contentID", p."path", c."title", bpn."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", bpn."orderBy", '' AS ids, '' AS vars
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
+			JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+				ON bpn."pathID" = p."pathID"
 			JOIN "#variables.datasource.prefix#content"."navigation" n
-				ON p."navigationID" = n."navigationID"
+				ON bpn."navigationID" = n."navigationID"
 			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Attribute" pa
 				ON p."pathID" = pa."pathID"
 			LEFT JOIN "#variables.datasource.prefix#content"."attribute" a
@@ -61,6 +96,7 @@
 				ON pa."attributeOptionID" = ao."attributeOptionID"
 			WHERE 
 				n."level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.level#" />
+				AND c."archivedOn" IS NULL
 				AND p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentPath#%" />
 				AND n."navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navPosition#" />
 			
@@ -69,12 +105,12 @@
 			
 			<!--- Check if we want to return blank nav titles --->
 			<cfif structKeyExists(arguments.options, 'hideBlankNavTitles') and arguments.options.hideBlankNavTitles eq true>
-				AND p."title" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="" />
+				AND bpn."title" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="" />
 			</cfif>
 			
 			<!--- TODO Permission checking --->
 			
-			ORDER BY p."orderBy" ASC, p."title" ASC
+			ORDER BY bpn."orderBy" ASC, bpn."title" ASC
 		</cfquery>
 		
 		<cfreturn navigation />
@@ -101,21 +137,23 @@
 		
 		<!--- Query for the exact pages that match the paths --->
 		<cfquery name="locate" datasource="#variables.datasource.name#">
-			SELECT p."path", c."title", p."title" AS "navTitle"
+			SELECT p."path", c."title", bpn."title" AS "navTitle"
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
 					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
+			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+				ON p."pathID" = bpn."pathID"
 			WHERE 1 = 1
 				AND (
-					"path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath)#" list="true" />)
-					OR "path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath, '*')#" list="true" />)
+					p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath)#" list="true" />)
+					OR p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath, '*')#" list="true" />)
 				)
 				
 				<!--- TODO add in authUser type permission checking --->
-			ORDER BY path ASC
+			ORDER BY p.path ASC
 		</cfquery>
 		
 		<!--- Prime the URL --->
@@ -130,5 +168,38 @@
 		</cfloop>
 		
 		<cfreturn currentPage />
+	</cffunction>
+	
+	<cffunction name="toHTML" access="public" returntype="string" output="false">
+		<cfargument name="domain" type="string" required="true" />
+		<cfargument name="theURL" type="component" required="true" />
+		<cfargument name="level" type="numeric" required="true" />
+		<cfargument name="navPosition" type="any" required="true" />
+		<cfargument name="options" type="struct" default="#{}#" />
+		<cfargument name="locale" type="string" default="en_US" />
+		<cfargument name="authUser" type="component" required="false" />
+		<cfargument name="cache" type="component" required="false" />
+		
+		<cfset var html = '' />
+		<cfset var uniqueKey = '' />
+		
+		<!--- Check for a logged-in user -- NO caching --->
+		<cfif structKeyExists(arguments, 'authUser') and arguments.authUser.isLoggedIn()>
+			<cfreturn super.toHTML(argumentCollection = arguments) />
+		</cfif>
+		
+		<!--- Check is we have a cache to use --->
+		<cfif structKeyExists(arguments, 'cache')>
+			<!--- Determine a unique identification for caching purposes --->
+			<cfset uniqueKey = createUniqueNavigationKey(argumentCollection = arguments) />
+			
+			<cfif not arguments.cache.has(uniqueKey)>
+				<cfset arguments.cache.put(uniqueKey, super.toHtml(argumentCollection = arguments)) />
+			</cfif>
+			
+			<cfreturn arguments.cache.get(uniqueKey) />
+		</cfif>
+		
+		<cfreturn super.toHTML(argumentCollection = arguments) />
 	</cffunction>
 </cfcomponent>

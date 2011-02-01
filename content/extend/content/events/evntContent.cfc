@@ -1,5 +1,4 @@
-<cfcomponent extends="algid.inc.resource.base.event" output="false">
-<cfscript>
+component extends="algid.inc.resource.base.event" {
 	public void function afterArchive( required struct transport, required component currUser, required component content ) {
 		var eventLog = '';
 		
@@ -8,6 +7,19 @@
 		
 		// TODO use i18n
 		eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully archived.');
+	}
+	
+	public void function afterCacheClear( required struct transport ) {
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('Content cache cleared successfully.');
+	}
+	
+	public void function afterCacheKeyDelete( required struct transport, required string key ) {
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('Deleted the content cache ''' & arguments.key & ''' key successfully.');
 	}
 	
 	public void function afterCreate( required struct transport, required component currUser, required component content ) {
@@ -18,6 +30,9 @@
 		
 		// TODO use i18n
 		eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully created.');
 	}
 	
 	public void function afterPublish( required struct transport, required component currUser, required component content ) {
@@ -34,14 +49,16 @@
 	 * Remove the cached paths after the save including paths removed from the content.
 	 */
 	public void function afterSave( required struct transport, required component currUser, required component content ) {
-		var cacheContent = '';
+		var cache = '';
+		var cacheManager = '';
 		var domain = '';
 		var i = '';
 		var paths = '';
 		var servDomain = getService(arguments.transport, 'content', 'domain');
 		
 		// Get the cache for the content
-		cacheContent = arguments.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		cacheManager = arguments.transport.theApplication.managers.plugin.getContent().getCache();
+		cache = cacheManager.getContent();
 		
 		// Find the domain for the content
 		domain = servDomain.getDomain( arguments.transport.theSession.managers.singleton.getUser(), arguments.content.getDomainID() );
@@ -51,7 +68,7 @@
 		
 		// Clear the cache key for each path for the content, including removed paths
 		for( i = 1; i <= arrayLen(paths); i++ ) {
-			cacheContent.delete( domain.getDomain() & paths[i].getPath() )
+			cache.delete( domain.getDomain() & paths[i].getPath() );
 		}
 	}
 	
@@ -63,6 +80,37 @@
 		
 		// TODO use i18n
 		eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		
+		// Add success message
+		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully updated.');
+	}
+	
+	/**
+	 * Remove the cached paths before the archive including paths removed from the content.
+	 */
+	public void function beforeArchive( required struct transport, required component currUser, required component content ) {
+		var cache = '';
+		var cacheManager = '';
+		var domain = '';
+		var i = '';
+		var paths = '';
+		var servDomain = getService(arguments.transport, 'content', 'domain');
+		var servPath = getService(arguments.transport, 'content', 'path');
+		
+		// Get the cache for the content
+		cacheManager = arguments.transport.theApplication.managers.plugin.getContent().getCache();
+		cache = cacheManager.getContent();
+		
+		// Find the domain for the content
+		domain = servDomain.getDomain( arguments.transport.theSession.managers.singleton.getUser(), arguments.content.getDomainID() );
+		
+		// Get the paths from the content
+		paths = servPath.getPaths({ contentID: arguments.content.getContentID() });
+		
+		// Clear the cache key for each path for the content, including removed paths
+		for( i = 1; i <= paths.recordCount; i++ ) {
+			cache.delete( domain.getDomain() & paths['path'][i].toString() );
+		}
 	}
 	
 	/**
@@ -91,5 +139,4 @@
 			arguments.content.setContentHtml(html);
 		}
 	}
-</cfscript>
-</cfcomponent>
+}

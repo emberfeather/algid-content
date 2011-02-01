@@ -2,8 +2,10 @@
 
 <!--- Check for existing paths --->
 <cfset filter = {
-		contentID = content.getContentID()
-	} />
+	contentID = content.getContentID(),
+	orderBy = 'path',
+	showNavigationFields = false
+} />
 
 <cfset paths = servPath.getPaths(filter) />
 

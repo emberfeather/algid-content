@@ -6,45 +6,45 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Theme ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'themeID'
 			) />
 		
 		<!--- Archived On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'archivedOn'
 			) />
 		
 		<!--- Directory --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'directory'
 			) />
 		
 		<!--- Is Public? --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'isPublic',
 				defaultValue = false
 			) />
 		
 		<!--- Levels --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'levels',
 				defaultValue = 0
 			) />
 		
 		<!--- Navigation --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'navigation',
 				defaultValue = []
 			) />
 		
 		<!--- Theme --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'theme'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modTheme') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modTheme') />
 		
 		<cfreturn this />
 	</cffunction>

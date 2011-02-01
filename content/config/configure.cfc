@@ -12,10 +12,12 @@
 	}
 	
 	public void function onApplicationStart(required struct theApplication) {
-		var cache = '';
+		var cacheManager = '';
+		var caches = '';
 		var navigation = '';
 		var plugin = '';
 		var storagePath = '';
+		var temp = '';
 		
 		// Get the plugin
 		plugin = arguments.theApplication.managers.plugin.getContent();
@@ -25,26 +27,35 @@
 		
 		arguments.theApplication.managers.singleton.setContentNavigation(navigation);
 		
-		// Create the content cache
-		cache = arguments.theApplication.factories.transient.getCacheContentForContent( plugin.getCacheContent() );
+		cacheManager = plugin.getCache();
+		caches = plugin.getCaches();
 		
-		// Store the cache in the plugin cache manager
-		plugin.getCache().setContent(cache);
+		// Create the content cache
+		if(caches.content != '') {
+			temp = arguments.theApplication.factories.transient.getCacheContentForContent( caches.content );
+			
+			cacheManager.setContent(temp);
+		}
+		
+		// Create the navigation cache
+		if(caches.navigation != '') {
+			temp = arguments.theApplication.factories.transient.getCacheNavigationForContent( caches.navigation );
+			
+			cacheManager.setNavigation(temp);
+		}
 	}
 	
 	public void function onRequestStart(required struct theApplication, required struct theSession, required struct theRequest, required string targetPage) {
 		var app = '';
 		var filter = '';
+		var options = '';
 		var plugin = '';
+		var rewrite = '';
 		var temp = '';
+		var theUrl = '';
 		
 		// Only do the following if in the content area
 		if (inContent( arguments.theApplication, arguments.targetPage )) {
-			// Create a profiler object
-			temp = arguments.theApplication.factories.transient.getProfiler(arguments.theApplication.managers.singleton.getApplication().isDevelopment());
-			
-			arguments.theRequest.managers.singleton.setProfiler( temp );
-			
 			// Default base
 			if ( !structKeyExists(url, '_base') ) {
 				url['_base'] = '/';
@@ -53,9 +64,23 @@
 			// Create the URL object for all the content requests
 			app = arguments.theApplication.managers.singleton.getApplication();
 			plugin = arguments.theApplication.managers.plugin.getContent();
-			temp = arguments.theApplication.factories.transient.getUrlForContent(url, { start = app.getPath() & plugin.getPath() & '?' });
 			
-			arguments.theRequest.managers.singleton.setUrl( temp );
+			arguments.theRequest.webRoot =  app.getPath();
+			arguments.theRequest.requestRoot =  plugin.getPath();
+			
+			options = { start = arguments.theRequest.webRoot & arguments.theRequest.requestRoot };
+			
+			rewrite = plugin.getRewrite();
+			
+			if(rewrite.isEnabled) {
+				options.rewriteBase = rewrite.base;
+				
+				theUrl = arguments.theApplication.factories.transient.getUrlRewrite(arguments.theUrl, options);
+			} else {
+				theUrl = arguments.theApplication.factories.transient.getUrl(arguments.theUrl, options);
+			}
+			
+			arguments.theRequest.managers.singleton.setUrl( theUrl );
 		}
 	}
 </cfscript>
@@ -721,6 +746,82 @@
 			ALTER TABLE "#variables.datasource.prefix#content".path ADD COLUMN "template" character varying(50);
 		</cfquery>
 	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.3
+	--->
+	<cffunction name="postgreSQL0_1_3" access="public" returntype="void" output="false">
+		<!---
+			TABLES
+		--->
+		
+		<!--- Bridge: Path to Navigation Table --->
+		<cfquery datasource="#variables.datasource.name#">
+			CREATE TABLE "#variables.datasource.prefix#content"."bPath2Navigation"
+			(
+				"pathID" uuid NOT NULL,
+				"navigationID" uuid NOT NULL,
+				title character varying(255) NOT NULL,
+				"groupBy" character varying(100),
+				"orderBy" integer NOT NULL DEFAULT 0,
+				CONSTRAINT "bPath2Navigation_pkey" PRIMARY KEY ("pathID", "navigationID"),
+				CONSTRAINT "bPath2Navigation_navigationID_fkey" FOREIGN KEY ("navigationID")
+					REFERENCES "#variables.datasource.prefix#content".navigation ("navigationID") MATCH SIMPLE
+					ON UPDATE CASCADE ON DELETE CASCADE,
+				CONSTRAINT "bPath2Navigation_pathID_fkey" FOREIGN KEY ("pathID")
+					REFERENCES "#variables.datasource.prefix#content".path ("pathID") MATCH SIMPLE
+					ON UPDATE CASCADE ON DELETE CASCADE
+			)
+			WITH (
+				OIDS=FALSE
+			);
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."bPath2Navigation" OWNER TO #variables.datasource.owner#;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			COMMENT ON TABLE "#variables.datasource.prefix#content"."bPath2Navigation" IS 'Bridge for attaching navigations to paths.';
+		</cfquery>
+		
+		<!--- Pull over existing navigation information --->
+		<cfquery datasource="#variables.datasource.name#">
+			INSERT INTO "#variables.datasource.prefix#content"."bPath2Navigation"
+			(
+				"pathID",
+				"navigationID",
+				title,
+				"groupBy",
+				"orderBy"
+			)
+			SELECT
+				"pathID",
+				"navigationID",
+				title,
+				"groupBy",
+				"orderBy"
+			FROM "#variables.datasource.prefix#content"."path"
+			WHERE "navigationID" IS NOT NULL
+		</cfquery>
+		
+		<!--- Remove old columns --->
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN title;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN "groupBy";
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN "orderBy";
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN "navigationID";
+		</cfquery>
+	</cffunction>
 <cfscript>
 	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
@@ -747,6 +848,18 @@
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
 				postgreSQL0_1_2();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+		
+		// 0.1.3
+		if (versions.compareVersions(arguments.installedVersion, '0.1.3') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_3();
 				
 				break;
 			default:

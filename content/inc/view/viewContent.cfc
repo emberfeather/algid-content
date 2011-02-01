@@ -38,11 +38,11 @@
 			
 			<!--- Create the options for the select --->
 			<cfloop query="arguments.domains">
-				<cfset element.options.addOption(arguments.domains.domain, arguments.domains.domainID) />
+				<cfset element.options.addOption(arguments.domains.domain, arguments.domains.domainID.toString()) />
 				
 				<!--- Check for the current domain in the options --->
 				<cfif arguments.domains.domain eq variables.transport.theCgi.server_name>
-					<cfset element.value = toString(arguments.domains.domainID) />
+					<cfset element.value = arguments.domains.domainID.toString() />
 				</cfif>
 			</cfloop>
 			
@@ -52,7 +52,7 @@
 			<cfset theForm.addElement('hidden', {
 					name = "domainID",
 					label = "domain",
-					value = toString(arguments.domains.domainID)
+					value = arguments.domains.domainID.toString()
 				}) />
 		</cfif>
 		
@@ -112,54 +112,56 @@
 		
 		<!--- Title --->
 		<cfset theForm.addElement('text', {
-				name = "title",
-				label = "title",
-				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
-			}) />
+			name = "title",
+			label = "title",
+			required = true,
+			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
+		}) />
 		
 		<!--- Type --->
 		<cfset element = {
-				name = "typeID",
-				label = "type",
-				options = variables.transport.theApplication.factories.transient.getOptions(),
-				value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
-			} />
+			name = "typeID",
+			label = "type",
+			required = true,
+			options = variables.transport.theApplication.factories.transient.getOptions(),
+			value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
+		} />
 		
 		<!--- Create the options for the select --->
 		<cfloop query="arguments.types">
-			<cfset element.options.addOption(arguments.types.type, arguments.types.typeID) />
+			<cfset element.options.addOption(arguments.types.type, arguments.types.typeID.toString()) />
 		</cfloop>
 		
 		<cfset theForm.addElement('radio', element) />
 		
 		<!--- Content --->
 		<cfset theForm.addElement('textarea', {
-				name = "content",
-				label = "content",
-				value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )
-			}) />
+			name = "content",
+			label = "content",
+			value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )
+		}) />
 		
 		<!--- Paths --->
 		<cfloop query="arguments.paths">
 `			<cfset theForm.addElement('text', {
-					class = 'allowDeletion',
-					name = 'path' & arguments.paths.currentRow,
-					label = 'path',
-					value = arguments.paths.path
-				}) />
+				class = 'allowDeletion',
+				name = 'path' & arguments.paths.currentRow,
+				label = 'path',
+				value = arguments.paths.path
+			}) />
 			
 `			<cfset theForm.addElement('hidden', {
-					name = 'path' & arguments.paths.currentRow & '_id',
-					value = arguments.paths.pathID.toString()
-				}) />
+				name = 'path' & arguments.paths.currentRow & '_id',
+				value = arguments.paths.pathID.toString()
+			}) />
 		</cfloop>
 		
 		<cfset theForm.addElement('text', {
-				class = 'allowDuplication allowDeletion',
-				name = 'path',
-				label = 'path',
-				value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
-			}) />
+			class = 'allowDuplication allowDeletion',
+			name = 'path',
+			label = 'path',
+			value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
+		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
 	</cffunction>
@@ -229,9 +231,11 @@
 		<cfargument name="options" type="struct" default="#{}#" />
 		
 		<cfset var app = '' />
-		<cfset var content = '' />
 		<cfset var datagrid = '' />
 		<cfset var i18n = '' />
+		<cfset var options = '' />
+		<cfset var plugin = '' />
+		<cfset var rewrite = '' />
 		<cfset var theUrl = '' />
 		
 		<cfset arguments.options.theURL = variables.transport.theRequest.managers.singleton.getURL() />
@@ -240,8 +244,19 @@
 		
 		<!--- Create a content front-end url --->
 		<cfset app = variables.transport.theApplication.managers.singleton.getApplication() />
-		<cfset content = variables.transport.theApplication.managers.plugin.getContent() />
-		<cfset theUrl = variables.transport.theApplication.factories.transient.getUrlForContent('', { start = app.getPath() & content.getPath() & '?' } ) />
+		<cfset plugin = variables.transport.theApplication.managers.plugin.getContent() />
+		
+		<cfset options = { start = app.getPath() & plugin.getPath() } />
+		
+		<cfset rewrite = plugin.getRewrite() />
+		
+		<cfif rewrite.isEnabled>
+			<cfset options.rewriteBase = rewrite.base />
+			
+			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrlRewrite('', options) />
+		<cfelse>
+			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrl('', options) />
+		</cfif>
 		
 		<!--- Add the resource bundle for the view --->
 		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />

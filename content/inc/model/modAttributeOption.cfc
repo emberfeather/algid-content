@@ -6,27 +6,27 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Attribute Option ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'attributeOptionID'
 			) />
 		
 		<!--- Attribute ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'attributeID'
 			) />
 		
 		<!--- Label --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'label'
 			) />
 		
 		<!--- Value --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'value'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modAttributeOption') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modAttributeOption') />
 		
 		<cfreturn this />
 	</cffunction>

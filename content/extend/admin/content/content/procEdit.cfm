@@ -4,18 +4,17 @@
 <cfset servType = services.get('content', 'type') />
 
 <!--- Retrieve the object --->
-<cfset content = servContent.getContent( session.managers.singleton.getUser(), theURL.search('content') ) />
+<cfset user = transport.theSession.managers.singleton.getUser() />
+<cfset content = servContent.getContent( user, theURL.search('content') ) />
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Process the form submission --->
 	<cfset modelSerial.deserialize(form, content) />
 	
-	<cfset user = transport.theSession.managers.singleton.getUser() />
-	
 	<cfset servContent.setContent( user, content ) />
 	
 	<!--- Find/Update all paths --->
-	<cfset usedPaths = '' />
+	<cfset usedPaths = [] />
 	
 	<!--- Removed cached content --->
 	<cfset domain = servDomain.getDomain(user, content.getDomainID()) />
@@ -35,7 +34,7 @@
 			
 			<cfset servPath.setPath(user, path) />
 			
-			<cfset usedPaths = listAppend(usedPaths, path.getPathID()) />
+			<cfset arrayAppend(usedPaths, path.getPathID()) />
 			
 			<!--- Remove from content cache --->
 			<cfset servContent.deleteCacheKey( domain.getDomain() & path.getPath() ) />
@@ -56,10 +55,6 @@
 	</cfloop>
 	
 	<cfset servPath.deletePaths(user, filter) />
-	
-	<!--- Add a success message --->
-	<!--- TODO use i18n --->
-	<cfset session.managers.singleton.getSuccess().addMessages('The ''' & content.getTitle() & ''' content was successfully saved.') />
 	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/content/browse') />

@@ -1,4 +1,13 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
+<cfscript>
+	public component function init( required struct transport ) {
+		super.init(arguments.transport);
+		
+		variables.path = arguments.transport.theApplication.managers.singleton.getPathForContent();
+		
+		return this;
+	}
+</cfscript>
 	<cffunction name="archiveTheme" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="theme" type="component" required="true" />
@@ -29,38 +38,7 @@
 		<!--- After Archive Event --->
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.theme) />
 	</cffunction>
-<cfscript>
-	private string function cleanPath( required string dirtyPath ) {
-		var path = getModel('content', 'path');
-		
-		return path.cleanPath(arguments.dirtyPath);
-	}
 	
-	private string function createPathList( required string path, string key = '' ) {
-		var pathList = '';
-		var pathPart = '';
-		var i = '';
-		
-		// If provided a key then prepend a slash so it can be added to the end of the pathPart
-		if(arguments.key != '') {
-			arguments.key = '/' & arguments.key;
-		} else {
-			pathList = listAppend(pathList, '/');
-		}
-		
-		// Set the base path in the path list
-		pathList = listAppend(pathList, arguments.key);
-		
-		// Make the list from each part of the provided path
-		for( i = 1; i <= listLen(arguments.path, '/'); i++ ) {
-			pathPart = listAppend(pathPart, listGetAt(arguments.path, i, '/'), '/');
-			
-			pathList = listAppend(pathList, '/' & pathPart & arguments.key);
-		}
-		
-		return pathList;
-	}
-</cfscript>
 	<cffunction name="getTheme" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="themeID" type="string" required="true" />
@@ -153,15 +131,15 @@
 					
 					<!--- Match a specific path or look for a key along the path --->
 					AND (
-						LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
-						OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+						LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
+						OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
 					)
 				<cfelseif arguments.filter.alongPath neq ''>
 					<!--- Find any theme along the path --->
-					AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
+					AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.alongPath)))#" list="true" />)
 				<cfelseif arguments.filter.path neq ''>
 					<!--- Match a specific path --->
-					AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+					AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
 				</cfif>
 			</cfif>
 			
@@ -364,8 +342,6 @@
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'theme') />
-		
-		<!--- TODO Check user permissions --->
 		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.theme) />

@@ -1,15 +1,28 @@
-h3 form {
+.theme form,
+.path form {
 	display: inline;
 }
 
-h3 input[type=text] {
-	width: 30em;
+.path {
+	font-size: 2.5em;
+}
+
+.path input[type=text] {
+	width: 525px;
+	font-size: inherit;
+	margin: 0;
+}
+
+.theme select {
+	font-size: inherit;
+	max-width: 250px;
 }
 
 .position {
 	max-height: 50em;
 	overflow: auto;
 	padding-right: .25em;
+	cursor: move;
 }
 
 .position .edit {
@@ -18,4 +31,8 @@ h3 input[type=text] {
 
 .position li:hover .edit {
 	visibility: visible;
+}
+
+.position .inlineEdit {
+	width: 100%;
 }

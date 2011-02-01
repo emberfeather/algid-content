@@ -51,7 +51,8 @@
 		navigationID = navigation.navigationID.toString(),
 		pathPrefix = currentPath.getPath(),
 		notPath = currentPath.getPath(),
-		oneLevelOnly = true
+		oneLevelOnly = true,
+		orderBy = 'orderBy'
 	})) />
 </cfloop>
 

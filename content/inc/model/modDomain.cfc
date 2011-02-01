@@ -6,33 +6,33 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Domain ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'domainID'
 			) />
 		
 		<!--- Archived On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'archivedOn'
 			) />
 		
 		<!--- CreatedOn --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'createdOn'
 			) />
 		
 		<!--- Domain --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'domain'
 			) />
 		
 		<!--- Hosts --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'hosts',
 				defaultValue = []
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modDomain') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modDomain') />
 		
 		<cfreturn this />
 	</cffunction>

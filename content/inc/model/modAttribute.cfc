@@ -6,32 +6,32 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Attribute ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'attributeID'
 			) />
 		
 		<!--- Theme ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'themeID'
 			) />
 		
 		<!--- Attribute --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'attribute'
 			) />
 		
 		<!--- Key --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'key'
 			) />
 		
 		<!--- Has Custom --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'hasCustom'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modAttribute') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modAttribute') />
 		
 		<cfreturn this />
 	</cffunction>

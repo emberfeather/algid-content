@@ -6,32 +6,32 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Content ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'contentID'
 			) />
 		
 		<!--- Draft --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'draft'
 			) />
 		
 		<!--- CreatedOn --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'createdOn'
 			) />
 		
 		<!--- PublishOn --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'publishOn'
 			) />
 		
 		<!--- UpdatedOn --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'updatedOn'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modDraft') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modDraft') />
 		
 		<cfreturn this />
 	</cffunction>

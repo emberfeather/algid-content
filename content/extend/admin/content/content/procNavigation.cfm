@@ -12,8 +12,8 @@
 </cfif>
 
 <!--- TODO minimized versions for production --->
-<cfset template.addScripts('../plugins/content/script/navigation.js') />
-<cfset template.addStyle('../plugins/content/style/navigation.css') />
+<cfset template.addScripts(transport.theRequest.webRoot & 'plugins/content/script/navigation.js') />
+<cfset template.addStyle(transport.theRequest.webRoot & 'plugins/content/style/navigation.css') />
 
 <cfset basePath = theUrl.search('path') />
 

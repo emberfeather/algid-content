@@ -1,4 +1,13 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
+<cfscript>
+	public component function init( required struct transport ) {
+		super.init(arguments.transport);
+		
+		variables.path = arguments.transport.theApplication.managers.singleton.getPathForContent();
+		
+		return this;
+	}
+</cfscript>
 	<cffunction name="deletePath" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="path" type="component" required="true" />
@@ -11,8 +20,6 @@
 		
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
-		
-		<!--- TODO Check user Permissions --->
 		
 		<!--- Before Delete Event --->
 		<cfset observer.beforeDelete(variables.transport, arguments.currUser, arguments.path) />
@@ -34,7 +41,6 @@
 		
 		<cfset var eventLog = '' />
 		<cfset var i = '' />
-		<cfset var id = '' />
 		<cfset var observer = '' />
 		
 		<cfparam name="arguments.filter.contentID" default="" />
@@ -44,8 +50,6 @@
 		
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
-		
-		<!--- TODO Check user Permissions --->
 		
 		<!--- Before Delete Bulk Event --->
 		<cfset observer.beforeDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
@@ -58,20 +62,16 @@
 			
 			<cfif structKeyExists(arguments.filter, 'in')>
 				AND "pathID" IN (
-					<cfloop from="1" to="#listLen(arguments.filter.in)#" index="i">
-						<cfset id = listGetAt(arguments.filter.in, i) />
-						
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.in)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[i]#" null="#arguments.filter.in[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.in)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notIn')>
 				AND "pathID" NOT IN (
-					<cfloop from="1" to="#listLen(arguments.filter.notIn)#" index="i">
-						<cfset id = listGetAt(arguments.filter.notIn, i) />
-						
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.notIn)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.notIn)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.notIn[i]#" null="#arguments.filter.notIn[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.notIn)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
@@ -80,39 +80,6 @@
 		<!--- After Delete Bulk Event --->
 		<cfset observer.afterDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
 	</cffunction>
-<cfscript>
-	public string function cleanPath( required string dirtyPath ) {
-		var path = getModel('content', 'path');
-		
-		return path.cleanPath(arguments.dirtyPath);
-	}
-	
-	public string function createPathList( required string path, string key = '' ) {
-		var pathList = '';
-		var pathPart = '';
-		var i = '';
-		
-		// If provided a key then prepend a slash so it can be added to the end of the pathPart
-		if(arguments.key != '') {
-			arguments.key = '/' & arguments.key;
-		} else {
-			// Handle the root path possibility
-			pathList = listAppend(pathList, '/');
-		}
-		
-		// Set the base path in the path list
-		pathList = listAppend(pathList, arguments.key);
-		
-		// Make the list from each part of the provided path
-		for( i = 1; i <= listLen(arguments.path, '/'); i++ ) {
-			pathPart = listAppend(pathPart, listGetAt(arguments.path, i, '/'), '/');
-			
-			pathList = listAppend(pathList, '/' & pathPart & arguments.key);
-		}
-		
-		return pathList;
-	}
-</cfscript>
 	
 	<cffunction name="getPath" access="public" returntype="component" output="false">
 		<cfargument name="currUser" type="component" required="true" />
@@ -132,11 +99,9 @@
 		
 		<cfif arguments.pathID neq ''>
 			<cfquery name="results" datasource="#variables.datasource.name#">
-				SELECT "pathID", "contentID", "themeID", "navigationID", "title", "path", "groupBy", "orderBy", "isActive", "template"
+				SELECT "pathID", "contentID", "themeID", "path", "isActive", "template"
 				FROM "#variables.datasource.prefix#content"."path"
 				WHERE "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.pathID#" null="#arguments.pathID eq ''#" />::uuid
-				
-				<!--- TODO Check for user connection --->
 			</cfquery>
 			
 			<cfif results.recordCount>
@@ -154,12 +119,13 @@
 		
 		<cfset var cleaned = '' />
 		<cfset var defaults = {
-				domain = variables.transport.theCgi.server_name,
-				orderBy = 'title',
-				orderSort = 'asc'
-			} />
+			domain = variables.transport.theCgi.server_name,
+			orderBy = 'title',
+			orderSort = 'asc',
+			isArchived = false,
+			showNavigationFields = true
+		} />
 		<cfset var i = '' />
-		<cfset var id = '' />
 		<cfset var pathPart = '' />
 		<cfset var results = '' />
 		
@@ -167,18 +133,27 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT p."pathID", p."contentID", p."themeID", p."navigationID", p."path", p."title", p."groupBy", p."orderBy", p."isActive", p."template"
+			SELECT DISTINCT p."pathID", p."contentID", p."themeID", p."path", p."isActive", p."template", c."title" AS contentTitle<cfif arguments.filter.showNavigationFields>, bpn."navigationID", bpn."title", bpn."groupBy", bpn."orderBy"</cfif>
 			FROM "#variables.datasource.prefix#content"."path" p
 			JOIN "#variables.datasource.prefix#content"."content" c
 				ON c."contentID" = p."contentID"
 			JOIN "#variables.datasource.prefix#content"."host" h
 				ON c."domainID" = h."domainID"
 					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			<!--- If there is a navigation ID given it means we want a full join --->
+			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq '' and arguments.filter.navigationID neq 'NULL'>
+				JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+					ON p."pathID" = bpn."pathID"
+					AND bpn."navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.navigationID#" />::uuid
+			<cfelse>
+				LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+					ON p."pathID" = bpn."pathID"
+			</cfif>
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				AND (
-					p."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					bpn."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
 			</cfif>
@@ -199,22 +174,22 @@
 				
 				<!--- Match a specific path or look for a key along the path --->
 				AND (
-					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
-					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
+					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
 				)
 			<cfelseif structKeyExists(arguments.filter, 'keyAlongPath')>
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
-				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
 				<!--- Find any path along the path --->
-				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.alongPath)))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'searchPath')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter.searchPath)#%" />
 			<cfelseif structKeyExists(arguments.filter, 'pathPrefix')>
-				<cfset cleaned = cleanPath(arguments.filter.pathPrefix) />
+				<cfset cleaned = variables.path.clean(arguments.filter.pathPrefix) />
 				
 				<cfif cleaned NEQ '/'>
 					<cfset cleaned &= '/' />
@@ -223,49 +198,66 @@
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
 				
-				<!--- Restrict to only the level that is prefixed --->
+				<!--- Restrict to only the level that is prefixed but allow for wildcard paths --->
 				<cfif structKeyExists(arguments.filter, 'oneLevelOnly') and arguments.filter.oneLevelOnly eq true>
-					AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+					AND (
+						LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+						OR (
+							LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+							AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+						)
+					)
 				</cfif>
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
-				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
+			</cfif>
+			
+			<!--- Handle looking for missing navigation --->
+			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq '' and arguments.filter.navigationID eq 'NULL'>
+				AND bpn."navigationID" IS NULL
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notPath') and arguments.filter.notPath neq ''>
-				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#cleanPath(arguments.filter.notPath)#" />
+				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath)#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'contentID') and arguments.filter.contentID neq ''>
 				AND p."contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.contentID#" />::uuid
 			</cfif>
 			
-			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq ''>
-				<cfif arguments.filter.navigationID eq 'NULL'>
-					AND p."navigationID" IS NULL
-				<cfelse>
-					AND p."navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.navigationID#" />::uuid
-				</cfif>
-			</cfif>
-			
-			<cfif structKeyExists(arguments.filter, 'notIn')>
+			<cfif structKeyExists(arguments.filter, 'in')>
 				AND p."pathID" NOT IN (
-					<cfloop from="1" to="#listLen(arguments.filter.notIn)#" index="i">
-						<cfset id = listGetAt(arguments.filter.notIn, i) />
-						
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#id#" null="#id eq ''#" />::uuid<cfif i lt listLen(arguments.filter.notIn)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[i]#" null="#arguments.filter.in[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.in)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'notIn')>
+				AND p."pathID" NOT IN (
+					<cfloop from="1" to="#arrayLen(arguments.filter.notIn)#" index="i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.notIn[i]#" null="#arguments.filter.notIn[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.notIn)>,</cfif>
+					</cfloop>
+				)
+			</cfif>
+			
+			<cfif structKeyExists(arguments.filter, 'isArchived')>
+				AND c."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
+			</cfif>
+			
 			ORDER BY
 			<cfswitch expression="#arguments.filter.orderBy#">
+				<cfcase value="orderBy">
+					bpn."orderBy" #arguments.filter.orderSort#,
+					c."title" ASC
+				</cfcase>
 				<cfcase value="updatedOn">
 					c."updatedOn" #arguments.filter.orderSort#,
 					c."title" ASC
 				</cfcase>
 				<cfcase value="title">
-					p."title" #arguments.filter.orderSort#
+					bpn."title" #arguments.filter.orderSort#
 				</cfcase>
 				<cfcase value="path">
 					p."path" #arguments.filter.orderSort#
@@ -292,34 +284,84 @@
 		<cfargument name="path" type="component" required="true" />
 		
 		<cfset var i = '' />
+		<cfset var isLevelChanged = false />
 		<cfset var observer = '' />
 		<cfset var results = '' />
 		<cfset var path = '' />
 		<cfset var paths = '' />
+		<cfset var results = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'path') />
 		
-		<!--- TODO Check user permissions --->
-		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.path) />
+		
+		<!--- Make sure that the path is unique to this domain --->
+		<cfquery name="results" datasource="#variables.datasource.name#">
+			SELECT p."pathID", c."archivedOn"
+			FROM "#variables.datasource.prefix#content"."path" p
+			JOIN "#variables.datasource.prefix#content"."content" c
+				ON p."contentID" = c."contentID"
+			WHERE p."contentID" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" />::uuid
+				AND p."path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />
+				AND p."contentID" IN (
+					SELECT "contentID"
+					FROM "#variables.datasource.prefix#content"."content"
+					WHERE "domainID" IN (
+						SELECT "domainID"
+						FROM "#variables.datasource.prefix#content"."content"
+						WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" />::uuid
+					)
+				)
+		</cfquery>
+		
+		<cfif results.recordCount>
+			<!--- Check if the existing path belonged to archived content --->
+			<cfif results.archivedOn neq ''>
+				<cfquery datasource="#variables.datasource.name#">
+					DELETE
+					FROM "#variables.datasource.prefix#content"."path"
+					WHERE
+						"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#results.pathID.toString()#" />::uuid
+				</cfquery>
+			<cfelse>
+				<cfthrow type="validation" message="The '#arguments.path.getPath()#' path is already in use" detail="The '#arguments.path.getPath()#' path is already in use for the domain" />
+			</cfif>
+		</cfif>
 		
 		<cfif arguments.path.getPathID() neq ''>
 			<!--- Before Update Event --->
 			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.path) />
 			
+			<!--- Check if the path changes levels --->
+			<cfquery name="results" datasource="#variables.datasource.name#">
+				SELECT "path"
+				FROM "#variables.datasource.prefix#content"."path"
+				WHERE
+					"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" />::uuid
+			</cfquery>
+			
+			<cfif results.recordCount>
+				<cfset isLevelChanged = variables.path.getLevel( results.path ) != variables.path.getLevel( arguments.path.getPath() ) />
+			</cfif>
+			
 			<cftransaction>
+				<cfif isLevelChanged>
+					<cfquery datasource="#variables.datasource.name#">
+						DELETE
+						FROM "#variables.datasource.prefix#content"."bPath2Navigation"
+						WHERE
+							"pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" />::uuid
+					</cfquery>
+				</cfif>
+				
 				<cfquery datasource="#variables.datasource.name#">
 					UPDATE "#variables.datasource.prefix#content"."path"
 					SET
 						"contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" null="#arguments.path.getContentID() eq ''#" />::uuid,
 						"themeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getThemeID()#" null="#arguments.path.getThemeID() eq ''#" />::uuid,
-						"navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getNavigationID()#" null="#arguments.path.getNavigationID() eq ''#" />::uuid,
-						"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTitle()#" />,
 						"path" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
-						"groupBy" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" null="#arguments.path.getGroupBy() eq ''#" />,
-						"orderBy" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
 						"isActive" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
 						"template" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" null="#arguments.path.getTemplate() eq ''#" />
 					WHERE
@@ -343,22 +385,14 @@
 						"pathID",
 						"contentID",
 						"themeID",
-						"navigationID",
-						"title",
 						"path",
-						"groupBy",
-						"orderBy",
 						"isActive",
 						"template"
 					) VALUES (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPathID()#" null="#arguments.path.getPathID() eq ''#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getContentID()#" null="#arguments.path.getContentID() eq ''#" />::uuid,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getThemeID()#" null="#arguments.path.getThemeID() eq ''#" />::uuid,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getNavigationID()#" null="#arguments.path.getNavigationID() eq ''#" />::uuid,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTitle()#" />,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getPath()#" />,
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getGroupBy()#" null="#arguments.path.getGroupBy() eq ''#" />,
-						<cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.path.getOrderBy()#" />,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getIsActive()#" />::bit,
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.path.getTemplate()#" null="#arguments.path.getTemplate() eq ''#" />
 					)

@@ -6,67 +6,73 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Content ID --->
-		<cfset addAttribute(
-				attribute = 'contentID'
-			) />
+		<cfset add__attribute(
+			attribute = 'contentID'
+		) />
 		
 		<!--- Archived On --->
-		<cfset addAttribute(
-				attribute = 'archivedOn'
-			) />
+		<cfset add__attribute(
+			attribute = 'archivedOn'
+		) />
 		
 		<!--- Content --->
-		<cfset addAttribute(
-				attribute = 'content'
-			) />
+		<cfset add__attribute(
+			attribute = 'content'
+		) />
 		
 		<!--- CreatedOn --->
-		<cfset addAttribute(
-				attribute = 'createdOn'
-			) />
+		<cfset add__attribute(
+			attribute = 'createdOn'
+		) />
 		
 		<!--- Do Caching --->
-		<cfset addAttribute(
-				attribute = 'doCaching',
-				defaultValue = true,
-				validation = {
-					isBoolean = true
-				}
-			) />
+		<cfset add__attribute(
+			attribute = 'doCaching',
+			defaultValue = true,
+			validation = {
+				isBoolean = true
+			}
+		) />
 		
 		<!--- Domain ID --->
-		<cfset addAttribute(
-				attribute = 'domainID'
-			) />
+		<cfset add__attribute(
+			attribute = 'domainID'
+		) />
 		
 		<!--- Expires On --->
-		<cfset addAttribute(
-				attribute = 'expiresOn'
-			) />
+		<cfset add__attribute(
+			attribute = 'expiresOn'
+		) />
+		
+		<!--- Is Error? --->
+		<cfset add__attribute(
+			attribute = 'isError',
+			defaultValue = false
+		) />
 		
 		<!--- Modified On --->
-		<cfset addAttribute(
-				attribute = 'modifiedOn'
-			) />
+		<cfset add__attribute(
+			attribute = 'modifiedOn'
+		) />
 		
 		<!--- Paths --->
-		<cfset addAttribute(
-				attribute = 'paths',
-				defaultValue = []
-			) />
+		<cfset add__attribute(
+			attribute = 'paths',
+			defaultValue = []
+		) />
 		
 		<!--- Title --->
-		<cfset addAttribute(
-				attribute = 'title'
-			) />
+		<cfset add__attribute(
+			attribute = 'title'
+		) />
 		
 		<!--- Type ID --->
-		<cfset addAttribute(
-				attribute = 'typeID'
-			) />
+		<cfset add__attribute(
+			attribute = 'typeID'
+		) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modContent') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modContent') />
 		
 		<!--- Prime to blank --->
 		<cfset this.setContentHtml('') />
@@ -90,13 +96,16 @@
 	 */
 	public void function setPathExtra( required string requested, required string found ) {
 		var extra = '';
+		var foundLen = len(arguments.found);
 		
-		if(right(arguments.found, 2) == '/*') {
-			arguments.found = left(arguments.found, len(arguments.found) - len('/*'));
+		if(foundLen > 1 && right(arguments.found, 2) == '/*') {
+			arguments.found = (foundLen > 2 ? left(arguments.found, foundLen - 2) : '');
+			
+			foundLen = len(arguments.found);
 		}
 		
-		if(len(arguments.requested) gt len(arguments.found)) {
-			extra = right(arguments.requested, len(arguments.requested) - len(arguments.found));
+		if(len(arguments.requested) gt foundLen) {
+			extra = right(arguments.requested, len(arguments.requested) - foundLen);
 		}
 		
 		variables.instance['pathExtra'] = extra;

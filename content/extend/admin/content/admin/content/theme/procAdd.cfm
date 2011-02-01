@@ -15,15 +15,12 @@
 	
 	<cfset servTheme.setTheme( transport.theSession.managers.singleton.getUser(), theme ) />
 	
-	<!--- Update the navigation --->
+	<!--- Set the navigation --->
 	<cfloop array="#theme.getNavigation()#" index="i">
 		<cfset i.setThemeID(theme.getThemeID()) />
 		
 		<cfset servNavigation.setNavigation(transport.theSession.managers.singleton.getUser(), i) />
 	</cfloop>
-	
-	<!--- Add a success message --->
-	<cfset transport.theSession.managers.singleton.getSuccess().addMessages('The theme ''' & theme.getTheme() & ''' was successfully saved.') />
 	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/admin/content/theme/list') />

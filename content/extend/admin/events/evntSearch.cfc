@@ -5,7 +5,6 @@
 		<cfargument name="results" type="component" required="true" />
 		<cfargument name="term" type="string" required="true" />
 		
-		<cfset var admin = '' />
 		<cfset var app = '' />
 		<cfset var filter = '' />
 		<cfset var i = 0 />
@@ -13,15 +12,29 @@
 		<cfset var locale = arguments.transport.theSession.managers.singleton.getSession().getLocale() />
 		<cfset var models = arguments.transport.theRequest.managers.singleton.getManagerModel() />
 		<cfset var navigation = '' />
+		<cfset var options = '' />
+		<cfset var plugin = '' />
 		<cfset var result = '' />
 		<cfset var results = '' />
+		<cfset var rewrite = '' />
 		<cfset var servContent = '' />
 		<cfset var servDomain = '' />
 		<cfset var theURL = '' />
 		
 		<cfset app = arguments.transport.theApplication.managers.singleton.getApplication() />
-		<cfset admin = arguments.transport.theApplication.managers.plugin.getAdmin() />
-		<cfset theUrl = arguments.transport.theApplication.factories.transient.getUrlForAdmin('', { start = app.getPath() & admin.getPath() & '?' } ) />
+		<cfset plugin = arguments.transport.theApplication.managers.plugin.getAdmin() />
+		
+		<cfset options = { start = app.getPath() & plugin.getPath() } />
+		
+		<cfset rewrite = plugin.getRewrite() />
+		
+		<cfif rewrite.isEnabled>
+			<cfset options.rewriteBase = rewrite.base />
+			
+			<cfset theUrl = arguments.transport.theApplication.factories.transient.getUrlRewrite(arguments.transport.theUrl, options) />
+		<cfelse>
+			<cfset theUrl = arguments.transport.theApplication.factories.transient.getUrl(arguments.transport.theUrl, options) />
+		</cfif>
 		
 		<!--- Use the search term to find the matches --->
 		<cfset servContent = getService(arguments.transport, 'content', 'content') />

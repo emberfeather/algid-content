@@ -1,4 +1,13 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
+<cfscript>
+	public component function init( required struct transport ) {
+		super.init(arguments.transport);
+		
+		variables.path = arguments.transport.theApplication.managers.singleton.getPathForContent();
+		
+		return this;
+	}
+</cfscript>
 	<cffunction name="archiveContent" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
@@ -12,77 +21,72 @@
 		<!--- Get the event log from the transport --->
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
-		<!--- TODO Check user Permissions --->
-		
 		<!--- Before Archive Event --->
 		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
 		
-		<!--- TODO Archive the content --->
+		<!--- Archive The Content --->
+		<cftransaction>
+			<cfquery datasource="#variables.datasource.name#">
+				UPDATE "#variables.datasource.prefix#content"."content"
+				SET
+					"archivedOn" = now()
+				WHERE
+					"contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getContentID()#" />::uuid
+			</cfquery>
+		</cftransaction>
 		
 		<!--- After Archive Event --->
 		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
 <cfscript>
-	private string function cleanPath(required string dirtyPath) {
-		var path = getModel('content', 'path');
-		
-		return path.cleanPath(arguments.dirtyPath);
-	}
-	
 	public void function clearCache() {
-		var cacheContent = '';
+		var contentCache = '';
+		var observer = '';
+		
+		// Get the event observer
+		observer = getPluginObserver('content', 'content');
 		
 		// Get the cache for the content
-		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		
+		// Before Cache Clear Event
+		observer.beforeCacheClear(variables.transport);
 		
 		// Clear the cache
-		cacheContent.clear();
-	}
-	
-	private string function createPathList( required string path, string key = '' ) {
-		var pathList = '';
-		var pathPart = '';
-		var i = '';
+		contentCache.clear();
 		
-		// If provided a key then prepend a slash so it can be added to the end of the pathPart
-		if(arguments.key != '') {
-			arguments.key = '/' & arguments.key;
-		} else {
-			// Handle the root path possibility
-			pathList = listAppend(pathList, '/');
-		}
-		
-		// Set the base path in the path list
-		pathList = listAppend(pathList, arguments.key);
-		
-		// Make the list from each part of the provided path
-		for( i = 1; i <= listLen(arguments.path, '/'); i++ ) {
-			pathPart = listAppend(pathPart, listGetAt(arguments.path, i, '/'), '/');
-			
-			pathList = listAppend(pathList, '/' & pathPart & arguments.key);
-		}
-		
-		return pathList;
+		// After Cache Clear Event
+		observer.afterCacheClear(variables.transport);
 	}
 	
 	public void function deleteCacheKey( required string key ) {
-		var cacheContent = '';
+		var contentCache = '';
+		var observer = '';
+		
+		// Get the event observer
+		observer = getPluginObserver('content', 'content');
 		
 		// Get the cache for the content
-		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		
+		// Before Cache Key Delete Event
+		observer.beforeCacheKeyDelete(variables.transport, arguments.key);
 		
 		// Delete from the cache
-		cacheContent.delete( arguments.key );
+		contentCache.delete( arguments.key );
+		
+		// After Cache Key Delete Event
+		observer.afterCacheKeyDelete(variables.transport, arguments.key);
 	}
 	
 	public array function getCacheAllIds() {
-		var cacheContent = '';
+		var contentCache = '';
 		
 		// Get the cache for the content
-		cacheContent = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
 		// Clear the cache
-		return cacheContent.getAllIds();
+		return contentCache.getAllIds();
 	}
 </cfscript>
 	<cffunction name="getContent" access="public" returntype="component" output="false">
@@ -143,6 +147,7 @@
 		
 		<cfset var defaults = {
 				domain = variables.transport.theCgi.server_name,
+				isArchived = false,
 				orderBy = 'title',
 				orderSort = 'asc'
 			} />
@@ -153,20 +158,22 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT c."contentID", p."path", p."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
-			FROM "#variables.datasource.prefix#content"."content" AS c
-			LEFT JOIN "#variables.datasource.prefix#content"."path" AS p
+			SELECT DISTINCT c."contentID", p."path", bpn."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
+			FROM "#variables.datasource.prefix#content"."content" c
+			LEFT JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
-			LEFT JOIN "#variables.datasource.prefix#content"."type" AS t
+			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
+				ON p."pathID" = bpn."pathID"
+			LEFT JOIN "#variables.datasource.prefix#content"."type" t
 				ON c."typeID" = t."typeID"
-			JOIN "#variables.datasource.prefix#content"."host" AS h
+			JOIN "#variables.datasource.prefix#content"."host" h
 				ON c."domainID" = h."domainID"
 					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
 			WHERE 1=1
 			
 			<cfif structKeyExists(arguments.filter, 'search') and arguments.filter.search neq ''>
 				AND (
-					p."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
+					bpn."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 					OR c."title" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 					OR p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.filter.search#%" />
 				)
@@ -188,23 +195,23 @@
 				
 				<!--- Match a specific path or look for a key along the path --->
 				AND (
-					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
-					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
+					OR LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.path), arguments.filter.keyAlongPathOrPath))#" list="true" />)
 				)
 			<cfelseif structKeyExists(arguments.filter, 'keyAlongPath')>
 				<!--- Find a key that is along the path --->
 				<cfparam name="arguments.filter.path" default="/" />
 				
-				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.path), arguments.filter.keyAlongPath))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'alongPath')>
 				<!--- Find any content along the path --->
-				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(createPathList(cleanPath(arguments.filter.alongPath)))#" list="true" />)
+				AND LOWER(p."path") IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.createList(variables.path.clean(arguments.filter.alongPath)))#" list="true" />)
 			<cfelseif structKeyExists(arguments.filter, 'searchPath')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter.searchPath)#%" />
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
-				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleanPath(arguments.filter.path))#" />
+				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'type') and arguments.filter.type neq ''>
@@ -222,7 +229,7 @@
 					c."title" ASC
 				</cfcase>
 				<cfcase value="navTitle">
-					p."title" #arguments.filter.orderSort#,
+					bpn."title" #arguments.filter.orderSort#,
 					c."title" #arguments.filter.orderSort#
 				</cfcase>
 				<cfcase value="path">
@@ -266,7 +273,159 @@
 		<!--- After Publish Event --->
 		<cfset observer.afterPublish(variables.transport, arguments.currUser, arguments.content) />
 	</cffunction>
-	
+<cfscript>
+	public component function retrieveContent( struct options = {} ) {
+		var content = '';
+		var contentCache = '';
+		var filter = {
+			domain = transport.theCgi.server_name,
+			keyAlongPathOrPath = ['*'],
+			orderBy = 'path',
+			orderSort = 'desc',
+			path = variables.transport.theRequest.managers.singleton.getUrl().search('_base')
+		};
+		var observer = '';
+		var paths = '';
+		var servPath = '';
+		
+		// Get the event observer
+		observer = getPluginObserver('content', 'content');
+		
+		servPath = getService('content', 'path');
+		
+		filter = extend(filter, arguments.options);
+		
+		// Use the plugin cache to pull the content from the cache first
+		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
+		
+		try {
+			// Check for cached version
+			if( contentCache.has( filter.domain & filter.path ) ) {
+				content = contentCache.get( filter.domain & filter.path );
+			} else {
+				// The content is not cached, retrieve it
+				paths = servPath.getPaths( filter );
+				
+				if (paths.recordCount gt 0) {
+					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+					
+					// Set the template
+					content.setTemplate(paths.template);
+					
+					// Store the original path requested
+					content.setPathExtra(filter.path, paths.path);
+					
+					// Trigger the before show event
+					observer.beforeDisplay(transport, content);
+					
+					// Check if the content should be cached
+					if (content.getDoCaching()) {
+						contentCache.put(filter.domain & filter.path, content);
+					}
+				} else {
+					getPageContext().getResponse().setStatus(404, 'Content not found');
+					
+					filter.keyAlongPath = '404';
+					
+					paths = servPath.getPaths( filter );
+					
+					if( paths.recordCount gt 0) {
+						// Use the cache for the error page
+						if( contentCache.has( filter.domain & paths.path )) {
+							content = contentCache.get( filter.domain & paths.path );
+						} else {
+							content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+							
+							// Set the template
+							content.setTemplate(paths.template);
+							
+							// Store the original path requested
+							content.setPathExtra(filter.path, paths.path);
+							
+							// Trigger the before show event
+							observer.beforeDisplay(transport, content);
+							
+							// Check if the content should be cached
+							if( content.getDoCaching()) {
+								contentCache.put(filter.domain & paths.path, content);
+							}
+						}
+					} else {
+						content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+						
+						// Page not found and no 404 page along the path
+						content.setTitle('404 Not Found');
+						content.setContent('404... content not found!');
+						content.setTemplate('index');
+					}
+					
+					content.setIsError(true);
+				}
+			}
+		} catch( any err ) {
+			getPageContext().getResponse().setStatus(500, 'Internal Server Error');
+			
+			// Track/dump the exception
+			if (transport.theApplication.managers.singleton.getApplication().isDevelopment() ) {
+				// Dump out the error
+				writeDump(err);
+				
+				abort;
+			} else {
+				try {
+					errorLogger = transport.theApplication.managers.singleton.getErrorLog();
+					
+					errorLogger.log(err);
+				} catch (any err) {
+					// Failed to log error, send report of unlogged error
+					
+					// TODO Send Unlogged Error
+				}
+			}
+			
+			filter.keyAlongPath = '500';
+			
+			// The content is not cached, retrieve it
+			paths = servPath.getPaths( filter );
+			
+			if (paths.recordCount gt 0) {
+				// Use the cache for the error page
+				if ( contentCache.has( filter.domain & paths.path ) ) {
+					content = contentCache.get( filter.domain & paths.path );
+				} else {
+					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+					
+					// Set the template
+					content.setTemplate(paths.template);
+					
+					// Store the original path requested
+					content.setPathExtra(filter.path, paths.path);
+					
+					// Trigger the before show event
+					observer.beforeDisplay(transport, content);
+					
+					// Check if the content should be cached
+					if (content.getDoCaching()) {
+						contentCache.put(filter.domain & paths.path, content);
+					}
+				}
+			} else {
+				content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+				
+				// Page not found and no 500 page along the path
+				content.setTitle('500 Server Error');
+				content.setContent('500... Internal server error!');
+				content.setTemplate('index');
+			}
+			
+			content.setIsError(true);
+		}
+		
+		variables.transport.theRequest.managers.singleton.setContent(content);
+		
+		return content;
+	}
+</cfscript>
 	<cffunction name="setContent" access="public" returntype="void" output="false">
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
@@ -279,8 +438,6 @@
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
-		
-		<!--- TODO Check user permissions --->
 		
 		<!--- Retrieve the paths from the content --->
 		<cfset paths = arguments.content.getPaths() />

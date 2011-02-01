@@ -6,42 +6,42 @@
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
 		<!--- Resource ID --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'resourceID'
 			) />
 		
 		<!--- Archived On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'archivedOn'
 			) />
 		
 		<!--- Created On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'createdOn'
 			) />
 		
 		<!--- Deprecated On --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'deprecatedOn'
 			) />
 		
 		<!--- File --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'file'
 			) />
 		
 		<!--- Is Public? --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'isPublic'
 			) />
 		
 		<!--- Resource --->
-		<cfset addAttribute(
+		<cfset add__attribute(
 				attribute = 'resource'
 			) />
 		
 		<!--- Set the bundle information for translation --->
-		<cfset addBundle('plugins/content/i18n/inc/model', 'modTheme') />
+		<cfset add__bundle('plugins/content/i18n/inc/model', 'modTheme') />
 		
 		<cfreturn this />
 	</cffunction>

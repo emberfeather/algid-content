@@ -7,6 +7,7 @@
 	
 	$(function(){
 		$('input[name^=path]').autocomplete({
+			delay: 280,
 			source: function(request, response) {
 				// Check if the term has already been searched for
 				if ( request.term in searchCache ) {
