@@ -69,14 +69,17 @@
 		// Get the cache for the content
 		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
-		// Before Cache Key Delete Event
-		observer.beforeCacheKeyDelete(variables.transport, arguments.key);
-		
-		// Delete from the cache
-		contentCache.delete( arguments.key );
-		
-		// After Cache Key Delete Event
-		observer.afterCacheKeyDelete(variables.transport, arguments.key);
+		// Make sure that the cache key exists before triggering events
+		if(contentCache.has( arguments.key )) {
+			// Before Cache Key Delete Event
+			observer.beforeCacheKeyDelete(variables.transport, arguments.key);
+			
+			// Delete from the cache
+			contentCache.delete( arguments.key );
+			
+			// After Cache Key Delete Event
+			observer.afterCacheKeyDelete(variables.transport, arguments.key);
+		}
 	}
 	
 	public array function getCacheAllIds() {
