@@ -137,7 +137,7 @@
 		
 		<!--- Query for the exact pages that match the paths --->
 		<cfquery name="locate" datasource="#variables.datasource.name#">
-			SELECT p."path", c."title", bpn."title" AS "navTitle"
+			SELECT DISTINCT p."path", c."title", bpn."title" AS "navTitle"
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
