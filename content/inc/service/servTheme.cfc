@@ -229,7 +229,7 @@
 							AND "level" = <cfqueryparam cfsqltype="cf_sql_smallint" value="#fileContent.navigation[i][j].level#" />
 					</cfquery>
 					
-					<cfset fileContent.navigation[i][j].navigationID = currentNavigation.navigationID />
+					<cfset fileContent.navigation[i][j].navigationID = currentNavigation.navigationID.toString() />
 				<cfelse>
 					<cfset fileContent.navigation[i][j].navigationID = '' />
 				</cfif>
