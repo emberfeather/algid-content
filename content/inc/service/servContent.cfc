@@ -12,14 +12,10 @@
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
-		<cfset var eventLog = '' />
 		<cfset var observer = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
-		
-		<!--- Get the event log from the transport --->
-		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
 		<!--- Before Archive Event --->
 		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
@@ -260,7 +256,6 @@
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
-		<cfset var eventLog = '' />
 		<cfset var observer = '' />
 		
 		<!--- Get the event observer --->
