@@ -25,7 +25,7 @@
 
 <!--- Not a valid path --->
 <cfif not len(paths.pathID.toString())>
-	<cfthrow type="forbidden" message="Path was not found" detail="Could not find the '#basePath#' path" />
+	<cfset transport.theSession.managers.singleton.getError().addMessages('The ''' & basePath & ''' path could not be found.') />
 </cfif>
 
 <cfset user = transport.theSession.managers.singleton.getUser() />
