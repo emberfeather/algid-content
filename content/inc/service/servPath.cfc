@@ -137,9 +137,14 @@
 			FROM "#variables.datasource.prefix#content"."path" p
 			JOIN "#variables.datasource.prefix#content"."content" c
 				ON c."contentID" = p."contentID"
-			JOIN "#variables.datasource.prefix#content"."host" h
-				ON c."domainID" = h."domainID"
-					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			<cfif structKeyExists(arguments.filter, 'domainID')>
+				AND c."domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domainID#" />::uuid
+			<cfelse>
+				JOIN "#variables.datasource.prefix#content"."host" h
+					ON c."domainID" = h."domainID"
+						AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			</cfif>
+			
 			<!--- If there is a navigation ID given it means we want a full join --->
 			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq '' and arguments.filter.navigationID neq 'NULL'>
 				JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
