@@ -214,8 +214,13 @@
 					)
 				</cfif>
 			<cfelseif structKeyExists(arguments.filter, 'path')>
+				<cfset cleaned = variables.path.clean(arguments.filter.path) />
+				
 				<!--- Match a specific path --->
-				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
+				AND (
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#" />
+					OR LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#/*" />
+				)
 			</cfif>
 			
 			<!--- Handle looking for missing navigation --->
@@ -224,7 +229,7 @@
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notPath') and arguments.filter.notPath neq ''>
-				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath)#" />
+				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath, { allowWildcards: true })#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'contentID') and arguments.filter.contentID neq ''>

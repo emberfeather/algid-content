@@ -5,7 +5,7 @@ component {
 		return this;
 	}
 	
-	public string function clean( required string value ) {
+	public string function clean( required string value, struct options = {} ) {
 		arguments.value = trim(arguments.value);
 		
 		// Convert standard characters
@@ -25,8 +25,15 @@ component {
 		arguments.value = reReplace(arguments.value, '[-]{2,}', '-', 'all');
 		arguments.value = reReplace(arguments.value, '[~]{2,}', '~', 'all');
 		
+		// Check for path ending with a asterisk
+		if (( !structKeyExists(arguments.options, 'allowWildcards') || !arguments.options.allowWildcards)
+			&& len(arguments.value) > 1
+			&& right(arguments.value, 1) == '*') {
+			arguments.value = reReplace(arguments.value, '[*]+$', '');
+		}
+		
 		// Check for path ending with a slash
-		if (len(arguments.value) gt 1 and right(arguments.value, 1) eq '/') {
+		if (len(arguments.value) > 1 && right(arguments.value, 1) == '/') {
 			arguments.value = reReplace(arguments.value, '[/]+$', '');
 		}
 		
