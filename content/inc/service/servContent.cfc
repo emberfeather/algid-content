@@ -307,6 +307,9 @@
 				if (paths.recordCount gt 0) {
 					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
 					
+					// Add to the singletons so it will be available for triggered events
+					variables.transport.theRequest.managers.singleton.setContent(content);
+					
 					// Set the template
 					content.setTemplate(paths.template);
 					
@@ -334,6 +337,9 @@
 						} else {
 							content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
 							
+							// Add to the singletons so it will be available for triggered events
+							variables.transport.theRequest.managers.singleton.setContent(content);
+							
 							// Set the template
 							content.setTemplate(paths.template);
 							
@@ -350,6 +356,9 @@
 						}
 					} else {
 						content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+						
+						// Add to the singletons so it will be available for triggered events
+						variables.transport.theRequest.managers.singleton.setContent(content);
 						
 						// Page not found and no 404 page along the path
 						content.setTitle('404 Not Found');
@@ -393,6 +402,9 @@
 				} else {
 					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
 					
+					// Add to the singletons so it will be available for triggered events
+					variables.transport.theRequest.managers.singleton.setContent(content);
+					
 					// Set the template
 					content.setTemplate(paths.template);
 					
@@ -410,6 +422,9 @@
 			} else {
 				content = getContent( transport.theSession.managers.singleton.getUser(), '' );
 				
+				// Add to the singletons so it will be available for triggered events
+				variables.transport.theRequest.managers.singleton.setContent(content);
+				
 				// Page not found and no 500 page along the path
 				content.setTitle('500 Server Error');
 				content.setContent('500... Internal server error!');
@@ -418,8 +433,6 @@
 			
 			content.setIsError(true);
 		}
-		
-		variables.transport.theRequest.managers.singleton.setContent(content);
 		
 		return content;
 	}
