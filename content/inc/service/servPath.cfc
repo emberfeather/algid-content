@@ -137,9 +137,14 @@
 			FROM "#variables.datasource.prefix#content"."path" p
 			JOIN "#variables.datasource.prefix#content"."content" c
 				ON c."contentID" = p."contentID"
-			JOIN "#variables.datasource.prefix#content"."host" h
-				ON c."domainID" = h."domainID"
-					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			<cfif structKeyExists(arguments.filter, 'domainID')>
+				AND c."domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domainID#" />::uuid
+			<cfelse>
+				JOIN "#variables.datasource.prefix#content"."host" h
+					ON c."domainID" = h."domainID"
+						AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
+			</cfif>
+			
 			<!--- If there is a navigation ID given it means we want a full join --->
 			<cfif structKeyExists(arguments.filter, 'navigationID') and arguments.filter.navigationID neq '' and arguments.filter.navigationID neq 'NULL'>
 				JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
@@ -209,8 +214,13 @@
 					)
 				</cfif>
 			<cfelseif structKeyExists(arguments.filter, 'path')>
+				<cfset cleaned = variables.path.clean(arguments.filter.path) />
+				
 				<!--- Match a specific path --->
-				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
+				AND (
+					LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#" />
+					OR LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#/*" />
+				)
 			</cfif>
 			
 			<!--- Handle looking for missing navigation --->
@@ -219,7 +229,7 @@
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notPath') and arguments.filter.notPath neq ''>
-				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath)#" />
+				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath, { allowWildcards: true })#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'contentID') and arguments.filter.contentID neq ''>

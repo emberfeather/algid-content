@@ -24,8 +24,8 @@
 <cfset paths = servPath.getPaths({ path = basePath }) />
 
 <!--- Not a valid path --->
-<cfif not len(paths.pathID.toString())>
-	<cfthrow type="forbidden" message="Path was not found" detail="Could not find the '#basePath#' path" />
+<cfif not paths.recordCount>
+	<cfset transport.theSession.managers.singleton.getError().addMessages('The ''' & basePath & ''' path could not be found.') />
 </cfif>
 
 <cfset user = transport.theSession.managers.singleton.getUser() />

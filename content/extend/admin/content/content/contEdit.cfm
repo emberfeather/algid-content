@@ -3,6 +3,7 @@
 <!--- Check for existing paths --->
 <cfset filter = {
 	contentID = content.getContentID(),
+	domainID = content.getDomainID(),
 	orderBy = 'path',
 	showNavigationFields = false
 } />

@@ -12,14 +12,10 @@
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
-		<cfset var eventLog = '' />
 		<cfset var observer = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
-		
-		<!--- Get the event log from the transport --->
-		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
 		<!--- Before Archive Event --->
 		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
@@ -69,14 +65,17 @@
 		// Get the cache for the content
 		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
-		// Before Cache Key Delete Event
-		observer.beforeCacheKeyDelete(variables.transport, arguments.key);
-		
-		// Delete from the cache
-		contentCache.delete( arguments.key );
-		
-		// After Cache Key Delete Event
-		observer.afterCacheKeyDelete(variables.transport, arguments.key);
+		// Make sure that the cache key exists before triggering events
+		if(contentCache.has( arguments.key )) {
+			// Before Cache Key Delete Event
+			observer.beforeCacheKeyDelete(variables.transport, arguments.key);
+			
+			// Delete from the cache
+			contentCache.delete( arguments.key );
+			
+			// After Cache Key Delete Event
+			observer.afterCacheKeyDelete(variables.transport, arguments.key);
+		}
 	}
 	
 	public array function getCacheAllIds() {
@@ -257,7 +256,6 @@
 		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
-		<cfset var eventLog = '' />
 		<cfset var observer = '' />
 		
 		<!--- Get the event observer --->
@@ -309,6 +307,9 @@
 				if (paths.recordCount gt 0) {
 					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
 					
+					// Add to the singletons so it will be available for triggered events
+					variables.transport.theRequest.managers.singleton.setContent(content);
+					
 					// Set the template
 					content.setTemplate(paths.template);
 					
@@ -336,6 +337,9 @@
 						} else {
 							content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
 							
+							// Add to the singletons so it will be available for triggered events
+							variables.transport.theRequest.managers.singleton.setContent(content);
+							
 							// Set the template
 							content.setTemplate(paths.template);
 							
@@ -352,6 +356,9 @@
 						}
 					} else {
 						content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+						
+						// Add to the singletons so it will be available for triggered events
+						variables.transport.theRequest.managers.singleton.setContent(content);
 						
 						// Page not found and no 404 page along the path
 						content.setTitle('404 Not Found');
@@ -395,6 +402,9 @@
 				} else {
 					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
 					
+					// Add to the singletons so it will be available for triggered events
+					variables.transport.theRequest.managers.singleton.setContent(content);
+					
 					// Set the template
 					content.setTemplate(paths.template);
 					
@@ -412,6 +422,9 @@
 			} else {
 				content = getContent( transport.theSession.managers.singleton.getUser(), '' );
 				
+				// Add to the singletons so it will be available for triggered events
+				variables.transport.theRequest.managers.singleton.setContent(content);
+				
 				// Page not found and no 500 page along the path
 				content.setTitle('500 Server Error');
 				content.setContent('500... Internal server error!');
@@ -420,8 +433,6 @@
 			
 			content.setIsError(true);
 		}
-		
-		variables.transport.theRequest.managers.singleton.setContent(content);
 		
 		return content;
 	}
