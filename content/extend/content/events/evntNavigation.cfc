@@ -2,7 +2,7 @@ component extends="algid.inc.resource.base.event" {
 	/**
 	 * Remove the cached navigation after the positioning.
 	 */
-	public void function afterPosition( required struct transport, required component currUser, required component path, required array positions ) {
+	public void function afterPosition( required struct transport, required component path, required array positions ) {
 		var cache = '';
 		var cacheManager = '';
 		

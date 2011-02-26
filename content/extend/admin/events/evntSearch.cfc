@@ -1,7 +1,6 @@
 <cfcomponent extends="algid.inc.resource.base.event" output="false">
 	<cffunction name="onSearch" access="public" returntype="void" output="false">
 		<cfargument name="transport" type="struct" required="true" />
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="results" type="component" required="true" />
 		<cfargument name="term" type="string" required="true" />
 		

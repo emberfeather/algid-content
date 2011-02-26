@@ -1,6 +1,5 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
 	<cffunction name="deleteNavigation" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="navigation" type="component" required="true" />
 		
 		<cfset var observer = '' />
@@ -9,7 +8,7 @@
 		<cfset observer = getPluginObserver('content', 'navigation') />
 		
 		<!--- Before Delete Event --->
-		<cfset observer.beforeDelete(variables.transport, arguments.currUser, arguments.navigation) />
+		<cfset observer.beforeDelete(variables.transport, arguments.navigation) />
 		
 		<cftransaction>
 			<cfquery datasource="#variables.datasource.name#">
@@ -20,11 +19,10 @@
 		</cftransaction>
 		
 		<!--- After Delete Event --->
-		<cfset observer.afterDelete(variables.transport, arguments.currUser, arguments.navigation) />
+		<cfset observer.afterDelete(variables.transport, arguments.navigation) />
 	</cffunction>
 	
 	<cffunction name="getNavigation" access="public" returntype="component" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="navigationID" type="string" required="true" />
 		
 		<cfset var navigation = '' />
@@ -112,7 +110,6 @@
 	</cffunction>
 	
 	<cffunction name="setNavigation" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="navigation" type="component" required="true" />
 		
 		<cfset var i = '' />
@@ -126,11 +123,11 @@
 		<cfset observer = getPluginObserver('content', 'navigation') />
 		
 		<!--- Before Save Event --->
-		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.navigation) />
+		<cfset observer.beforeSave(variables.transport, arguments.navigation) />
 		
 		<cfif arguments.navigation.getNavigationID() neq ''>
 			<!--- Before Update Event --->
-			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.navigation) />
+			<cfset observer.beforeUpdate(variables.transport, arguments.navigation) />
 			
 			<cftransaction>
 				<cfquery datasource="#variables.datasource.name#">
@@ -143,10 +140,10 @@
 			</cftransaction>
 			
 			<!--- After Update Event --->
-			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.navigation) />
+			<cfset observer.afterUpdate(variables.transport, arguments.navigation) />
 		<cfelse>
 			<!--- Before Create Event --->
-			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.navigation) />
+			<cfset observer.beforeCreate(variables.transport, arguments.navigation) />
 			
 			<!--- Create the new ID --->
 			<cfset arguments.navigation.setNavigationID( createUUID() ) />
@@ -170,15 +167,14 @@
 			</cftransaction>
 			
 			<!--- After Create Event --->
-			<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.navigation) />
+			<cfset observer.afterCreate(variables.transport, arguments.navigation) />
 		</cfif>
 		
 		<!--- After Save Event --->
-		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.navigation) />
+		<cfset observer.afterSave(variables.transport, arguments.navigation) />
 	</cffunction>
 	
 	<cffunction name="setPositions" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="path" type="component" required="true" />
 		<cfargument name="positions" type="array" required="true" />
 		
@@ -197,7 +193,7 @@
 		<cfset observer = getPluginObserver('content', 'navigation') />
 		
 		<!--- Before Position Event --->
-		<cfset observer.beforePosition(variables.transport, arguments.currUser, arguments.path, arguments.positions) />
+		<cfset observer.beforePosition(variables.transport, arguments.path, arguments.positions) />
 		
 		<cfset pathClean = variables.transport.theApplication.managers.singleton.getPathForContent() />
 		
@@ -325,6 +321,6 @@
 		</cftransaction>
 		
 		<!--- After Position Event --->
-		<cfset observer.afterPosition(variables.transport, arguments.currUser, arguments.path, arguments.positions) />
+		<cfset observer.afterPosition(variables.transport, arguments.path, arguments.positions) />
 	</cffunction>
 </cfcomponent>

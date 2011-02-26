@@ -21,12 +21,10 @@
 	<!--- Create new content for each title given in the domain --->
 	<cfset numContent = 0 />
 	
-	<cfset user = transport.theSession.managers.singleton.getUser() />
-	
 	<!--- Find all titles and create content for each --->
 	<cfloop list="#form.fieldnames#" index="i">
 		<cfif left(i, 5) eq 'title' and trim(form[i]) neq ''>
-			<cfset content = servContent.getContent( user, '' ) />
+			<cfset content = servContent.getContent( '' ) />
 			
 			<!--- Set the domainID --->
 			<cfset content.setDomainID(form.domainID) />
@@ -34,7 +32,7 @@
 			<!--- Set the title --->
 			<cfset content.setTitle(form[i]) />
 			
-			<cfset servContent.setContent( user, content ) />
+			<cfset servContent.setContent( content ) />
 			
 			<cfset numContent++ />
 		</cfif>

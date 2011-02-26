@@ -9,7 +9,6 @@
 	}
 </cfscript>
 	<cffunction name="archiveContent" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
 		<cfset var observer = '' />
@@ -18,7 +17,7 @@
 		<cfset observer = getPluginObserver('content', 'content') />
 		
 		<!--- Before Archive Event --->
-		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.beforeArchive(variables.transport, arguments.content) />
 		
 		<!--- Archive The Content --->
 		<cftransaction>
@@ -32,7 +31,7 @@
 		</cftransaction>
 		
 		<!--- After Archive Event --->
-		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.afterArchive(variables.transport, arguments.content) />
 	</cffunction>
 <cfscript>
 	public void function clearCache() {
@@ -89,7 +88,6 @@
 	}
 </cfscript>
 	<cffunction name="getContent" access="public" returntype="component" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="contentID" type="string" required="true" />
 		
 		<cfset var content = '' />
@@ -136,7 +134,7 @@
 		</cfif>
 		
 		<!--- After Read Event --->
-		<cfset observer.afterRead(variables.transport, arguments.currUser, content) />
+		<cfset observer.afterRead(variables.transport, content) />
 		
 		<cfreturn content />
 	</cffunction>
@@ -253,7 +251,6 @@
 	</cffunction>
 	
 	<cffunction name="publishContent" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
 		<cfset var observer = '' />
@@ -261,15 +258,13 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
 		
-		<!--- TODO Check for user permission --->
-		
 		<!--- Before Publish Event --->
-		<cfset observer.beforePublish(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.beforePublish(variables.transport, arguments.content) />
 		
 		<!--- TODO Publish the content --->
 		
 		<!--- After Publish Event --->
-		<cfset observer.afterPublish(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.afterPublish(variables.transport, arguments.content) />
 	</cffunction>
 <cfscript>
 	public component function retrieveContent( struct options = {} ) {
@@ -305,7 +300,7 @@
 				paths = servPath.getPaths( filter );
 				
 				if (paths.recordCount gt 0) {
-					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+					content = getContent( paths.contentID.toString() );
 					
 					// Add to the singletons so it will be available for triggered events
 					variables.transport.theRequest.managers.singleton.setContent(content);
@@ -335,7 +330,7 @@
 						if( contentCache.has( filter.domain & paths.path )) {
 							content = contentCache.get( filter.domain & paths.path );
 						} else {
-							content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+							content = getContent( paths.contentID.toString() );
 							
 							// Add to the singletons so it will be available for triggered events
 							variables.transport.theRequest.managers.singleton.setContent(content);
@@ -355,7 +350,7 @@
 							}
 						}
 					} else {
-						content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+						content = getContent( '' );
 						
 						// Add to the singletons so it will be available for triggered events
 						variables.transport.theRequest.managers.singleton.setContent(content);
@@ -400,7 +395,7 @@
 				if ( contentCache.has( filter.domain & paths.path ) ) {
 					content = contentCache.get( filter.domain & paths.path );
 				} else {
-					content = getContent( transport.theSession.managers.singleton.getUser(), paths.contentID.toString() );
+					content = getContent( paths.contentID.toString() );
 					
 					// Add to the singletons so it will be available for triggered events
 					variables.transport.theRequest.managers.singleton.setContent(content);
@@ -420,7 +415,7 @@
 					}
 				}
 			} else {
-				content = getContent( transport.theSession.managers.singleton.getUser(), '' );
+				content = getContent( '' );
 				
 				// Add to the singletons so it will be available for triggered events
 				variables.transport.theRequest.managers.singleton.setContent(content);
@@ -438,7 +433,6 @@
 	}
 </cfscript>
 	<cffunction name="setContent" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="content" type="component" required="true" />
 		
 		<cfset var i = '' />
@@ -454,11 +448,11 @@
 		<cfset paths = arguments.content.getPaths() />
 		
 		<!--- Before Save Event --->
-		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.beforeSave(variables.transport, arguments.content) />
 		
 		<cfif arguments.content.getContentID() neq ''>
 			<!--- Before Update Event --->
-			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.content) />
+			<cfset observer.beforeUpdate(variables.transport, arguments.content) />
 			
 			<cftransaction>
 				<cfquery datasource="#variables.datasource.name#">
@@ -476,10 +470,10 @@
 			</cftransaction>
 			
 			<!--- After Update Event --->
-			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.content) />
+			<cfset observer.afterUpdate(variables.transport, arguments.content) />
 		<cfelse>
 			<!--- Before Create Event --->
-			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.content) />
+			<cfset observer.beforeCreate(variables.transport, arguments.content) />
 			
 			<!--- Insert as a new domain --->
 			<!--- Create the new ID --->
@@ -504,10 +498,10 @@
 			</cftransaction>
 			
 			<!--- After Create Event --->
-			<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.content) />
+			<cfset observer.afterCreate(variables.transport, arguments.content) />
 		</cfif>
 		
 		<!--- After Save Event --->
-		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.content) />
+		<cfset observer.afterSave(variables.transport, arguments.content) />
 	</cffunction>
 </cfcomponent>

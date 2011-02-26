@@ -1,10 +1,9 @@
 <cfset servContent = services.get('content', 'content') />
 
 <!--- Retrieve the object --->
-<cfset user = transport.theSession.managers.singleton.getUser() />
-<cfset content = servContent.getContent( user, theURL.search('content') ) />
+<cfset content = servContent.getContent( theURL.search('content') ) />
 
-<cfset servContent.archiveContent( user, content ) />
+<cfset servContent.archiveContent( content ) />
 
 <!--- Redirect --->
 <cfset theURL.setRedirect('_base', '/content/browse') />

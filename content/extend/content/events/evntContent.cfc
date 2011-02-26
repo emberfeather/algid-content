@@ -1,12 +1,9 @@
 component extends="algid.inc.resource.base.event" {
-	public void function afterArchive( required struct transport, required component currUser, required component content ) {
-		var eventLog = '';
-		
-		// Get the event log from the transport
-		eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
+	public void function afterArchive( required struct transport, required component content ) {
+		local.eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
 		
 		// TODO use i18n
-		eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		local.eventLog.logEvent('content', 'contentArchive', 'Archived the ''' & arguments.content.getTitle() & ''' content.', arguments.transport.theSession.managers.singleton.getUser().getUserID(), arguments.content.getContentID());
 		
 		// Add success message
 		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully archived.');
@@ -22,33 +19,27 @@ component extends="algid.inc.resource.base.event" {
 		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('Deleted the content cache ''' & arguments.key & ''' key successfully.');
 	}
 	
-	public void function afterCreate( required struct transport, required component currUser, required component content ) {
-		var eventLog = '';
-		
-		// Get the event log from the transport
-		eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
+	public void function afterCreate( required struct transport, required component content ) {
+		local.eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
 		
 		// TODO use i18n
-		eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		local.eventLog.logEvent('content', 'contentCreate', 'Created the ''' & arguments.content.getTitle() & ''' content.', arguments.transport.theSession.managers.singleton.getUser().getUserID(), arguments.content.getContentID());
 		
 		// Add success message
 		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully created.');
 	}
 	
-	public void function afterPublish( required struct transport, required component currUser, required component content ) {
-		var eventLog = '';
-		
-		// Get the event log from the transport
-		eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
+	public void function afterPublish( required struct transport, required component content ) {
+		local.eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
 		
 		// TODO use i18n
-		eventLog.logEvent('content', 'contentPublish', 'Published the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		local.eventLog.logEvent('content', 'contentPublish', 'Published the ''' & arguments.content.getTitle() & ''' content.', arguments.transport.theSession.managers.singleton.getUser().getUserID(), arguments.content.getContentID());
 	}
 	
 	/**
 	 * Remove the cached paths after the save including paths removed from the content.
 	 */
-	public void function afterSave( required struct transport, required component currUser, required component content ) {
+	public void function afterSave( required struct transport, required component content ) {
 		var cache = '';
 		var cacheManager = '';
 		var domain = '';
@@ -61,7 +52,7 @@ component extends="algid.inc.resource.base.event" {
 		cache = cacheManager.getContent();
 		
 		// Find the domain for the content
-		domain = servDomain.getDomain( arguments.transport.theSession.managers.singleton.getUser(), arguments.content.getDomainID() );
+		domain = servDomain.getDomain( arguments.arguments.content.getDomainID() );
 		
 		// Get the paths from the content
 		paths = arguments.content.getPaths();
@@ -72,14 +63,11 @@ component extends="algid.inc.resource.base.event" {
 		}
 	}
 	
-	public void function afterUpdate( required struct transport, required component currUser, required component content ) {
-		var eventLog = '';
-		
-		// Get the event log from the transport
-		eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
+	public void function afterUpdate( required struct transport, required component content ) {
+		local.eventLog = arguments.transport.theApplication.managers.singleton.getEventLog();
 		
 		// TODO use i18n
-		eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.currUser.getUserID(), arguments.content.getContentID());
+		local.eventLog.logEvent('content', 'contentUpdate', 'Updated the ''' & arguments.content.getTitle() & ''' content.', arguments.transport.theSession.managers.singleton.getUser().getUserID(), arguments.content.getContentID());
 		
 		// Add success message
 		arguments.transport.theSession.managers.singleton.getSuccess().addMessages('The ''' & arguments.content.getTitle() & ''' content was successfully updated.');
@@ -88,7 +76,7 @@ component extends="algid.inc.resource.base.event" {
 	/**
 	 * Remove the cached paths before the archive including paths removed from the content.
 	 */
-	public void function beforeArchive( required struct transport, required component currUser, required component content ) {
+	public void function beforeArchive( required struct transport, required component content ) {
 		var cache = '';
 		var cacheManager = '';
 		var domain = '';
@@ -102,7 +90,7 @@ component extends="algid.inc.resource.base.event" {
 		cache = cacheManager.getContent();
 		
 		// Find the domain for the content
-		domain = servDomain.getDomain( arguments.transport.theSession.managers.singleton.getUser(), arguments.content.getDomainID() );
+		domain = servDomain.getDomain( arguments.arguments.content.getDomainID() );
 		
 		// Get the paths from the content
 		paths = servPath.getPaths({ contentID: arguments.content.getContentID() });

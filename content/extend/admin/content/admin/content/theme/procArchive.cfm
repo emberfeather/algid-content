@@ -10,9 +10,9 @@
 </cfif>
 
 <cfif theUrl.search('theme') neq ''>
-	<cfset theme = servTheme.getTheme( transport.theSession.managers.singleton.getUser(), theUrl.search('theme')) />
+	<cfset theme = servTheme.getTheme( theUrl.search('theme')) />
 	
-	<cfset servTheme.archiveTheme( transport.theSession.managers.singleton.getUser(), theme ) />
+	<cfset servTheme.archiveTheme( theme ) />
 	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/admin/content/theme/list') />

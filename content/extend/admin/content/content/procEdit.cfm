@@ -4,26 +4,25 @@
 <cfset servType = services.get('content', 'type') />
 
 <!--- Retrieve the object --->
-<cfset user = transport.theSession.managers.singleton.getUser() />
-<cfset content = servContent.getContent( user, theURL.search('content') ) />
+<cfset content = servContent.getContent( theURL.search('content') ) />
 
 <cfif cgi.request_method eq 'post'>
 	<!--- Process the form submission --->
 	<cfset modelSerial.deserialize(form, content) />
 	
-	<cfset servContent.setContent( user, content ) />
+	<cfset servContent.setContent( content ) />
 	
 	<!--- Find/Update all paths --->
 	<cfset usedPaths = [] />
 	
 	<!--- Removed cached content --->
-	<cfset domain = servDomain.getDomain(user, content.getDomainID()) />
+	<cfset domain = servDomain.getDomain(content.getDomainID()) />
 	
 	<cfloop list="#form.fieldnames#" index="i">
 		<cfif left(i, 4) eq 'path' and not right(i, 3) eq '_id' and trim(form[i]) neq ''>
 			<!--- Check if we were provided an id to edit --->
 			<!--- Get the path from the contentID/create a new path --->
-			<cfset path = servPath.getPath(user, (structKeyExists(form, i & '_id') ? form[i & '_id'] : '')) />
+			<cfset path = servPath.getPath((structKeyExists(form, i & '_id') ? form[i & '_id'] : '')) />
 			
 			<cfset path.setPath(form[i]) />
 			
@@ -32,7 +31,7 @@
 				<cfset path.setTitle(content.getTitle()) />
 			</cfif>
 			
-			<cfset servPath.setPath(user, path) />
+			<cfset servPath.setPath(path) />
 			
 			<cfset arrayAppend(usedPaths, path.getPathID()) />
 			
@@ -54,7 +53,7 @@
 		<cfset servContent.deleteCacheKey( domain.getDomain() & deletedPaths.path ) />
 	</cfloop>
 	
-	<cfset servPath.deletePaths(user, filter) />
+	<cfset servPath.deletePaths(filter) />
 	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/content/browse') />

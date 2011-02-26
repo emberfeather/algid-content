@@ -1,6 +1,5 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
 	<cffunction name="archiveType" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="type" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -13,7 +12,7 @@
 		<!--- TODO Check user permissions --->
 		
 		<!--- Before Archive Event --->
-		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.type) />
+		<cfset observer.beforeArchive(variables.transport, arguments.type) />
 		
 		<!--- Archive the type --->
 		<cftransaction>
@@ -27,7 +26,7 @@
 		</cftransaction>
 		
 		<!--- After Archive Event --->
-		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.type) />
+		<cfset observer.afterArchive(variables.transport, arguments.type) />
 	</cffunction>
 	
 	<cffunction name="getType" access="public" returntype="component" output="false">
@@ -119,7 +118,6 @@
 	</cffunction>
 	
 	<cffunction name="setType" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="type" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -132,7 +130,7 @@
 		<!--- TODO Check user permissions --->
 		
 		<!--- Before Save Event --->
-		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.type) />
+		<cfset observer.beforeSave(variables.transport, arguments.type) />
 		
 		<cfif arguments.type.getTypeID() eq ''>
 			<!--- Check for archived type --->
@@ -161,7 +159,7 @@
 					</cftransaction>
 					
 					<!--- After Update Event --->
-					<cfset observer.afterUnarchive(variables.transport, arguments.currUser, arguments.type) />
+					<cfset observer.afterUnarchive(variables.transport, arguments.type) />
 				</cfif>
 			<cfelse>
 				<!--- Insert as a new type --->
@@ -182,7 +180,7 @@
 				</cftransaction>
 				
 				<!--- After Create Event --->
-				<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.type) />
+				<cfset observer.afterCreate(variables.transport, arguments.type) />
 			</cfif>
 		<cfelse>
 			<cftransaction>
@@ -197,10 +195,10 @@
 			</cftransaction>
 			
 			<!--- After Update Event --->
-			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.type) />
+			<cfset observer.afterUpdate(variables.transport, arguments.type) />
 		</cfif>
 		
 		<!--- After Save Event --->
-		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.type) />
+		<cfset observer.afterSave(variables.transport, arguments.type) />
 	</cffunction>
 </cfcomponent>

@@ -9,7 +9,6 @@
 	}
 </cfscript>
 	<cffunction name="archiveTheme" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="theme" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -24,7 +23,7 @@
 		<!--- TODO Check user Permissions --->
 		
 		<!--- Before Archive Event --->
-		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.theme) />
+		<cfset observer.beforeArchive(variables.transport, arguments.theme) />
 		
 		<!--- Archive the theme --->
 		<cftransaction>
@@ -36,11 +35,10 @@
 		</cftransaction>
 		
 		<!--- After Archive Event --->
-		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.theme) />
+		<cfset observer.afterArchive(variables.transport, arguments.theme) />
 	</cffunction>
 	
 	<cffunction name="getTheme" access="public" returntype="component" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="themeID" type="string" required="true" />
 		
 		<cfset var theme = '' />
@@ -330,7 +328,6 @@
 	</cffunction>
 	
 	<cffunction name="setTheme" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="theme" type="component" required="true" />
 		
 		<cfset var i = '' />
@@ -344,7 +341,7 @@
 		<cfset observer = getPluginObserver('content', 'theme') />
 		
 		<!--- Before Save Event --->
-		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.theme) />
+		<cfset observer.beforeSave(variables.transport, arguments.theme) />
 		
 		<cfif arguments.theme.getThemeID() neq ''>
 			<cfquery name="isArchived" datasource="#variables.datasource.name#">
@@ -355,10 +352,10 @@
 			
 			<cfif isArchived.archivedOn eq ''>
 				<!--- Before Update Event --->
-				<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.theme) />
+				<cfset observer.beforeUpdate(variables.transport, arguments.theme) />
 			<cfelse>
 				<!--- Before Unarchive Event --->
-				<cfset observer.beforeUnarchive(variables.transport, arguments.currUser, arguments.theme) />
+				<cfset observer.beforeUnarchive(variables.transport, arguments.theme) />
 			</cfif>
 			
 			<cftransaction>
@@ -377,14 +374,14 @@
 			
 			<cfif isArchived.archivedOn eq ''>
 				<!--- After Update Event --->
-				<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.theme) />
+				<cfset observer.afterUpdate(variables.transport, arguments.theme) />
 			<cfelse>
 				<!--- After Unarchive Event --->
-				<cfset observer.afterUnarchive(variables.transport, arguments.currUser, arguments.theme) />
+				<cfset observer.afterUnarchive(variables.transport, arguments.theme) />
 			</cfif>
 		<cfelse>
 			<!--- Before Create Event --->
-			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.theme) />
+			<cfset observer.beforeCreate(variables.transport, arguments.theme) />
 			
 			<!--- Insert as a new record --->
 			<!--- Create the new ID --->
@@ -409,10 +406,10 @@
 			</cftransaction>
 			
 			<!--- After Create Event --->
-			<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.theme) />
+			<cfset observer.afterCreate(variables.transport, arguments.theme) />
 		</cfif>
 		
 		<!--- After Save Event --->
-		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.theme) />
+		<cfset observer.afterSave(variables.transport, arguments.theme) />
 	</cffunction>
 </cfcomponent>
