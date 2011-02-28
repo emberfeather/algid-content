@@ -52,7 +52,7 @@ component extends="algid.inc.resource.base.event" {
 		cache = cacheManager.getContent();
 		
 		// Find the domain for the content
-		domain = servDomain.getDomain( arguments.arguments.content.getDomainID() );
+		domain = servDomain.getDomain( arguments.content.getDomainID() );
 		
 		// Get the paths from the content
 		paths = arguments.content.getPaths();
@@ -90,7 +90,7 @@ component extends="algid.inc.resource.base.event" {
 		cache = cacheManager.getContent();
 		
 		// Find the domain for the content
-		domain = servDomain.getDomain( arguments.arguments.content.getDomainID() );
+		domain = servDomain.getDomain( arguments.content.getDomainID() );
 		
 		// Get the paths from the content
 		paths = servPath.getPaths({ contentID: arguments.content.getContentID() });
