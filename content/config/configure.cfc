@@ -27,6 +27,14 @@
 		
 		arguments.theApplication.managers.singleton.setContentNavigation(navigation);
 		
+		// Negate the offset since it is reversed
+		local.timezoneInfo = getTimeZoneInfo();
+		
+		// Create the sitemap singleton
+		local.sitemap = arguments.theApplication.factories.transient.getSitemapForContent(numberFormat(local.timezoneInfo.utcHourOffset * -1, '+00') & ':' & numberFormat(local.timezoneInfo.utcMinuteOffset, '00'));
+		
+		arguments.theApplication.managers.singleton.setSitemap(navigation);
+		
 		cacheManager = plugin.getCache();
 		caches = plugin.getCaches();
 		

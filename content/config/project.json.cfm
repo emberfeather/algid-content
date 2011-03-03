@@ -6,6 +6,7 @@
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"cacheNavigationForContent": "cf-compendium.inc.resource.storage.cache",
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
+		"sitemapForContent": "cf-compendium.inc.resource.utility.sitemap",
 		"templateForContent": "plugins.content.inc.resource.structure.template"
 	},
 	"caches": {
