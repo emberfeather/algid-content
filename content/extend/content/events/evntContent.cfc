@@ -40,26 +40,22 @@ component extends="algid.inc.resource.base.event" {
 	 * Remove the cached paths after the save including paths removed from the content.
 	 */
 	public void function afterSave( required struct transport, required component content ) {
-		var cache = '';
-		var cacheManager = '';
-		var domain = '';
-		var i = '';
-		var paths = '';
-		var servDomain = getService(arguments.transport, 'content', 'domain');
+		local.servDomain = getService(arguments.transport, 'content', 'domain');
+		local.plugin = arguments.transport.theApplication.managers.plugin.getContent();
 		
 		// Get the cache for the content
-		cacheManager = arguments.transport.theApplication.managers.plugin.getContent().getCache();
-		cache = cacheManager.getContent();
+		local.cacheManager = local.plugin.getCache();
+		local.cache = local.cacheManager.getContent();
 		
 		// Find the domain for the content
-		domain = servDomain.getDomain( arguments.content.getDomainID() );
+		local.domain = local.servDomain.getDomain( arguments.content.getDomainID() );
 		
 		// Get the paths from the content
-		paths = arguments.content.getPaths();
+		local.paths = arguments.content.getPaths();
 		
 		// Clear the cache key for each path for the content, including removed paths
-		for( i = 1; i <= arrayLen(paths); i++ ) {
-			cache.delete( domain.getDomain() & paths[i].getPath() );
+		for( local.i = 1; local.i <= arrayLen(paths); local.i++ ) {
+			local.cache.delete( local.domain.getDomain() & local.paths[local.i].getPath() );
 		}
 	}
 	
