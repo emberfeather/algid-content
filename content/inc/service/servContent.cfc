@@ -288,6 +288,9 @@
 		
 		filter = extend(filter, arguments.options);
 		
+		// Clean the path to prevent duplicate cache entries
+		filter.path = variables.path.clean(filter.path);
+		
 		// Use the plugin cache to pull the content from the cache first
 		contentCache = variables.transport.theApplication.managers.plugin.getContent().getCache().getContent();
 		
