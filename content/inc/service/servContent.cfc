@@ -86,6 +86,59 @@
 		// Clear the cache
 		return contentCache.getAllIds();
 	}
+	
+	public void function generateSitemap(required component domain, struct filter = {}) {
+		local.app = variables.transport.theApplication.managers.singleton.getApplication();
+		local.plugin = variables.transport.theApplication.managers.plugin.getContent();
+		local.primaryHost = arguments.domain.getPrimaryHost();
+		local.timezoneInfo = getTimeZoneInfo();
+		local.timezone = numberFormat(local.timezoneInfo.utcHourOffset * -1, '+00') & ':' & numberFormat(local.timezoneInfo.utcMinuteOffset, '00');
+		
+		// Create the URL object for all the links
+		local.webRoot =  local.app.getPath();
+		local.requestRoot =  local.plugin.getPath();
+		
+		local.options = { start = local.primaryHost.getUrl() & local.webRoot & local.requestRoot };
+		
+		local.rewrite = local.plugin.getRewrite();
+		
+		if(local.rewrite.isEnabled) {
+			local.options.rewriteBase = rewrite.base;
+			
+			local.theUrl = variables.transport.theApplication.factories.transient.getUrlRewrite(variables.transport.theUrl, local.options);
+		} else {
+			local.theUrl = variables.transport.theApplication.factories.transient.getUrl(variables.transport.theUrl, local.options);
+		}
+		
+		// Determine the directory of the domain static files
+		local.staticRoot = local.plugin.getDomains().staticRoot & '/' & local.primaryHost.getHostname();
+		
+		if(!directoryExists(local.staticRoot)) {
+			directoryCreate(local.staticRoot);
+		}
+		
+		// Negate the offset since it is reversed
+		local.sitemap = variables.transport.theApplication.factories.transient.getSitemapForContent(local.timezone);
+		
+		// Query the content and paths for the domain
+		arguments.filter.domain = local.primaryHost.getHostname();
+		
+		local.contents = getContents(arguments.filter);
+		
+		// TODO Determine the frequency of change for each path
+		
+		// Start with a clean path
+		local.theUrl.cleanSitemap();
+		
+		// Generate the proper sitemap based upon the paths
+		for(local.i = 1; local.i <= local.contents.recordCount; local.i++) {
+			local.theUrl.setSitemap('_base', variables.path.clean(local.contents.path[local.i]));
+			
+			local.sitemap.addUrl(local.theUrl.getSitemap(), { lastMod: local.contents.updatedOn[local.i] });
+		}
+		
+		local.sitemap.saveSitemap(local.staticRoot);
+	}
 </cfscript>
 	<cffunction name="getContent" access="public" returntype="component" output="false">
 		<cfargument name="contentID" type="string" required="true" />

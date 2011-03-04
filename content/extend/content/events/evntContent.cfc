@@ -41,6 +41,7 @@ component extends="algid.inc.resource.base.event" {
 	 */
 	public void function afterSave( required struct transport, required component content ) {
 		local.servDomain = getService(arguments.transport, 'content', 'domain');
+		local.servContent = getService(arguments.transport, 'content', 'content');
 		local.plugin = arguments.transport.theApplication.managers.plugin.getContent();
 		
 		// Get the cache for the content
@@ -57,6 +58,9 @@ component extends="algid.inc.resource.base.event" {
 		for( local.i = 1; local.i <= arrayLen(paths); local.i++ ) {
 			local.cache.delete( local.domain.getDomain() & local.paths[local.i].getPath() );
 		}
+		
+		// Update the sitemap.xml for the domain
+		local.servContent.generateSitemap(local.domain);
 	}
 	
 	public void function afterUpdate( required struct transport, required component content ) {

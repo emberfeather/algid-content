@@ -14,6 +14,9 @@
 		"navigation": ""
 	},
 	"defaultTheme": "content/extend/content/theme/content",
+	"domains": {
+		"staticRoot": "/static"
+	},
 	"i18n": {
 		"locales": [
 			"en_PI",
