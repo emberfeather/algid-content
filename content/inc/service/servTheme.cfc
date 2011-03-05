@@ -340,6 +340,8 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'theme') />
 		
+		<cfset validate__model(arguments.theme) />
+		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.theme) />
 		

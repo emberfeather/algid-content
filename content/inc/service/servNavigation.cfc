@@ -122,6 +122,8 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'navigation') />
 		
+		<cfset validate__model(arguments.navigation) />
+		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.navigation) />
 		

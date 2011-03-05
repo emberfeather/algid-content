@@ -495,13 +495,11 @@
 		<cfset var observer = '' />
 		<cfset var results = '' />
 		<cfset var path = '' />
-		<cfset var paths = '' />
 		
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'content') />
 		
-		<!--- Retrieve the paths from the content --->
-		<cfset paths = arguments.content.getPaths() />
+		<cfset validate__model(arguments.content) />
 		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.content) />

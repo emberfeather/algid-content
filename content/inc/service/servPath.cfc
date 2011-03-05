@@ -300,6 +300,11 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'path') />
 		
+		<!--- Add the path validator --->
+		<cfset add__validator('pathValidatorForContent', 'plugins/content/i18n/inc/resource/validation', 'path') />
+		
+		<cfset validate__model(arguments.path) />
+		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.path) />
 		

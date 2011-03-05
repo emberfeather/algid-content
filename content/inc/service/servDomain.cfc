@@ -285,7 +285,7 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'domain') />
 		
-		<!--- TODO Check user permissions --->
+		<cfset validate__model(arguments.domain) />
 		
 		<!--- Before Save Event --->
 		<cfset observer.beforeSave(variables.transport, arguments.domain) />
@@ -377,6 +377,8 @@
 		<cfset observer.beforeSave(variables.transport, arguments.hosts) />
 		
 		<cfloop array="#arguments.hosts#" index="host">
+			<cfset validate__model(host) />
+			
 			<cfif host.getHostID() eq ''>
 				<!--- Check for in use hostname --->
 				<cfquery datasource="#variables.datasource.name#" name="results">
