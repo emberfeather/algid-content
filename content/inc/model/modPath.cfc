@@ -100,7 +100,7 @@
 	}
 	
 	public void function setPath( required string value ) {
-		variables.instance['path'] = cleanPath(arguments.value);
+		variables.instance['path'] = arguments.value;
 	}
 </cfscript>
 </cfcomponent>
