@@ -21,20 +21,20 @@
 		<!--- Title --->
 		<!--- TODO Use i18n for img title --->
 		<cfset theForm.addElement('text', {
-				class = 'allowDuplication',
-				name = 'title',
-				label = 'title',
-				value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : '' )
-			}) />
+			class = 'allowDuplication',
+			name = 'title',
+			label = 'title',
+			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : '' )
+		}) />
 		
 		<!--- Domain --->
 		<cfif arguments.domains.recordCount GT 1>
 			<!--- Select --->
 			<cfset element = {
-					name = "domainID",
-					label = "domain",
-					options = variables.transport.theApplication.factories.transient.getOptions()
-				} />
+				name = "domainID",
+				label = "domain",
+				options = variables.transport.theApplication.factories.transient.getOptions()
+			} />
 			
 			<!--- Create the options for the select --->
 			<cfloop query="arguments.domains">
@@ -50,10 +50,10 @@
 		<cfelse>
 			<!--- Hidden --->
 			<cfset theForm.addElement('hidden', {
-					name = "domainID",
-					label = "domain",
-					value = arguments.domains.domainID.toString()
-				}) />
+				name = "domainID",
+				label = "domain",
+				value = arguments.domains.domainID.toString()
+			}) />
 		</cfif>
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
@@ -74,18 +74,18 @@
 		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<cfset datagrid.addColumn({
-				label = 'path'
-			}) />
+			label = 'path'
+		}) />
 		
 		<cfset datagrid.addColumn({
-				class = 'phantom align-right',
-				value = 'delete',
-				link = {
-					'path' = '__value',
-					'_base' = '/admin/content/caching/delete'
-				},
-				linkClass = 'delete'
-			}) />
+			class = 'phantom align-right',
+			value = 'delete',
+			link = {
+				'path' = '__value',
+				'_base' = '/admin/content/caching/delete'
+			},
+			linkClass = 'delete'
+		}) />
 		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
 	</cffunction>
@@ -262,40 +262,40 @@
 		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<cfset datagrid.addColumn({
-				key = 'path',
-				label = 'path',
-				link = {
-					'_base' = 'path'
+			key = 'path',
+			label = 'path',
+			link = {
+				'_base' = 'path'
+			},
+			theUrl = theUrl
+		}) />
+		
+		<cfset datagrid.addColumn({
+			key = 'title',
+			label = 'title'
+		}) />
+		
+		<cfset datagrid.addColumn({
+			key = 'type',
+			label = 'type'
+		}) />
+		
+		<cfset datagrid.addColumn({
+			class = 'phantom align-right',
+			value = [ 'delete', 'edit' ],
+			link = [
+				{
+					'content' = 'contentID',
+					'_base' = '/content/archive'
 				},
-				theUrl = theUrl
-			}) />
-		
-		<cfset datagrid.addColumn({
-				key = 'title',
-				label = 'title'
-			}) />
-		
-		<cfset datagrid.addColumn({
-				key = 'type',
-				label = 'type'
-			}) />
-		
-		<cfset datagrid.addColumn({
-				class = 'phantom align-right',
-				value = [ 'delete', 'edit' ],
-				link = [
-					{
-						'content' = 'contentID',
-						'_base' = '/content/archive'
-					},
-					{
-						'content' = 'contentID',
-						'_base' = '/content/edit'
-					}
-				],
-				linkClass = [ 'delete', '' ],
-				title = 'title'
-			}) />
+				{
+					'content' = 'contentID',
+					'_base' = '/content/edit'
+				}
+			],
+			linkClass = [ 'delete', '' ],
+			title = 'title'
+		}) />
 		
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
 	</cffunction>
