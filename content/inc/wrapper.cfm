@@ -114,12 +114,12 @@
 	
 	<!--- Use the theme that is the closest to the current page --->
 	<cfset filter = {
-			keyAlongPathOrPath = ['', '*'],
-			path = theUrl.search('_base'),
-			domain = transport.theCgi.server_name,
-			orderBy = 'path',
-			orderSort = 'desc'
-		} />
+		keyAlongPathOrPath = ['', '*'],
+		path = theUrl.search('_base'),
+		domain = transport.theCgi.server_name,
+		orderBy = 'path',
+		orderSort = 'desc'
+	} />
 	
 	<cfset themes = servTheme.getThemes(filter) />
 	

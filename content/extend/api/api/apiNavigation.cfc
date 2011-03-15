@@ -6,9 +6,6 @@ component extends="plugins.api.inc.resource.base.api" {
 		var servPath = '';
 		var servNavigation = '';
 		var results = '';
-		var user = '';
-		
-		user = variables.transport.theSession.managers.singleton.getUser();
 		
 		servPath = variables.services.get('content', 'path');
 		servNavigation = variables.services.get('content', 'navigation');
@@ -20,10 +17,10 @@ component extends="plugins.api.inc.resource.base.api" {
 		
 		paths = servPath.getPaths(filter);
 		
-		currentPath = servPath.getPath(user, paths.pathID.toString());
+		currentPath = servPath.getPath(paths.pathID.toString());
 		
 		// Save the positions of the navigation
-		servNavigation.setPositions(user, currentPath, arguments.positions);
+		servNavigation.setPositions(currentPath, arguments.positions);
 		
 		// Send back some of the request
 		variables.apiResponseHead['path'] = variables.apiRequestBody.path;

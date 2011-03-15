@@ -28,5 +28,4 @@
 	<cfset transport.theSession.managers.singleton.getError().addMessages('The ''' & basePath & ''' path could not be found.') />
 </cfif>
 
-<cfset user = transport.theSession.managers.singleton.getUser() />
-<cfset currentPath = servPath.getPath( user, paths.pathID.toString() ) />
+<cfset currentPath = servPath.getPath( paths.pathID.toString() ) />

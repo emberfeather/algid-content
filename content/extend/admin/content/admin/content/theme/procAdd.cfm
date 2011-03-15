@@ -13,13 +13,13 @@
 <cfif theUrl.search('plugin') neq '' and theUrl.search('themeDirectory') neq ''>
 	<cfset theme = servTheme.readTheme(theUrl.search('plugin'), theUrl.search('themeDirectory')) />
 	
-	<cfset servTheme.setTheme( transport.theSession.managers.singleton.getUser(), theme ) />
+	<cfset servTheme.setTheme( theme ) />
 	
 	<!--- Set the navigation --->
 	<cfloop array="#theme.getNavigation()#" index="i">
 		<cfset i.setThemeID(theme.getThemeID()) />
 		
-		<cfset servNavigation.setNavigation(transport.theSession.managers.singleton.getUser(), i) />
+		<cfset servNavigation.setNavigation(i) />
 	</cfloop>
 	
 	<!--- Redirect --->

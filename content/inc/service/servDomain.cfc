@@ -1,6 +1,5 @@
 <cfcomponent extends="algid.inc.resource.base.service" output="false">
 	<cffunction name="archiveDomain" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="domain" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -13,7 +12,7 @@
 		<!--- TODO Check user permissions --->
 		
 		<!--- Before Archive Event --->
-		<cfset observer.beforeArchive(variables.transport, arguments.currUser, arguments.domain) />
+		<cfset observer.beforeArchive(variables.transport, arguments.domain) />
 		
 		<!--- Archive the domain --->
 		<cftransaction>
@@ -27,11 +26,10 @@
 		</cftransaction>
 		
 		<!--- After Archive Event --->
-		<cfset observer.afterArchive(variables.transport, arguments.currUser, arguments.domain) />
+		<cfset observer.afterArchive(variables.transport, arguments.domain) />
 	</cffunction>
 	
 	<cffunction name="deleteHosts" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="filter" type="struct" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -48,7 +46,7 @@
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
 		<!--- Before Delete Bulk Event --->
-		<cfset observer.beforeDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
+		<cfset observer.beforeDeleteBulk(variables.transport, arguments.filter) />
 		
 		<!--- Delete the host --->
 		<cfquery datasource="#variables.datasource.name#">
@@ -74,11 +72,10 @@
 		</cfquery>
 		
 		<!--- After Delete Bulk Event --->
-		<cfset observer.afterDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
+		<cfset observer.afterDeleteBulk(variables.transport, arguments.filter) />
 	</cffunction>
 	
 	<cffunction name="getDomain" access="public" returntype="component" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="domainID" type="string" required="true" />
 		
 		<cfset var domain = '' />
@@ -179,7 +176,6 @@
 	</cffunction>
 	
 	<cffunction name="getHost" access="public" returntype="component" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="hostID" type="string" required="true" />
 		
 		<cfset var host = '' />
@@ -280,7 +276,6 @@
 	</cffunction>
 	
 	<cffunction name="setDomain" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="domain" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -290,10 +285,10 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'domain') />
 		
-		<!--- TODO Check user permissions --->
+		<cfset validate__model(arguments.domain) />
 		
 		<!--- Before Save Event --->
-		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.domain) />
+		<cfset observer.beforeSave(variables.transport, arguments.domain) />
 		
 		<cfif arguments.domain.getDomainID() eq ''>
 			<!--- Check for archived domain --->
@@ -324,7 +319,7 @@
 					</cftransaction>
 					
 					<!--- After Update Event --->
-					<cfset observer.afterUnarchive(variables.transport, arguments.currUser, arguments.domain) />
+					<cfset observer.afterUnarchive(variables.transport, arguments.domain) />
 				</cfif>
 			<cfelse>
 				<!--- Insert as a new domain --->
@@ -345,7 +340,7 @@
 				</cftransaction>
 				
 				<!--- After Create Event --->
-				<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.domain) />
+				<cfset observer.afterCreate(variables.transport, arguments.domain) />
 			</cfif>
 		<cfelse>
 			<cftransaction>
@@ -360,15 +355,14 @@
 			</cftransaction>
 			
 			<!--- After Update Event --->
-			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.domain) />
+			<cfset observer.afterUpdate(variables.transport, arguments.domain) />
 		</cfif>
 		
 		<!--- After Save Event --->
-		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.domain) />
+		<cfset observer.afterSave(variables.transport, arguments.domain) />
 	</cffunction>
 	
 	<cffunction name="setHosts" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="hosts" type="array" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -380,9 +374,11 @@
 		<cfset observer = getPluginObserver('content', 'host') />
 		
 		<!--- Before Save Event --->
-		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.hosts) />
+		<cfset observer.beforeSave(variables.transport, arguments.hosts) />
 		
 		<cfloop array="#arguments.hosts#" index="host">
+			<cfset validate__model(host) />
+			
 			<cfif host.getHostID() eq ''>
 				<!--- Check for in use hostname --->
 				<cfquery datasource="#variables.datasource.name#" name="results">
@@ -402,7 +398,7 @@
 					<cfset host.setHostID( createUUID() ) />
 					
 					<!--- Before Create Event --->
-					<cfset observer.beforeCreate(variables.transport, arguments.currUser, host) />
+					<cfset observer.beforeCreate(variables.transport, host) />
 					
 					<cftransaction>
 						<cfquery datasource="#variables.datasource.name#" result="results">
@@ -424,11 +420,11 @@
 					</cftransaction>
 					
 					<!--- After Create Event --->
-					<cfset observer.afterCreate(variables.transport, arguments.currUser, host) />
+					<cfset observer.afterCreate(variables.transport, host) />
 				</cfif>
 			<cfelse>
 				<!--- Before Update Event --->
-				<cfset observer.beforeUpdate(variables.transport, arguments.currUser, host) />
+				<cfset observer.beforeUpdate(variables.transport, host) />
 				
 				<cftransaction>
 					<cfquery datasource="#variables.datasource.name#" result="results">
@@ -444,11 +440,11 @@
 				</cftransaction>
 				
 				<!--- After Update Event --->
-				<cfset observer.afterUpdate(variables.transport, arguments.currUser, host) />
+				<cfset observer.afterUpdate(variables.transport, host) />
 			</cfif>
 		</cfloop>
 		
 		<!--- After Save Event --->
-		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.hosts) />
+		<cfset observer.afterSave(variables.transport, arguments.hosts) />
 	</cffunction>
 </cfcomponent>

@@ -13,8 +13,10 @@ component extends="algid.inc.resource.base.event" {
 			local.urls = [];
 			
 			// Trim off the ending slash to let the path finish the url
-			if(len(local.root)) {
+			if(len(local.root) > 1) {
 				local.root = left(local.root, len(local.root) - 1);
+			} else if(len(local.root)) {
+				local.root = '';
 			}
 			
 			loop query="local.content" {

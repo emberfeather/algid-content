@@ -9,7 +9,6 @@
 	}
 </cfscript>
 	<cffunction name="deletePath" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="path" type="component" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -22,7 +21,7 @@
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
 		<!--- Before Delete Event --->
-		<cfset observer.beforeDelete(variables.transport, arguments.currUser, arguments.path) />
+		<cfset observer.beforeDelete(variables.transport, arguments.path) />
 		
 		<!--- Delete the path --->
 		<cfquery datasource="#variables.datasource.name#">
@@ -32,11 +31,10 @@
 		</cfquery>
 		
 		<!--- After Delete Event --->
-		<cfset observer.afterDelete(variables.transport, arguments.currUser, arguments.path) />
+		<cfset observer.afterDelete(variables.transport, arguments.path) />
 	</cffunction>
 	
 	<cffunction name="deletePaths" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="filter" type="struct" required="true" />
 		
 		<cfset var eventLog = '' />
@@ -52,7 +50,7 @@
 		<cfset eventLog = variables.transport.theApplication.managers.singleton.getEventLog() />
 		
 		<!--- Before Delete Bulk Event --->
-		<cfset observer.beforeDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
+		<cfset observer.beforeDeleteBulk(variables.transport, arguments.filter) />
 		
 		<!--- Delete the path --->
 		<cfquery datasource="#variables.datasource.name#">
@@ -78,11 +76,10 @@
 		</cfquery>
 		
 		<!--- After Delete Bulk Event --->
-		<cfset observer.afterDeleteBulk(variables.transport, arguments.currUser, arguments.filter) />
+		<cfset observer.afterDeleteBulk(variables.transport, arguments.filter) />
 	</cffunction>
 	
 	<cffunction name="getPath" access="public" returntype="component" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="pathID" type="string" required="true" />
 		
 		<cfset var i = '' />
@@ -290,7 +287,6 @@
 	</cffunction>
 	
 	<cffunction name="setPath" access="public" returntype="void" output="false">
-		<cfargument name="currUser" type="component" required="true" />
 		<cfargument name="path" type="component" required="true" />
 		
 		<cfset var i = '' />
@@ -304,8 +300,13 @@
 		<!--- Get the event observer --->
 		<cfset observer = getPluginObserver('content', 'path') />
 		
+		<!--- Add the path validator --->
+		<cfset add__validator('pathValidatorForContent', 'plugins/content/i18n/inc/resource/validation', 'path') />
+		
+		<cfset validate__model(arguments.path) />
+		
 		<!--- Before Save Event --->
-		<cfset observer.beforeSave(variables.transport, arguments.currUser, arguments.path) />
+		<cfset observer.beforeSave(variables.transport, arguments.path) />
 		
 		<!--- Make sure that the path is unique to this domain --->
 		<cfquery name="results" datasource="#variables.datasource.name#">
@@ -342,7 +343,7 @@
 		
 		<cfif arguments.path.getPathID() neq ''>
 			<!--- Before Update Event --->
-			<cfset observer.beforeUpdate(variables.transport, arguments.currUser, arguments.path) />
+			<cfset observer.beforeUpdate(variables.transport, arguments.path) />
 			
 			<!--- Check if the path changes levels --->
 			<cfquery name="results" datasource="#variables.datasource.name#">
@@ -380,10 +381,10 @@
 			</cftransaction>
 			
 			<!--- After Update Event --->
-			<cfset observer.afterUpdate(variables.transport, arguments.currUser, arguments.path) />
+			<cfset observer.afterUpdate(variables.transport, arguments.path) />
 		<cfelse>
 			<!--- Before Create Event --->
-			<cfset observer.beforeCreate(variables.transport, arguments.currUser, arguments.path) />
+			<cfset observer.beforeCreate(variables.transport, arguments.path) />
 			
 			<!--- Insert as a new record --->
 			<!--- Create the new ID --->
@@ -410,10 +411,10 @@
 			</cftransaction>
 			
 			<!--- After Create Event --->
-			<cfset observer.afterCreate(variables.transport, arguments.currUser, arguments.path) />
+			<cfset observer.afterCreate(variables.transport, arguments.path) />
 		</cfif>
 		
 		<!--- After Save Event --->
-		<cfset observer.afterSave(variables.transport, arguments.currUser, arguments.path) />
+		<cfset observer.afterSave(variables.transport, arguments.path) />
 	</cffunction>
 </cfcomponent>

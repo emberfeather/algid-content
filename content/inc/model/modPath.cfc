@@ -5,72 +5,67 @@
 		
 		<cfset super.init(arguments.i18n, arguments.locale) />
 		
-		<!--- Path ID --->
-		<cfset add__attribute(
-				attribute = 'pathID'
-			) />
-		
-		<!--- Content ID --->
-		<cfset add__attribute(
-				attribute = 'contentID'
-			) />
-		
-		<!--- Is Active? --->
-		<cfset add__attribute(
-				attribute = 'isActive'
-			) />
-		
-		<!--- Group By --->
-		<cfset add__attribute(
-				attribute = 'groupBy'
-			) />
-		
-		<!--- Navigation ID --->
-		<cfset add__attribute(
-				attribute = 'navigationID'
-			) />
-		
-		<!--- Order By --->
-		<cfset add__attribute(
-				attribute = 'orderBy',
-				defaultValue = 0
-			) />
-		
-		<!--- Path --->
-		<cfset add__attribute(
-				attribute = 'path',
-				defaultValue = '/'
-			) />
-		
-		<!--- Template --->
-		<cfset add__attribute(
-				attribute = 'template',
-				defaultValue = 'index'
-			) />
-		
-		<!--- Title --->
-		<cfset add__attribute(
-				attribute = 'title'
-			) />
-		
-		<!--- Theme ID --->
-		<cfset add__attribute(
-				attribute = 'themeID'
-			) />
-		
 		<!--- Set the bundle information for translation --->
 		<cfset add__bundle('plugins/content/i18n/inc/model', 'modPath') />
 		
-		<!---
-			Set pattern for valid URL path characters.
-			
-			@see http://www.w3.org/Addressing/URL/url-spec.txt
-		--->
-		<cfset variables.validPathChars = '/a-zA-Z0-9\._~$@&%+\!\*"''\(\),-' />
+		<!--- Path ID --->
+		<cfset add__attribute(
+			attribute = 'pathID'
+		) />
+		
+		<!--- Content ID --->
+		<cfset add__attribute(
+			attribute = 'contentID'
+		) />
+		
+		<!--- Is Active? --->
+		<cfset add__attribute(
+			attribute = 'isActive'
+		) />
+		
+		<!--- Group By --->
+		<cfset add__attribute(
+			attribute = 'groupBy'
+		) />
+		
+		<!--- Navigation ID --->
+		<cfset add__attribute(
+			attribute = 'navigationID'
+		) />
+		
+		<!--- Order By --->
+		<cfset add__attribute(
+			attribute = 'orderBy',
+			defaultValue = 0
+		) />
+		
+		<!--- Path --->
+		<cfset add__attribute(
+			attribute = 'path',
+			defaultValue = '/',
+			validation = {
+				path = true
+			}
+		) />
+		
+		<!--- Template --->
+		<cfset add__attribute(
+			attribute = 'template',
+			defaultValue = 'index'
+		) />
+		
+		<!--- Title --->
+		<cfset add__attribute(
+			attribute = 'title'
+		) />
+		
+		<!--- Theme ID --->
+		<cfset add__attribute(
+			attribute = 'themeID'
+		) />
 		
 		<cfreturn this />
 	</cffunction>
-
 <cfscript>
 	public string function cleanPath( required string value ) {
 		arguments.value = trim(arguments.value);
@@ -78,8 +73,12 @@
 		// Convert standard characters
 		arguments.value = replaceList(arguments.value, '\, ','/,_');
 		
-		// Remove invalid characters
-		arguments.value = reReplace(arguments.value, '[^' & variables.validPathChars & ']', '', 'all');
+		/**
+		 * Remove invalid characters
+		 * 
+		 * @see http://www.w3.org/Addressing/URL/url-spec.txt
+		 */
+		arguments.value = reReplace(arguments.value, '[^/a-zA-Z0-9\._~$@&%+\!\*"''\(\),-]', '', 'all');
 		
 		// Check for path not starting with a slash
 		if (not len(arguments.value) or left(arguments.value, 1) neq '/') {
@@ -101,37 +100,7 @@
 	}
 	
 	public void function setPath( required string value ) {
-		variables.instance['path'] = cleanPath(arguments.value);
-	}
-	
-	public void function validatePath( required string value ) {
-		var locate = '';
-		var start = 0;
-		
-		arguments.value = trim(arguments.value);
-		
-		// Check for starting slash
-		if (reFind('^[^/]', arguments.value)) {
-			throw(type="validation", message="The path can must start with a forward slash");
-		}
-		
-		// Check for invalid characters
-		if (reFind('[^' & variables.validPathChars & ']', arguments.value)) {
-			throw(type="validation", message="The path can only contain characters that contain uppercase and lowercase letters, decimal digits, hyphen, period, underscore, and tilde", detail='See the URL specification for path at http://www.w3.org/Addressing/URL/url-spec.txt');
-		}
-		
-		// Check for invalid hex escapes
-		if (find('%', arguments.value)) {
-			while( find('%', arguments.value, start) ) {
-				locate = reFind('%.{2}', arguments.value, start, true);
-				
-				if(!locate.pos[1] || not reFind('%[a-zA-Z0-9]{2}', mid(arguments.value, locate.pos[1], locate.len[1])) ) {
-					throw(type="validation", message="The path can only contain the % when followed by two hexadecimal characters", detail='See the URL specification for escape at http://www.w3.org/Addressing/URL/url-spec.txt');
-				}
-				
-				start = locate.pos[1] + locate.len[1];
-			}
-		}
+		variables.instance['path'] = arguments.value;
 	}
 </cfscript>
 </cfcomponent>

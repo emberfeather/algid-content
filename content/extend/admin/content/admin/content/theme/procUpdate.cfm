@@ -11,12 +11,12 @@
 </cfif>
 
 <cfif theUrl.search('theme') neq ''>
-	<cfset theme = servTheme.getTheme( transport.theSession.managers.singleton.getUser(), theUrl.search('theme')) />
+	<cfset theme = servTheme.getTheme( theUrl.search('theme')) />
 	
 	<!--- Reread the theme from the file system --->
 	<cfset theme = servTheme.readTheme( theme.getPlugin(), theme.getThemeKey() ) />
 	
-	<cfset servTheme.setTheme( transport.theSession.managers.singleton.getUser(), theme ) />
+	<cfset servTheme.setTheme( theme ) />
 	
 	<!--- Remove old navigation --->
 	<cfset existingNavigation = servNavigation.getNavigations({ themeID: theme.getThemeID() }) />
@@ -33,15 +33,15 @@
 		</cfloop>
 		
 		<cfif not isUsed>
-			<cfset oldNavigation = servNavigation.getNavigation(transport.theSession.managers.singleton.getUser(), existingNavigation.navigationID.toString()) />
+			<cfset oldNavigation = servNavigation.getNavigation(existingNavigation.navigationID.toString()) />
 			
-			<cfset servNavigation.deleteNavigation(transport.theSession.managers.singleton.getUser(), oldNavigation) />
+			<cfset servNavigation.deleteNavigation(oldNavigation) />
 		</cfif>
 	</cfloop>
 	
 	<!--- Update the navigation --->
 	<cfloop array="#theme.getNavigation()#" index="i">
-		<cfset servNavigation.setNavigation(transport.theSession.managers.singleton.getUser(), i) />
+		<cfset servNavigation.setNavigation(i) />
 	</cfloop>
 	
 	<!--- Redirect --->
