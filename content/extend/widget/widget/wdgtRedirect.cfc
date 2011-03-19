@@ -12,6 +12,10 @@ component extends="plugins.widget.inc.resource.base.widget" {
 			if(isStruct(arguments.args.url)) {
 				local.theUrl = variables.transport.theRequest.managers.singleton.getUrl();
 				
+				if(structKeyExists(arguments.args, 'clean') && isBoolean(arguments.args.clean) && arguments.args.clean == true) {
+					local.theUrl.cleanRedirect();
+				}
+				
 				local.theUrl.setRedirect(arguments.args.url);
 				local.theUrl.redirectRedirect();
 			}
