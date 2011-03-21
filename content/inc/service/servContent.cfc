@@ -423,16 +423,8 @@
 		} catch( any err ) {
 			getPageContext().getResponse().setStatus(500, 'Internal Server Error');
 			
-			// Track/dump the exception
-			if (transport.theApplication.managers.singleton.getApplication().isDevelopment() ) {
-				// Dump out the error
-				writeDump(err);
-				abort;
-			} else {
-				errorLogger = transport.theApplication.managers.singleton.getErrorLog();
-				
-				errorLogger.log(err);
-			}
+			errorLogger = transport.theApplication.managers.singleton.getErrorLog();
+			errorLogger.log(err);
 			
 			filter.keyAlongPath = '500';
 			
