@@ -427,18 +427,11 @@
 			if (transport.theApplication.managers.singleton.getApplication().isDevelopment() ) {
 				// Dump out the error
 				writeDump(err);
-				
 				abort;
 			} else {
-				try {
-					errorLogger = transport.theApplication.managers.singleton.getErrorLog();
-					
-					errorLogger.log(err);
-				} catch (any err) {
-					// Failed to log error, send report of unlogged error
-					
-					// TODO Send Unlogged Error
-				}
+				errorLogger = transport.theApplication.managers.singleton.getErrorLog();
+				
+				errorLogger.log(err);
 			}
 			
 			filter.keyAlongPath = '500';
