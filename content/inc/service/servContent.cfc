@@ -423,6 +423,8 @@
 		} catch( any err ) {
 			getPageContext().getResponse().setStatus(500, 'Internal Server Error');
 			
+			transport.theApplication.managers.singleton.getErrorLog().log(err);
+			
 			filter.keyAlongPath = '500';
 			
 			// The content is not cached, retrieve it
