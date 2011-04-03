@@ -28,8 +28,10 @@
 				path.parent().trigger('submit');
 			},
 			source: function(request, response) {
+				var i;
+				
 				// Check if the term has already been searched for
-				if ( request.term in searchCache ) {
+				if ( searchCache[ request.term ] !== undefined ) {
 					response( searchCache[ request.term ] );
 					
 					return;
@@ -45,7 +47,7 @@
 					success: function( data ) {
 						if(data.HEAD.result) {
 							// Convert for use with the autocomplete
-							for(var i = 0; i < data.BODY.length; i++) {
+							for(i = 0; i < data.BODY.length; i++) {
 								data.BODY[i].value = data.BODY[i].path;
 								data.BODY[i].label = data.BODY[i].path;
 							}

@@ -13,7 +13,7 @@
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset theUrl = variables.transport.theRequest.managers.singleton.getUrl() />
-		<cfset theForm = variables.transport.theApplication.factories.transient.getFormStandard('addContent', i18n) />
+		<cfset theForm = variables.transport.theApplication.factories.transient.getForm('addContent', i18n) />
 		
 		<!--- Add the resource bundle for the view --->
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
@@ -105,7 +105,7 @@
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset theURL = variables.transport.theRequest.managers.singleton.getUrl() />
-		<cfset theForm = variables.transport.theApplication.factories.transient.getFormStandard('editContent', i18n) />
+		<cfset theForm = variables.transport.theApplication.factories.transient.getForm('editContent', i18n) />
 		
 		<!--- Add the resource bundle for the view --->
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />

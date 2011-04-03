@@ -423,54 +423,52 @@
 		} catch( any err ) {
 			getPageContext().getResponse().setStatus(500, 'Internal Server Error');
 			
-			// Track/dump the exception
-			if (transport.theApplication.managers.singleton.getApplication().isDevelopment() ) {
-				// Dump out the error
-				writeDump(err);
+			transport.theApplication.managers.singleton.getErrorLog().log(err);
+			
+			local.isError = false;
+			
+			// Extra precaution, especially with errors in events
+			try {
+				filter.keyAlongPath = '500';
 				
-				abort;
-			} else {
-				try {
-					errorLogger = transport.theApplication.managers.singleton.getErrorLog();
-					
-					errorLogger.log(err);
-				} catch (any err) {
-					// Failed to log error, send report of unlogged error
-					
-					// TODO Send Unlogged Error
+				// The content is not cached, retrieve it
+				paths = servPath.getPaths( filter );
+				
+				if (paths.recordCount gt 0) {
+					// Use the cache for the error page
+					if ( contentCache.has( filter.domain & paths.path ) ) {
+						content = contentCache.get( filter.domain & paths.path );
+					} else {
+						content = getContent( paths.contentID.toString() );
+						
+						// Add to the singletons so it will be available for triggered events
+						variables.transport.theRequest.managers.singleton.setContent(content);
+						
+						// Set the template
+						content.setTemplate(paths.template);
+						
+						// Store the original path requested
+						content.setPathExtra(filter.path, paths.path);
+						
+						// Trigger the before show event
+						observer.beforeDisplay(transport, content);
+						
+						// Check if the content should be cached
+						if (content.getDoCaching()) {
+							contentCache.put(filter.domain & paths.path, content);
+						}
+					}
+				} else {
+					local.isError = true;
 				}
+			} catch( any err ) {
+				transport.theApplication.managers.singleton.getErrorLog().log(err);
+				
+				local.isError = true;
 			}
 			
-			filter.keyAlongPath = '500';
-			
-			// The content is not cached, retrieve it
-			paths = servPath.getPaths( filter );
-			
-			if (paths.recordCount gt 0) {
-				// Use the cache for the error page
-				if ( contentCache.has( filter.domain & paths.path ) ) {
-					content = contentCache.get( filter.domain & paths.path );
-				} else {
-					content = getContent( paths.contentID.toString() );
-					
-					// Add to the singletons so it will be available for triggered events
-					variables.transport.theRequest.managers.singleton.setContent(content);
-					
-					// Set the template
-					content.setTemplate(paths.template);
-					
-					// Store the original path requested
-					content.setPathExtra(filter.path, paths.path);
-					
-					// Trigger the before show event
-					observer.beforeDisplay(transport, content);
-					
-					// Check if the content should be cached
-					if (content.getDoCaching()) {
-						contentCache.put(filter.domain & paths.path, content);
-					}
-				}
-			} else {
+			// Show generic error page if can't find error page or error in error page
+			if(local.isError) {
 				content = getContent( '' );
 				
 				// Add to the singletons so it will be available for triggered events
