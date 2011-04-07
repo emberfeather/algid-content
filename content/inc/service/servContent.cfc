@@ -160,8 +160,6 @@
 				SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
 				FROM "#variables.datasource.prefix#content"."content"
 				WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
-				
-				<!--- TODO Check for user connection --->
 			</cfquery>
 			
 			<cfif results.recordCount>
@@ -423,7 +421,7 @@
 		} catch( any err ) {
 			getPageContext().getResponse().setStatus(500, 'Internal Server Error');
 			
-			transport.theApplication.managers.singleton.getErrorLog().log(err);
+			transport.theSession.managers.singleton.getErrorLog().log(err);
 			
 			local.isError = false;
 			
@@ -462,7 +460,7 @@
 					local.isError = true;
 				}
 			} catch( any err ) {
-				transport.theApplication.managers.singleton.getErrorLog().log(err);
+				transport.theSession.managers.singleton.getErrorLog().log(err);
 				
 				local.isError = true;
 			}
