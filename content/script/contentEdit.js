@@ -37,10 +37,6 @@
 							
 							response( data.BODY );
 						} else {
-							if (window.console.error) {
-								window.console.error(data.HEAD.errors);
-							}
-							
 							response( [] );
 						}
 					}
