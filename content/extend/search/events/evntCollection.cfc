@@ -1,7 +1,5 @@
 component extends="algid.inc.resource.base.event" {
 	public void function onUpdate( required struct transport, required component collection ) {
-		local.app = arguments.transport.theApplication.managers.singleton.getApplication();
-		local.plugin = arguments.transport.theApplication.managers.plugin.getContent();
 		local.servContent = getService(arguments.transport, 'content', 'content');
 		
 		// Find content to index
@@ -9,18 +7,10 @@ component extends="algid.inc.resource.base.event" {
 		local.content = local.servContent.getContents({ domain: arguments.collection.getName(), orderBy: 'path' });
 		
 		if(local.content.recordCount) {
-			local.root = local.app.getPath() & local.plugin.getPath();
 			local.urls = [];
 			
-			// Trim off the ending slash to let the path finish the url
-			if(len(local.root) > 1) {
-				local.root = left(local.root, len(local.root) - 1);
-			} else if(len(local.root)) {
-				local.root = '';
-			}
-			
 			loop query="local.content" {
-				arrayAppend(local.urls, local.root & local.content.path);
+				arrayAppend(local.urls, local.content.path);
 			}
 			
 			queryAddColumn(local.content, 'url', 'varchar', local.urls);

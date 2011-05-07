@@ -56,10 +56,6 @@
 							
 							response( data.BODY );
 						} else {
-							if (window.console.error) {
-								window.console.error(data.HEAD.errors);
-							}
-							
 							response( [] );
 						}
 					}
@@ -121,15 +117,7 @@
 		}, {
 			path: path.val(),
 			positions: navigation
-		}, {
-			success: function( data ) {
-				if(!data.HEAD.result) {
-					$('.content').after($('<div />', { html: data.HEAD.errors.HEAD.error.detail }));
-					$('.content').after($('<div />', { html: data.HEAD.errors.HEAD.error.stacktrace }));
-					window.console.error(data.HEAD.errors);
-				}
-			}
-		});
+		}, {});
 		
 		updatePreviousIndex();
 	}
