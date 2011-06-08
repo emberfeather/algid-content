@@ -81,7 +81,9 @@
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
-					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
+			JOIN "#variables.datasource.prefix#content"."host" h
+				ON d."domainID" = h."domainID"
+					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
 			JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
@@ -141,7 +143,9 @@
 			FROM "#variables.datasource.prefix#content"."content" c
 			JOIN "#variables.datasource.prefix#content"."domain" d
 				ON c."domainID" = d."domainID"
-					AND d."domain" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
+			JOIN "#variables.datasource.prefix#content"."host" h
+				ON d."domainID" = h."domainID"
+					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
 			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
