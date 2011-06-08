@@ -39,8 +39,6 @@
 				SELECT "navigationID", "themeID", "navigation", "level", "allowGroups"
 				FROM "#variables.datasource.prefix#content"."navigation"
 				WHERE "navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navigationID#" null="#arguments.navigationID eq ''#" />::uuid
-				
-				<!--- TODO Check for user connection --->
 			</cfquery>
 			
 			<cfif results.recordCount>
