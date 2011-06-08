@@ -79,10 +79,8 @@
 		<cfquery name="navigation" datasource="#variables.datasource.name#">
 			SELECT c."contentID", p."path", c."title", bpn."title" AS "navTitle", n."navigation", a."attribute", ao."value" AS "attributeOptionValue", pa."value" AS "attributeValue", bpn."orderBy", '' AS ids, '' AS vars
 			FROM "#variables.datasource.prefix#content"."content" c
-			JOIN "#variables.datasource.prefix#content"."domain" d
-				ON c."domainID" = d."domainID"
 			JOIN "#variables.datasource.prefix#content"."host" h
-				ON d."domainID" = h."domainID"
+				ON c."domainID" = h."domainID"
 					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
@@ -141,10 +139,8 @@
 		<cfquery name="locate" datasource="#variables.datasource.name#">
 			SELECT DISTINCT p."path", c."title", bpn."title" AS "navTitle"
 			FROM "#variables.datasource.prefix#content"."content" c
-			JOIN "#variables.datasource.prefix#content"."domain" d
-				ON c."domainID" = d."domainID"
 			JOIN "#variables.datasource.prefix#content"."host" h
-				ON d."domainID" = h."domainID"
+				ON c."domainID" = h."domainID"
 					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain#" />
 			JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
