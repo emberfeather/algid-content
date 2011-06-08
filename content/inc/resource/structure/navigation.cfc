@@ -151,8 +151,6 @@
 					p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath)#" list="true" />)
 					OR p."path" IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#createPathList(currentPath, '*')#" list="true" />)
 				)
-				
-				<!--- TODO add in authUser type permission checking --->
 			ORDER BY p.path ASC
 		</cfquery>
 		
