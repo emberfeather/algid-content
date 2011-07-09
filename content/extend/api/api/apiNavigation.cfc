@@ -8,7 +8,17 @@ component extends="plugins.api.inc.resource.base.api" {
 		var results = '';
 		
 		servPath = variables.services.get('content', 'path');
+		servDomain = variables.services.get('content', 'domain');
 		servNavigation = variables.services.get('content', 'navigation');
+		
+		// Get the domain
+		filter = {
+			host: variables.transport.theCgi.remote_host
+		};
+		
+		local.domains = servDomain.getDomains(filter);
+		
+		local.domain = servDomain.getDomain(local.domains.domainID.toString());
 		
 		// Get the path
 		filter = {
@@ -20,7 +30,7 @@ component extends="plugins.api.inc.resource.base.api" {
 		currentPath = servPath.getPath(paths.pathID.toString());
 		
 		// Save the positions of the navigation
-		servNavigation.setPositions(currentPath, arguments.positions);
+		servNavigation.setPositions(currentPath, local.domain, arguments.positions);
 		
 		// Send back some of the request
 		variables.apiResponseHead['path'] = variables.apiRequestBody.path;

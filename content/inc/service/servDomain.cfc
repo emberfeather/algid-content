@@ -152,6 +152,10 @@
 				)
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'host') and arguments.filter.host neq ''>
+				and h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.host#" />
+			</cfif>
+			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
 				and d."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
