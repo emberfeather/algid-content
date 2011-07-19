@@ -44,12 +44,5 @@
 			},
 			minLength: 0
 		});
-		
-		// Change the richtext editor based upon the selection of the type
-		$('input[name=typeID]').change(function(){
-			$('textarea[name=content]')
-				.addClass('editor-' + $.one20.content.typeMap['type-' + this.value].toLowerCase())
-				.richtext();
-		}).filter(':checked').change();
 	});
 }(jQuery));
