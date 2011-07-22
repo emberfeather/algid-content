@@ -100,6 +100,15 @@
 		<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 	</cfif>
 	
+	<!--- Add the meta information about the content --->
+	<cfset servMeta = services.get('content', 'meta') />
+	
+	<cfset metaInformation = servMeta.getMetas({ contentID: content.getContentID() }) />
+	
+	<cfloop query="metaInformation">
+		<cfset template.setMeta(metaInformation.name, metaInformation.value) />
+	</cfloop>
+	
 	<cfset template.setContent(content.getContentHtml()) />
 	<cfset template.setTemplate(content.getTemplate()) />
 	
