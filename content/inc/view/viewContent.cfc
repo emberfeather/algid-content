@@ -103,6 +103,8 @@
 		<cfset var theForm = '' />
 		<cfset var theURL = '' />
 		
+		<cfset local.type = 'html' />
+		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset theURL = variables.transport.theRequest.managers.singleton.getUrl() />
 		<cfset theForm = variables.transport.theApplication.factories.transient.getForm('editContent', i18n) />
@@ -130,12 +132,20 @@
 		<!--- Create the options for the select --->
 		<cfloop query="arguments.types">
 			<cfset element.options.addOption(arguments.types.type, arguments.types.typeID.toString()) />
+			
+			<cfif arguments.content.getTypeID() eq arguments.types.typeID.toString()>
+				<cfset local.type = arguments.types.type />
+			</cfif>
 		</cfloop>
 		
 		<cfset theForm.addElement('radio', element) />
 		
 		<!--- Content --->
 		<cfset theForm.addElement('textarea', {
+			data = {
+				'editor': 'markItUp',
+				'editor-type': local.type
+			},
 			name = "content",
 			label = "content",
 			value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )

@@ -6,7 +6,7 @@
 	var searchCache = {};
 	
 	$(function(){
-		$('input[name^=path]').autocomplete({
+		$('input[name^="path"]').autocomplete({
 			delay: 280,
 			source: function(request, response) {
 				var i;
@@ -45,11 +45,12 @@
 			minLength: 0
 		});
 		
-		// Change the richtext editor based upon the selection of the type
-		$('input[name=typeID]').change(function(){
-			$('textarea[name=content]')
-				.addClass('editor-' + $.one20.content.typeMap['type-' + this.value].toLowerCase())
-				.richtext();
-		}).filter(':checked').change();
+		var content = $('textarea[name="content"]');
+		
+		$('input[name="typeID"]').change(function() {
+			content.data('editorType', $.trim($(this).parent().text().toLowerCase()));
+			
+			content.trigger('editorSwitch');
+		});
 	});
 }(jQuery));

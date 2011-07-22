@@ -39,8 +39,6 @@
 				SELECT "navigationID", "themeID", "navigation", "level", "allowGroups"
 				FROM "#variables.datasource.prefix#content"."navigation"
 				WHERE "navigationID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navigationID#" null="#arguments.navigationID eq ''#" />::uuid
-				
-				<!--- TODO Check for user connection --->
 			</cfquery>
 			
 			<cfif results.recordCount>
@@ -178,6 +176,7 @@
 	
 	<cffunction name="setPositions" access="public" returntype="void" output="false">
 		<cfargument name="path" type="component" required="true" />
+		<cfargument name="domain" type="component" required="true" />
 		<cfargument name="positions" type="array" required="true" />
 		
 		<cfset var cleaned = '' />
@@ -212,14 +211,17 @@
 			WHERE
 				"pathID" IN (
 					<!--- Make sure all paths are directly off the base path, including wildcard paths --->
-					SELECT "pathID"
-					FROM "#variables.datasource.prefix#content"."path"
-					WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
+					SELECT p."pathID"
+					FROM "#variables.datasource.prefix#content"."path" p
+					JOIN "#variables.datasource.prefix#content"."content" c
+					ON p."contentID" = c."contentID"
+						AND c."domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
+					WHERE LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
 						AND (
-							LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+							LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
 							OR (
-								LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
-								AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+								LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+								AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
 							)
 						)
 				)
@@ -247,14 +249,17 @@
 						</cfif>
 						AND "pathID" IN (
 							<!--- Make sure all paths are directly off the base path, including wildcard paths --->
-							SELECT "pathID"
-							FROM "#variables.datasource.prefix#content"."path"
-							WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
+							SELECT p."pathID"
+							FROM "#variables.datasource.prefix#content"."path" p
+							JOIN "#variables.datasource.prefix#content"."content" c
+							ON p."contentID" = c."contentID"
+								AND c."domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
+							WHERE LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
 								AND (
-									LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+									LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
 									OR (
-										LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
-										AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+										LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+										AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
 									)
 								)
 						)
@@ -287,14 +292,17 @@
 									AND "pathID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#position.paths[i].pathID#" />::uuid
 									AND "pathID" IN (
 										<!--- Make sure all paths are directly off the base path, including wildcard paths --->
-										SELECT "pathID"
-										FROM "#variables.datasource.prefix#content"."path"
-										WHERE LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
+										SELECT p."pathID"
+										FROM "#variables.datasource.prefix#content"."path" p
+										JOIN "#variables.datasource.prefix#content"."content" c
+										ON p."contentID" = c."contentID"
+											AND c."domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.domain.getDomainID()#" />::uuid
+										WHERE LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%" />
 											AND (
-												LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
+												LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%" />
 												OR (
-													LOWER("path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
-													AND LOWER("path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
+													LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/*" />
+													AND LOWER(p."path") NOT LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(cleaned)#%/%/*" />
 												)
 											)
 									)

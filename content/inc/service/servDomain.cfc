@@ -152,6 +152,10 @@
 				)
 			</cfif>
 			
+			<cfif structKeyExists(arguments.filter, 'host') and arguments.filter.host neq ''>
+				and h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.host#" />
+			</cfif>
+			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
 				and d."archivedOn" IS <cfif arguments.filter.isArchived>NOT</cfif> NULL
 			</cfif>
@@ -220,8 +224,8 @@
 			FROM "#variables.datasource.prefix#content"."host"
 			WHERE 1=1
 			
-			<cfif structKeyExists(arguments.filter, 'domainID') and arguments.filter.domainID neq ''>
-				and "domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domainID#" />::uuid
+			<cfif structKeyExists(arguments.filter, 'domainID')>
+				and "domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domainID#" null="#arguments.filter.domainID eq ''#" />::uuid
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'hostname') and arguments.filter.hostname neq ''>
