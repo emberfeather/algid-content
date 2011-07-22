@@ -19,7 +19,6 @@
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<!--- Title --->
-		<!--- TODO Use i18n for img title --->
 		<cfset theForm.addElement('text', {
 			class = 'allowDuplication',
 			name = 'title',
@@ -93,6 +92,7 @@
 	<cffunction name="edit" access="public" returntype="string" output="false">
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="paths" type="query" required="true" />
+		<cfargument name="metas" type="query" required="true" />
 		<cfargument name="types" type="query" required="true" />
 		<cfargument name="request" type="struct" default="#{}#" />
 		
@@ -111,6 +111,9 @@
 		
 		<!--- Add the resource bundle for the view --->
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		
+		<!--- Add the custom elements --->
+		<cfset theForm.addFormElement(variables.transport.theApplication.factories.transient.getFormElementForContent()) />
 		
 		<!--- Title --->
 		<cfset theForm.addElement('text', {
@@ -171,6 +174,29 @@
 			name = 'path',
 			label = 'path',
 			value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
+		}) />
+		
+		<!--- Metas --->
+		<cfloop query="arguments.metas">
+`			<cfset theForm.addElement('meta', {
+				elementClass = 'full',
+				class = 'allowDeletion',
+				name = 'meta' & arguments.metas.currentRow,
+				label = 'meta',
+				value = {
+					name: arguments.metas.name,
+					id: arguments.metas.metaID,
+					value: arguments.metas.value
+				}
+			}) />
+		</cfloop>
+		
+		<cfset theForm.addElement('meta', {
+			elementClass = 'full',
+			class = 'allowDuplication allowDeletion',
+			name = 'meta',
+			label = 'meta',
+			value = ( structKeyExists(arguments.request, 'meta') ? arguments.request.meta : { id: '', name: '', value: '' } )
 		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />

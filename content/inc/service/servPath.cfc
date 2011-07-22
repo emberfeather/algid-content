@@ -234,7 +234,7 @@
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'in')>
-				AND p."pathID" NOT IN (
+				AND p."pathID" IN (
 					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="i">
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[i]#" null="#arguments.filter.in[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.in)>,</cfif>
 					</cfloop>

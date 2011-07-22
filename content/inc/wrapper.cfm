@@ -100,6 +100,15 @@
 		<cfset template.addLevel(content.getTitle(), content.getTitle(), '') />
 	</cfif>
 	
+	<!--- Add the meta information to the template --->
+	<cfif content.hasMeta()>
+		<cfset metaInformation = content.getMeta() />
+		
+		<cfloop query="metaInformation">
+			<cfset template.setMeta(metaInformation.name, metaInformation.value) />
+		</cfloop>
+	</cfif>
+	
 	<cfset template.setContent(content.getContentHtml()) />
 	<cfset template.setTemplate(content.getTemplate()) />
 	

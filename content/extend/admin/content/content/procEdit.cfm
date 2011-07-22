@@ -1,5 +1,6 @@
 <cfset servContent = services.get('content', 'content') />
 <cfset servDomain = services.get('content', 'domain') />
+<cfset servMeta = services.get('content', 'meta') />
 <cfset servPath = services.get('content', 'path') />
 <cfset servType = services.get('content', 'type') />
 
@@ -7,6 +8,8 @@
 <cfset content = servContent.getContent( theURL.search('content') ) />
 
 <cfif cgi.request_method eq 'post'>
+	<cfset fields = listSort(form.fieldnames, 'text') />
+	
 	<!--- Process the form submission --->
 	<cfset modelSerial.deserialize(form, content) />
 	
@@ -54,6 +57,39 @@
 	</cfloop>
 	
 	<cfset servPath.deletePaths(filter) />
+	
+	<!--- Handle Metadata --->
+	
+	<!--- Transform  --->
+	<cfset fieldname = 'meta' />
+	<cfset fieldnameLen = len(fieldname) />
+	<cfset fieldnameExp = '(name)(-clone[0-9]*)?$' />
+	
+	<cfset metas = [] />
+	
+	<cfloop array="#[ '^meta[0-9]+', '^meta\..*[^0-9]$', '^meta\..*clone[0-9]+$' ]#" index="fieldExp">
+		<cfloop list="#fields#" index="i">
+			<cfif reFind(fieldExp, i) and refind(fieldnameExp, i) and trim(form[i]) neq ''>
+				<cfset meta = servMeta.getMeta(form[reReplace(i, fieldnameExp, 'id\2')]) />
+				
+				<cfset modelSerial.deserialize({
+					'name': form[i],
+					'contentID': content.getContentId(),
+					'value': form[reReplace(i, fieldnameExp, 'value\2')]
+				}, meta) />
+				
+				<cfset servMeta.setMeta(meta) />
+				
+				<cfset arrayAppend(metas, meta.getMetaId()) />
+			</cfif>
+		</cfloop>
+	</cfloop>
+	
+	<!--- Remove deleted metas --->
+	<cfset servMeta.deleteMetas({
+		contentId: content.getContentID(),
+		notIn: metas
+	}) />
 	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/content/browse') />
