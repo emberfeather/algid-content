@@ -80,11 +80,11 @@
 	
 	<!--- Include minified files for production --->
 	<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
-		<cfset template.addScripts('/cf-compendium/script/jquery.cf-compendium-min.js') />
 		<cfset template.addStyles('/cf-compendium/style/cf-compendium-min.css') />
+		<cfset template.addScripts('/cf-compendium/script/jquery.cf-compendium-min.js') />
 	<cfelse>
-		<cfset template.addScripts('/cf-compendium/script/jquery.base.js', '/cf-compendium/script/jquery.form.js', '/cf-compendium/script/jquery.list.js', '/cf-compendium/script/jquery.datagrid.js', '/cf-compendium/script/jquery.timeago.js', '/cf-compendium/script/jquery.cookie.js') />
 		<cfset template.addStyles('/cf-compendium/style/base.css', '/cf-compendium/style/form.css', '/cf-compendium/style/list.css', '/cf-compendium/style/datagrid.css', '/cf-compendium/style/code.css') />
+		<cfset template.addScripts('/cf-compendium/script/jquery.base.js', '/cf-compendium/script/jquery.form.js', '/cf-compendium/script/jquery.list.js', '/cf-compendium/script/jquery.datagrid.js', '/cf-compendium/script/jquery.timeago.js', '/cf-compendium/script/jquery.cookie.js', '/cf-compendium/script/jquery.elastic.js') />
 	</cfif>
 	
 	<cfset profiler.stop('template') />
