@@ -86,10 +86,12 @@
 	</cfloop>
 	
 	<!--- Remove deleted metas --->
-	<cfset servMeta.deleteMetas({
-		contentId: content.getContentID(),
-		notIn: metas
-	}) />
+	<cfif arrayLen(metas)>
+		<cfset servMeta.deleteMetas({
+			contentId: content.getContentID(),
+			notIn: metas
+		}) />
+	</cfif>
 	
 	<!--- Redirect --->
 	<cfset theURL.setRedirect('_base', '/content/browse') />
