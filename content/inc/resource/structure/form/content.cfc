@@ -4,7 +4,7 @@
 		
 		<cfset local.ele = {
 			type: 'text',
-			class: arguments.element.class,
+			class: arguments.element.class & ' metaname',
 			id: arguments.element.id & '-name',
 			name: arguments.element.name & '.name',
 			value: arguments.element.value.name
@@ -14,6 +14,7 @@
 		
 		<cfset local.ele = {
 			type: 'textarea',
+			class: 'elastic',
 			id: arguments.element.id & '-value',
 			name: arguments.element.name & '.value',
 			value: arguments.element.value.value
