@@ -31,16 +31,16 @@
 			
 			<cfif structKeyExists(arguments.filter, 'in')>
 				AND "metaID" IN (
-					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="i">
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[i]#" null="#arguments.filter.in[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.in)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.in)#" index="local.i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.in[local.i]#" null="#arguments.filter.in[local.i] eq ''#" />::uuid<cfif local.i lt arrayLen(arguments.filter.in)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notIn')>
 				AND "metaID" NOT IN (
-					<cfloop from="1" to="#arrayLen(arguments.filter.notIn)#" index="i">
-						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.notIn[i]#" null="#arguments.filter.notIn[i] eq ''#" />::uuid<cfif i lt arrayLen(arguments.filter.notIn)>,</cfif>
+					<cfloop from="1" to="#arrayLen(arguments.filter.notIn)#" index="local.i">
+						<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.notIn[local.i]#" null="#arguments.filter.notIn[local.i] eq ''#" />::uuid<cfif local.i lt arrayLen(arguments.filter.notIn)>,</cfif>
 					</cfloop>
 				)
 			</cfif>
