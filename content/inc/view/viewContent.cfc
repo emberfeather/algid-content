@@ -1,7 +1,6 @@
 <cfcomponent extends="algid.inc.resource.base.view" output="false">
 	<cffunction name="add" access="public" returntype="string" output="false">
 		<cfargument name="domains" type="query" required="true" />
-		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var element = '' />
 		<cfset var hasMultiple = '' />
@@ -23,7 +22,7 @@
 			class = 'allowDuplication',
 			name = 'title',
 			label = 'title',
-			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : '' )
+			value = ''
 		}) />
 		
 		<!--- Domain --->
@@ -94,7 +93,6 @@
 		<cfargument name="paths" type="query" required="true" />
 		<cfargument name="metas" type="query" required="true" />
 		<cfargument name="types" type="query" required="true" />
-		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var element = '' />
 		<cfset var i18n = '' />
@@ -120,7 +118,7 @@
 			name = "title",
 			label = "title",
 			required = true,
-			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
+			value = arguments.content.getTitle()
 		}) />
 		
 		<!--- Type --->
@@ -129,7 +127,7 @@
 			label = "type",
 			required = true,
 			options = variables.transport.theApplication.factories.transient.getOptions(),
-			value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
+			value = arguments.content.getTypeID()
 		} />
 		
 		<!--- Create the options for the select --->
@@ -151,7 +149,7 @@
 			},
 			name = "content",
 			label = "content",
-			value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )
+			value = arguments.content.getContent()
 		}) />
 		
 		<!--- Paths --->
@@ -173,7 +171,7 @@
 			class = 'allowDuplication allowDeletion',
 			name = 'path',
 			label = 'path',
-			value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
+			value = ''
 		}) />
 		
 		<!--- Metas --->
@@ -196,7 +194,7 @@
 			class = 'allowDuplication allowDeletion',
 			name = 'meta',
 			label = 'meta',
-			value = ( structKeyExists(arguments.request, 'meta') ? arguments.request.meta : { id: '', name: '', value: '' } )
+			value = { id: '', name: '', value: '' }
 		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />

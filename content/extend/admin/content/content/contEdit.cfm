@@ -19,7 +19,7 @@
 }) />
 
 <cfoutput>
-	#viewContent.edit( content, paths, metas, types, form )#
+	#viewContent.edit( content, paths, metas, types )#
 </cfoutput>
 
 <cfsavecontent variable="tempScript">
