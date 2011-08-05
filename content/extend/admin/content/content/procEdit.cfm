@@ -2,7 +2,6 @@
 <cfset servDomain = services.get('content', 'domain') />
 <cfset servMeta = services.get('content', 'meta') />
 <cfset servPath = services.get('content', 'path') />
-<cfset servType = services.get('content', 'type') />
 
 <!--- Retrieve the object --->
 <cfset content = servContent.getContent( theURL.search('content') ) />

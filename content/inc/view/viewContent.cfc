@@ -92,7 +92,6 @@
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="paths" type="query" required="true" />
 		<cfargument name="metas" type="query" required="true" />
-		<cfargument name="types" type="query" required="true" />
 		
 		<cfset var element = '' />
 		<cfset var i18n = '' />
@@ -100,8 +99,6 @@
 		<cfset var paths = '' />
 		<cfset var theForm = '' />
 		<cfset var theURL = '' />
-		
-		<cfset local.type = 'html' />
 		
 		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
 		<cfset theURL = variables.transport.theRequest.managers.singleton.getUrl() />
@@ -121,31 +118,11 @@
 			value = arguments.content.getTitle()
 		}) />
 		
-		<!--- Type --->
-		<cfset element = {
-			name = "typeID",
-			label = "type",
-			required = true,
-			options = variables.transport.theApplication.factories.transient.getOptions(),
-			value = arguments.content.getTypeID()
-		} />
-		
-		<!--- Create the options for the select --->
-		<cfloop query="arguments.types">
-			<cfset element.options.addOption(arguments.types.type, arguments.types.typeID.toString()) />
-			
-			<cfif arguments.content.getTypeID() eq arguments.types.typeID.toString()>
-				<cfset local.type = arguments.types.type />
-			</cfif>
-		</cfloop>
-		
-		<cfset theForm.addElement('radio', element) />
-		
 		<!--- Content --->
 		<cfset theForm.addElement('textarea', {
 			data = {
 				'editor': 'markItUp',
-				'editor-type': local.type
+				'editor-type': 'html'
 			},
 			name = "content",
 			label = "content",
@@ -218,7 +195,6 @@
 	<cffunction name="filter" access="public" returntype="string" output="false">
 		<cfargument name="params" type="struct" default="#{}#" />
 		<cfargument name="domains" type="query" required="true" />
-		<cfargument name="types" type="query" required="true" />
 		
 		<cfset var filterVertical = '' />
 		<cfset var options = '' />
@@ -241,20 +217,6 @@
 			</cfloop>
 			
 			<cfset filterVertical.addFilter('domain', options) />
-		</cfif>
-		
-		<!--- Type --->
-		<cfif arguments.types.recordCount>
-			<cfset options = variables.transport.theApplication.factories.transient.getOptions() />
-			
-			<!--- TODO use i18n --->
-			<cfset options.addOption('Any type', '') />
-			
-			<cfloop query="arguments.types">
-				<cfset options.addOption(arguments.types.type, arguments.types.typeID.toString()) />
-			</cfloop>
-			
-			<cfset filterVertical.addFilter('type', options) />
 		</cfif>
 		
 		<cfreturn filterVertical.toHTML(variables.transport.theRequest.managers.singleton.getURL(), arguments.params) />
@@ -307,11 +269,6 @@
 		<cfset datagrid.addColumn({
 			key = 'title',
 			label = 'title'
-		}) />
-		
-		<cfset datagrid.addColumn({
-			key = 'type',
-			label = 'type'
 		}) />
 		
 		<cfset datagrid.addColumn({

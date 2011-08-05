@@ -66,11 +66,6 @@
 			attribute = 'title'
 		) />
 		
-		<!--- Type ID --->
-		<cfset add__attribute(
-			attribute = 'typeID'
-		) />
-		
 		<!--- Set the bundle information for translation --->
 		<cfset add__bundle('plugins/content/i18n/inc/model', 'modContent') />
 		

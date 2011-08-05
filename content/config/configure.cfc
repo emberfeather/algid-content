@@ -822,6 +822,24 @@
 			ALTER TABLE "#variables.datasource.prefix#content".path DROP COLUMN "navigationID";
 		</cfquery>
 	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.13
+	--->
+	<cffunction name="postgreSQL0_1_13" access="public" returntype="void" output="false">
+		<!---
+			TABLES
+		--->
+		
+		<!--- Remove Type --->
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."content" DROP COLUMN "typeID";;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			DROP TABLE "#variables.datasource.prefix#content"."type";
+		</cfquery>
+	</cffunction>
 <cfscript>
 	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
@@ -860,6 +878,18 @@
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
 				postgreSQL0_1_3();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+		
+		// 0.1.3
+		if (versions.compareVersions(arguments.installedVersion, '0.1.13') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_13();
 				
 				break;
 			default:

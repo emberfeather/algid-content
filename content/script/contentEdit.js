@@ -31,12 +31,6 @@
 				});
 			}
 		}).trigger('afterduplicate');
-		
-		$('input[name="typeID"]').change(function() {
-			$('textarea[name="content"]')
-				.data('editorType', $.trim($(this).parent().text().toLowerCase()))
-				.trigger('editorSwitch');
-		});
 	});
 	
 	function pathSource(request, response) {

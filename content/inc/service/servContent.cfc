@@ -157,7 +157,7 @@
 		
 		<cfif arguments.contentID neq ''>
 			<cfquery name="results" datasource="#variables.datasource.name#">
-				SELECT "contentID", "domainID", "typeID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
+				SELECT "contentID", "domainID", "title", "content", "createdOn", "updatedOn", "expiresOn", "archivedOn"
 				FROM "#variables.datasource.prefix#content"."content"
 				WHERE "contentID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.contentID#" null="#arguments.contentID eq ''#" />::uuid
 			</cfquery>
@@ -166,21 +166,6 @@
 				<cfset modelSerial = variables.transport.theApplication.factories.transient.getModelSerial(variables.transport) />
 				
 				<cfset modelSerial.deserialize(results, content) />
-				
-				<cfset type = getModel('content', 'type') />
-				
-				<cfif content.getTypeID() neq ''>
-					<!--- Retrieve the content type object --->
-					<cfquery name="results" datasource="#variables.datasource.name#">
-						SELECT "typeID", "type"
-						FROM "#variables.datasource.prefix#content"."type"
-						WHERE "typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#content.getTypeID()#" />::uuid
-					</cfquery>
-					
-					<cfset modelSerial.deserialize(results, type) />
-				</cfif>
-				
-				<cfset content.setType(type) />
 			</cfif>
 		</cfif>
 		
@@ -206,14 +191,12 @@
 		<cfset arguments.filter = extend(defaults, arguments.filter) />
 		
 		<cfquery name="results" datasource="#variables.datasource.name#">
-			SELECT DISTINCT c."contentID", p."path", bpn."title" AS navTitle, t."type", c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
+			SELECT DISTINCT c."contentID", p."path", bpn."title" AS navTitle, c."title", c."createdOn", c."updatedOn", c."archivedOn", c."content"
 			FROM "#variables.datasource.prefix#content"."content" c
 			LEFT JOIN "#variables.datasource.prefix#content"."path" p
 				ON c."contentID" = p."contentID"
 			LEFT JOIN "#variables.datasource.prefix#content"."bPath2Navigation" bpn
 				ON p."pathID" = bpn."pathID"
-			LEFT JOIN "#variables.datasource.prefix#content"."type" t
-				ON c."typeID" = t."typeID"
 			JOIN "#variables.datasource.prefix#content"."host" h
 				ON c."domainID" = h."domainID"
 					AND h."hostname" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.domain#" />
@@ -260,10 +243,6 @@
 			<cfelseif structKeyExists(arguments.filter, 'path')>
 				<!--- Match a specific path --->
 				AND LOWER(p."path") = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(variables.path.clean(arguments.filter.path))#" />
-			</cfif>
-			
-			<cfif structKeyExists(arguments.filter, 'type') and arguments.filter.type neq ''>
-				AND c."typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter.type#" />::uuid
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'isArchived')>
@@ -519,7 +498,6 @@
 				<cfquery datasource="#variables.datasource.name#">
 					UPDATE "#variables.datasource.prefix#content"."content"
 					SET
-						"typeID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTypeID()#" null="#arguments.content.getTypeID() eq ''#" />::uuid,
 						"domainID" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getDomainID()#" />::uuid,
 						"title" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.content.getTitle()#" />,
 						"content" = <cfqueryparam cfsqltype="cf_sql_longvarchar" value="#arguments.content.getContent()#" />,

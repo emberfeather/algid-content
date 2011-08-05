@@ -1,11 +1,10 @@
 <cfset viewContent = views.get('content', 'content') />
 
 <cfset filter = {
-		'domain' = theURL.search('domain'),
-		'orderBy' = 'path',
-		'search' = theURL.search('search'),
-		'type' = theURL.search('type')
-	} />
+	'domain' = theURL.search('domain'),
+	'orderBy' = 'path',
+	'search' = theURL.search('search')
+} />
 
 <!--- Check for no specified domain --->
 <cfif filter.domain eq ''>
@@ -13,8 +12,7 @@
 </cfif>
 
 <cfset domains = servDomain.getDomains() />
-<cfset types = servType.getTypes() />
 
 <cfoutput>
-	#viewContent.filter( filter, domains, types )#
+	#viewContent.filter( filter, domains )#
 </cfoutput>
