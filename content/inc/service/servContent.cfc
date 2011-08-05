@@ -331,10 +331,12 @@
 		var observer = '';
 		var paths = '';
 		var servPath = '';
+		var servMeta = '';
 		
 		// Get the event observer
 		observer = getPluginObserver('content', 'content');
 		
+		servMeta = getService('content', 'meta');
 		servPath = getService('content', 'path');
 		
 		filter = extend(filter, arguments.options);
@@ -365,6 +367,9 @@
 					// Store the original path requested
 					content.setPathExtra(filter.path, paths.path);
 					
+					// Add the meta information to the content
+					content.setMeta(servMeta.getMetas({ contentId: content.getContentId() } ));
+					
 					// Trigger the before show event
 					observer.beforeDisplay(transport, content);
 					
@@ -394,6 +399,9 @@
 							
 							// Store the original path requested
 							content.setPathExtra(filter.path, paths.path);
+							
+							// Add the meta information to the content
+							content.setMeta(servMeta.getMetas({ contentId: content.getContentId() } ));
 							
 							// Trigger the before show event
 							observer.beforeDisplay(transport, content);
@@ -447,6 +455,9 @@
 						
 						// Store the original path requested
 						content.setPathExtra(filter.path, paths.path);
+						
+						// Add the meta information to the content
+						content.setMeta(servMeta.getMetas({ contentId: content.getContentId() } ));
 						
 						// Trigger the before show event
 						observer.beforeDisplay(transport, content);

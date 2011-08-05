@@ -18,7 +18,7 @@
 		<cfset theForm.addElement('text', {
 			name = "domain",
 			label = "domain",
-			value = ( structKeyExists(arguments.request, 'domain') ? arguments.request.domain : arguments.domain.getDomain() )
+			value = arguments.domain.getDomain()
 		}) />
 		
 		<!--- Hostnames --->
@@ -48,7 +48,7 @@
 			class = 'allowDuplication allowDeletion',
 			name = 'hostname',
 			label = 'hostname',
-			value = ( structKeyExists(arguments.request, 'hostname') ? arguments.request.hostname : '' )
+			value = arguments.request.hostname
 		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />

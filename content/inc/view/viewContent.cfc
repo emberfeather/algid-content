@@ -1,7 +1,6 @@
 <cfcomponent extends="algid.inc.resource.base.view" output="false">
 	<cffunction name="add" access="public" returntype="string" output="false">
 		<cfargument name="domains" type="query" required="true" />
-		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var element = '' />
 		<cfset var hasMultiple = '' />
@@ -19,12 +18,11 @@
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
 		<!--- Title --->
-		<!--- TODO Use i18n for img title --->
 		<cfset theForm.addElement('text', {
 			class = 'allowDuplication',
 			name = 'title',
 			label = 'title',
-			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : '' )
+			value = ''
 		}) />
 		
 		<!--- Domain --->
@@ -93,8 +91,8 @@
 	<cffunction name="edit" access="public" returntype="string" output="false">
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="paths" type="query" required="true" />
+		<cfargument name="metas" type="query" required="true" />
 		<cfargument name="types" type="query" required="true" />
-		<cfargument name="request" type="struct" default="#{}#" />
 		
 		<cfset var element = '' />
 		<cfset var i18n = '' />
@@ -112,12 +110,15 @@
 		<!--- Add the resource bundle for the view --->
 		<cfset theForm.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
 		
+		<!--- Add the custom elements --->
+		<cfset theForm.addFormElement(variables.transport.theApplication.factories.transient.getFormElementForContent()) />
+		
 		<!--- Title --->
 		<cfset theForm.addElement('text', {
 			name = "title",
 			label = "title",
 			required = true,
-			value = ( structKeyExists(arguments.request, 'title') ? arguments.request.title : arguments.content.getTitle() )
+			value = arguments.content.getTitle()
 		}) />
 		
 		<!--- Type --->
@@ -126,7 +127,7 @@
 			label = "type",
 			required = true,
 			options = variables.transport.theApplication.factories.transient.getOptions(),
-			value = ( structKeyExists(arguments.request, 'typeID') ? arguments.request.typeID : arguments.content.getTypeID() )
+			value = arguments.content.getTypeID()
 		} />
 		
 		<!--- Create the options for the select --->
@@ -148,7 +149,7 @@
 			},
 			name = "content",
 			label = "content",
-			value = ( structKeyExists(arguments.request, 'content') ? arguments.request.content : arguments.content.getContent() )
+			value = arguments.content.getContent()
 		}) />
 		
 		<!--- Paths --->
@@ -170,7 +171,30 @@
 			class = 'allowDuplication allowDeletion',
 			name = 'path',
 			label = 'path',
-			value = ( structKeyExists(arguments.request, 'path') ? arguments.request.path : '' )
+			value = ''
+		}) />
+		
+		<!--- Metas --->
+		<cfloop query="arguments.metas">
+`			<cfset theForm.addElement('meta', {
+				elementClass = 'full',
+				class = 'allowDeletion',
+				name = 'meta' & arguments.metas.currentRow,
+				label = 'meta',
+				value = {
+					name: arguments.metas.name,
+					id: arguments.metas.metaID,
+					value: arguments.metas.value
+				}
+			}) />
+		</cfloop>
+		
+		<cfset theForm.addElement('meta', {
+			elementClass = 'full',
+			class = 'allowDuplication allowDeletion',
+			name = 'meta',
+			label = 'meta',
+			value = { id: '', name: '', value: '' }
 		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />

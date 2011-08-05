@@ -8,5 +8,5 @@
 <cfset hosts = servDomain.getHosts(filter) />
 
 <cfoutput>
-	#viewDomain.edit(domain, hosts, form)#
+	#viewDomain.edit(domain, hosts)#
 </cfoutput>

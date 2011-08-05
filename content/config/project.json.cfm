@@ -5,6 +5,7 @@
 	"applicationTransients": {
 		"cacheContentForContent": "cf-compendium.inc.resource.storage.cache",
 		"cacheNavigationForContent": "cf-compendium.inc.resource.storage.cache",
+		"formElementForContent": "plugins.content.inc.resource.structure.form.content",
 		"navigationForContent": "plugins.content.inc.resource.structure.navigation",
 		"sitemapForContent": "cf-compendium.inc.resource.utility.sitemap",
 		"pathValidatorForContent": "plugins.content.inc.resource.validation.path",
@@ -46,5 +47,5 @@
 	},
 	"sessionTransients": {
 	},
-	"version": "0.1.11"
+	"version": "0.1.12"
 }
