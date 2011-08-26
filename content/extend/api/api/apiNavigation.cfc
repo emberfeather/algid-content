@@ -1,7 +1,6 @@
 component extends="plugins.api.inc.resource.base.api" {
 	public component function setPositions(required string path, required array positions) {
 		var filter = {};
-		var currentPath = '';
 		var paths = '';
 		var servPath = '';
 		var servNavigation = '';
@@ -13,10 +12,14 @@ component extends="plugins.api.inc.resource.base.api" {
 		
 		// Get the domain
 		filter = {
-			host: variables.transport.theCgi.remote_host
+			host: variables.transport.theCgi.server_name
 		};
 		
 		local.domains = servDomain.getDomains(filter);
+		
+		if(!local.domains.recordCount) {
+			throw(message = 'Unable to find domain information', detail = 'The domain was not found for #filter.host#');
+		}
 		
 		local.domain = servDomain.getDomain(local.domains.domainID.toString());
 		
@@ -27,10 +30,10 @@ component extends="plugins.api.inc.resource.base.api" {
 		
 		paths = servPath.getPaths(filter);
 		
-		currentPath = servPath.getPath(paths.pathID.toString());
+		local.currentPath = servPath.getPath(paths.pathID.toString());
 		
 		// Save the positions of the navigation
-		servNavigation.setPositions(currentPath, local.domain, arguments.positions);
+		servNavigation.setPositions(local.currentPath, local.domain, arguments.positions);
 		
 		// Send back some of the request
 		variables.apiResponseHead['path'] = variables.apiRequestBody.path;

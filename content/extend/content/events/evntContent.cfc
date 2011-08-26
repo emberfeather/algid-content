@@ -100,31 +100,4 @@ component extends="algid.inc.resource.base.event" {
 			cache.delete( domain.getDomain() & paths['path'][i].toString() );
 		}
 	}
-	
-	/**
-	 * Parse the content to generate the contentHtml.
-	 */
-	public void function beforeDisplay( required struct transport, required component content ) {
-		var html = '';
-		var parser = '';
-		var type = '';
-		
-		if(arguments.content.getTypeID() eq '') {
-			return;
-		}
-		
-		// Get the parser type for content
-		type = 'parser' & arguments.content.getType().getType();
-		
-		// If we know what parser to use then use it
-		if(arguments.transport.theApplication.managers.singleton.has(type)) {
-			parser = arguments.transport.theApplication.managers.singleton.get(type);
-			
-			// Parse the raw markup
-			html = parser.toHtml(arguments.content.getContentHtml());
-			
-			// Store it as the html content
-			arguments.content.setContentHtml(html);
-		}
-	}
 }
