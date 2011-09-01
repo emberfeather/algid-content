@@ -88,6 +88,75 @@
 		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
 	</cffunction>
 	
+	<cffunction name="datagrid" access="public" returntype="string" output="false">
+		<cfargument name="data" type="any" required="true" />
+		<cfargument name="options" type="struct" default="#{}#" />
+		
+		<cfset var app = '' />
+		<cfset var datagrid = '' />
+		<cfset var i18n = '' />
+		<cfset var options = '' />
+		<cfset var plugin = '' />
+		<cfset var rewrite = '' />
+		<cfset var theUrl = '' />
+		
+		<cfset arguments.options.theURL = variables.transport.theRequest.managers.singleton.getURL() />
+		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
+		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.theSession.managers.singleton.getSession().getLocale()) />
+		
+		<!--- Create a content front-end url --->
+		<cfset app = variables.transport.theApplication.managers.singleton.getApplication() />
+		<cfset plugin = variables.transport.theApplication.managers.plugin.getContent() />
+		
+		<cfset options = { start = app.getPath() & plugin.getPath() } />
+		
+		<cfset rewrite = plugin.getRewrite() />
+		
+		<cfif rewrite.isEnabled>
+			<cfset options.rewriteBase = rewrite.base />
+			
+			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrlRewrite('', options) />
+		<cfelse>
+			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrl('', options) />
+		</cfif>
+		
+		<!--- Add the resource bundle for the view --->
+		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
+		
+		<cfset datagrid.addColumn({
+			key = 'path',
+			label = 'path',
+			link = {
+				'_base' = 'path'
+			},
+			theUrl = theUrl
+		}) />
+		
+		<cfset datagrid.addColumn({
+			key = 'title',
+			label = 'title'
+		}) />
+		
+		<cfset datagrid.addColumn({
+			class = 'phantom align-right',
+			value = [ 'delete', 'edit' ],
+			link = [
+				{
+					'content' = 'contentID',
+					'_base' = '/content/archive'
+				},
+				{
+					'content' = 'contentID',
+					'_base' = '/content/edit'
+				}
+			],
+			linkClass = [ 'delete', '' ],
+			title = 'title'
+		}) />
+		
+		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
+	</cffunction>
+	
 	<cffunction name="edit" access="public" returntype="string" output="false">
 		<cfargument name="content" type="component" required="true" />
 		<cfargument name="paths" type="query" required="true" />
@@ -220,74 +289,5 @@
 		</cfif>
 		
 		<cfreturn filterVertical.toHTML(variables.transport.theRequest.managers.singleton.getURL(), arguments.params) />
-	</cffunction>
-	
-	<cffunction name="datagrid" access="public" returntype="string" output="false">
-		<cfargument name="data" type="any" required="true" />
-		<cfargument name="options" type="struct" default="#{}#" />
-		
-		<cfset var app = '' />
-		<cfset var datagrid = '' />
-		<cfset var i18n = '' />
-		<cfset var options = '' />
-		<cfset var plugin = '' />
-		<cfset var rewrite = '' />
-		<cfset var theUrl = '' />
-		
-		<cfset arguments.options.theURL = variables.transport.theRequest.managers.singleton.getURL() />
-		<cfset i18n = variables.transport.theApplication.managers.singleton.getI18N() />
-		<cfset datagrid = variables.transport.theApplication.factories.transient.getDatagrid(i18n, variables.transport.theSession.managers.singleton.getSession().getLocale()) />
-		
-		<!--- Create a content front-end url --->
-		<cfset app = variables.transport.theApplication.managers.singleton.getApplication() />
-		<cfset plugin = variables.transport.theApplication.managers.plugin.getContent() />
-		
-		<cfset options = { start = app.getPath() & plugin.getPath() } />
-		
-		<cfset rewrite = plugin.getRewrite() />
-		
-		<cfif rewrite.isEnabled>
-			<cfset options.rewriteBase = rewrite.base />
-			
-			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrlRewrite('', options) />
-		<cfelse>
-			<cfset theUrl = variables.transport.theApplication.factories.transient.getUrl('', options) />
-		</cfif>
-		
-		<!--- Add the resource bundle for the view --->
-		<cfset datagrid.addBundle('plugins/content/i18n/inc/view', 'viewContent') />
-		
-		<cfset datagrid.addColumn({
-			key = 'path',
-			label = 'path',
-			link = {
-				'_base' = 'path'
-			},
-			theUrl = theUrl
-		}) />
-		
-		<cfset datagrid.addColumn({
-			key = 'title',
-			label = 'title'
-		}) />
-		
-		<cfset datagrid.addColumn({
-			class = 'phantom align-right',
-			value = [ 'delete', 'edit' ],
-			link = [
-				{
-					'content' = 'contentID',
-					'_base' = '/content/archive'
-				},
-				{
-					'content' = 'contentID',
-					'_base' = '/content/edit'
-				}
-			],
-			linkClass = [ 'delete', '' ],
-			title = 'title'
-		}) />
-		
-		<cfreturn datagrid.toHTML( arguments.data, arguments.options ) />
 	</cffunction>
 </cfcomponent>
