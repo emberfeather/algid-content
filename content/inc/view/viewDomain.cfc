@@ -48,7 +48,7 @@
 			class = 'allowDuplication allowDeletion',
 			name = 'hostname',
 			label = 'hostname',
-			value = arguments.request.hostname
+			value = structKeyExists(arguments.request, 'hostname') ? arguments.request.hostname : ''
 		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
