@@ -402,6 +402,9 @@
 						content.setTemplate('index');
 					}
 					
+					// Trigger that there was a 404 error
+					observer.on404(transport, content);
+					
 					content.setIsError(true);
 				}
 			}
