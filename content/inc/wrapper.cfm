@@ -39,7 +39,7 @@
 	<cfset primaryHostname = servDomain.getPrimaryHostname(transport.theCgi.server_name) />
 	
 	<cfif primaryHostname neq transport.theCgi.server_name>
-		<cflocation url="http#(transport.theCgi.https eq 'on' ? 's' : '')#://#primaryHostname#:#transport.theCgi.server_port##theURL.get(false)#" addtoken="false" />
+		<cflocation url="http#(transport.theCgi.https eq 'on' ? 's' : '')#://#primaryHostname##( listFind('80,443', transport.theCgi.server_port) ? '' : ':#transport.theCgi.server_port#' )##theURL.get(false)#" addtoken="false" />
 	</cfif>
 	
 	<!--- Check for a change to the number of records per page --->
