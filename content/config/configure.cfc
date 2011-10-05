@@ -833,7 +833,7 @@
 		
 		<!--- Remove Type --->
 		<cfquery datasource="#variables.datasource.name#">
-			ALTER TABLE "#variables.datasource.prefix#content"."content" DROP COLUMN "typeID";;
+			ALTER TABLE "#variables.datasource.prefix#content"."content" DROP COLUMN "typeID";
 		</cfquery>
 		
 		<cfquery datasource="#variables.datasource.name#">
