@@ -48,7 +48,7 @@
 			class = 'allowDuplication allowDeletion',
 			name = 'hostname',
 			label = 'hostname',
-			value = arguments.request.hostname
+			value = structKeyExists(arguments.request, 'hostname') ? arguments.request.hostname : ''
 		}) />
 		
 		<cfreturn theForm.toHTML(theURL.get()) />
@@ -107,7 +107,7 @@
 			}) />
 		
 		<cfset datagrid.addColumn({
-				class = 'phantom align-right',
+				class = 'phantom align-right width-min',
 				value = [ 'delete', 'edit' ],
 				link = [
 					{
