@@ -54,16 +54,19 @@ component {
 		// If provided a key then prepend a slash so it can be added to the end of the pathPart
 		if(arrayLen(arguments.keys)) {
 			for( j = 1; j <= arrayLen(arguments.keys); j++ ) {
-				arguments.keys[j] = '/' & arguments.keys[j];
+				if(arguments.keys[j] != '') {
+					arguments.keys[j] = '/' & arguments.keys[j];
+					
+					// Add to the base path list
+					pathList = listAppend(pathList, arguments.keys[j]);
+				} else {
+					// Handle the root path possibility
+					pathList = listAppend(pathList, '/');
+				}
 			}
 		} else {
 			// Handle the root path possibility
 			pathList = listAppend(pathList, '/');
-		}
-		
-		// Set the base path in the path list
-		for( j = 1; j <= arrayLen(arguments.keys); j++ ) {
-			pathList = listAppend(pathList, arguments.keys[j]);
 		}
 		
 		// Make the list from each part of the provided path
