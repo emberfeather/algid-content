@@ -99,4 +99,4 @@
 	<cfset theURL.redirectRedirect() />
 </cfif>
 
-<cfset template.addScripts('../plugins/content/script/contentEdit.js') />
+<cfset template.addScripts(transport.theRequest.webroot & 'plugins/content/script/contentEdit.js') />
