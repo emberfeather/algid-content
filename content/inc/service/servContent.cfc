@@ -350,11 +350,22 @@
 					content.setMeta(servMeta.getMetas({ contentId: content.getContentId() } ));
 					
 					// Trigger the before show event
-					observer.beforeDisplay(transport, content);
-					
-					// Check if the content should be cached
-					if (content.getDoCaching()) {
-						contentCache.put(filter.domain & filter.path, content);
+					try {
+						observer.beforeDisplay(transport, content);
+						
+						// Check if the content should be cached
+						if (content.getDoCaching()) {
+							contentCache.put(filter.domain & filter.path, content);
+						}
+					} catch( validation e ) {
+						variables.transport.theSession.managers.singleton.getError().addMessages(argumentCollection = listToArray(e.message, '|'));
+						content.setIsError(true);
+					} catch( forbidden e ) {
+						variables.transport.theSession.managers.singleton.getError().addMessages(argumentCollection = listToArray(e.message, '|'));
+						content.setIsError(true);
+						
+						// Clear the content since they should not see it
+						content.setContent('');
 					}
 				} else {
 					getPageContext().getResponse().setStatus(404, 'Content not found');
