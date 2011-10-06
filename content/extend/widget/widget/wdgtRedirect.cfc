@@ -23,4 +23,16 @@ component extends="plugins.widget.inc.resource.base.widget" {
 			location(arguments.args.url, false);
 		}
 	}
+	
+	public string function javascript( required string content, required struct args ) {
+		local.html = '';
+		local.target = (structKeyExists(arguments.args, 'target') ? arguments.args.target : 'top');
+		
+		if(structKeyExists(arguments.args, 'url')) {
+			local.html = '<script>window.#local.target#.location.href = "#arguments.args.url#";</script>';
+			local.html &= 'You should be redirected automatically, but if not please click this link: <a href="#arguments.args.url#" target="#local.target#">#arguments.args.url#</a>';
+		}
+		
+		return local.html;
+	}
 }
