@@ -39,7 +39,7 @@
 	<cfset primaryHostname = servDomain.getPrimaryHostname(transport.theCgi.server_name) />
 	
 	<cfif primaryHostname neq transport.theCgi.server_name>
-		<cflocation url="http#(transport.theCgi.https eq 'on' ? 's' : '')#://#primaryHostname#:#transport.theCgi.server_port##theURL.get(false)#" addtoken="false" />
+		<cflocation url="http#(transport.theCgi.https eq 'on' ? 's' : '')#://#primaryHostname##( listFind('80,443', transport.theCgi.server_port) ? '' : ':#transport.theCgi.server_port#' )##theURL.get(false)#" addtoken="false" />
 	</cfif>
 	
 	<!--- Check for a change to the number of records per page --->
@@ -77,15 +77,6 @@
 	
 	<!--- Store in the singletons --->
 	<cfset transport.theRequest.managers.singleton.setTemplate(template) />
-	
-	<!--- Include minified files for production --->
-	<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
-		<cfset template.addStyles('/cf-compendium/style/cf-compendium-min.css') />
-		<cfset template.addScripts('/cf-compendium/script/jquery.cf-compendium-min.js') />
-	<cfelse>
-		<cfset template.addStyles('/cf-compendium/style/base.css', '/cf-compendium/style/form.css', '/cf-compendium/style/list.css', '/cf-compendium/style/datagrid.css', '/cf-compendium/style/code.css', '/cf-compendium/style/chosen.css') />
-		<cfset template.addScripts('/cf-compendium/script/jquery.base.js', '/cf-compendium/script/jquery.form.js', '/cf-compendium/script/jquery.list.js', '/cf-compendium/script/jquery.datagrid.js', '/cf-compendium/script/jquery.timeago.js', '/cf-compendium/script/jquery.cookie.js', '/cf-compendium/script/jquery-ui.timepicker-addon.js', '/cf-compendium/script/jquery.chosen-min.js', '/cf-compendium/script/jquery.elastic.js') />
-	</cfif>
 	
 	<cfset profiler.stop('template') />
 	

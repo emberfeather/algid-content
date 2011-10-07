@@ -1,6 +1,6 @@
 component extends="plugins.widget.inc.resource.base.widget" {
-	public component function init(required struct transport) {
-		super.init(arguments.transport);
+	public component function init(required struct transport, required string path) {
+		super.init(arguments.transport, arguments.path);
 		
 		preventCaching();
 		
@@ -22,5 +22,19 @@ component extends="plugins.widget.inc.resource.base.widget" {
 			
 			location(arguments.args.url, false);
 		}
+	}
+	
+	public string function javascript( required string content, required struct args ) {
+		local.html = '';
+		local.target = (structKeyExists(arguments.args, 'target') ? arguments.args.target : 'top');
+		
+		if(structKeyExists(arguments.args, 'url')) {
+			local.html = '<script>window.#local.target#.location.href = "#arguments.args.url#";</script>';
+			local.html &= '<p>You should be redirected automatically, but if not please click this link: <a href="#arguments.args.url#" target="#local.target#">#arguments.args.url#</a></p>';
+			
+			setSetting('replaceContent', true);
+		}
+		
+		return local.html;
 	}
 }
