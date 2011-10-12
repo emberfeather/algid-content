@@ -31,6 +31,7 @@ component extends="plugins.widget.inc.resource.base.widget" {
 		if(structKeyExists(arguments.args, 'url')) {
 			local.html = '<script>window.#local.target#.location.href = "#arguments.args.url#";</script>';
 			local.html &= '<p>You should be redirected automatically, but if not please click this link: <a href="#arguments.args.url#" target="#local.target#">#arguments.args.url#</a></p>';
+			local.html &= arguments.content;
 			
 			setSetting('replaceContent', true);
 		}
