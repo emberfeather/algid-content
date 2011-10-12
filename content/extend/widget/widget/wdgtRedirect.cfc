@@ -1,12 +1,4 @@
 component extends="plugins.widget.inc.resource.base.widget" {
-	public component function init(required struct transport, required string path) {
-		super.init(arguments.transport, arguments.path);
-		
-		preventCaching();
-		
-		return this;
-	}
-	
 	public string function process( required string content, required struct args ) {
 		if(structKeyExists(arguments.args, 'url')) {
 			if(isStruct(arguments.args.url)) {
