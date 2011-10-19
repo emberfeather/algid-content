@@ -80,6 +80,33 @@
 	
 	<cfset profiler.stop('template') />
 	
+	<cfset profiler.start('theme') />
+	
+	<!--- Determine which theme to use based upon the domain/path combination --->
+	<cfset theme = transport.theApplication.managers.plugin.getContent().getDefaultTheme() />
+	
+	<cfset servTheme = services.get('content', 'theme') />
+	
+	<!--- Use the theme that is the closest to the current page --->
+	<cfset filter = {
+		keyAlongPathOrPath = ['', '*'],
+		path = theUrl.search('_base'),
+		domain = transport.theCgi.server_name,
+		orderBy = 'path',
+		orderSort = 'desc'
+	} />
+	
+	<cfset themes = servTheme.getThemes(filter) />
+	
+	<cfif themes.recordCount gt 0>
+		<cfset theme = themes.directory />
+	</cfif>
+	
+	<!--- Store the theme for later --->
+	<cfset template.setTheme(theme) />
+	
+	<cfset profiler.stop('theme') />
+	
 	<cfset profiler.start('content') />
 	
 	<cfset servContent = services.get('content', 'content') />
@@ -105,29 +132,9 @@
 	
 	<cfset profiler.stop('content') />
 	
-	<cfset profiler.start('theme') />
-	
-	<!--- Determine which theme to use based upon the domain/path combination --->
-	<cfset theme = transport.theApplication.managers.plugin.getContent().getDefaultTheme() />
-	
-	<cfset servTheme = services.get('content', 'theme') />
-	
-	<!--- Use the theme that is the closest to the current page --->
-	<cfset filter = {
-		keyAlongPathOrPath = ['', '*'],
-		path = theUrl.search('_base'),
-		domain = transport.theCgi.server_name,
-		orderBy = 'path',
-		orderSort = 'desc'
-	} />
-	
-	<cfset themes = servTheme.getThemes(filter) />
-	
-	<cfif themes.recordCount gt 0>
-		<cfset theme = themes.directory />
-	</cfif>
+	<cfset profiler.start('display') />
 </cfsilent>
 
 <cfinclude template="/plugins/#theme#/template/#template.getTemplate()#.cfm" />
 
-<cfset profiler.stop('theme') />
+<cfset profiler.stop('display') />
