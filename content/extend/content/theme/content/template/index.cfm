@@ -123,11 +123,6 @@
 				<!--- Output the main content --->
 				<cfoutput>#template.getContent()#</cfoutput>
 			</div>
-			
-			<!--- TODO Remove --->
-			<div class="grid_12 align-center">
-				<cfoutput>#createUUID()#</cfoutput>
-			</div>
 		</div>
 		
 		<cfoutput>#template.getScripts()#</cfoutput>
