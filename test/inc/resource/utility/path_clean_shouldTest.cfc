@@ -102,4 +102,15 @@ component extends="mxunit.framework.TestCase" {
 	public void function testStripTrailingSlashWithTrailingSlash() {
 		assertEquals('/test/path', variables.path.clean('/test/path/'));
 	}
+	
+	/**
+	 * Tests the stripping of trailing keys
+	 */
+	public void function testStripTrailingKeysWithSingleKey() {
+		assertEquals('/test/path', variables.path.clean('/test/path/~', ['~']));
+	}
+	
+	public void function testStripTrailingKeysWithMultipleKeys() {
+		assertEquals('/test/path', variables.path.clean('/test/path/^', ['~', '^']));
+	}
 }

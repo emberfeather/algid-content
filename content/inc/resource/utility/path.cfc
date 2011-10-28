@@ -5,7 +5,7 @@ component {
 		return this;
 	}
 	
-	public string function clean( required string value, struct options = {} ) {
+	public string function clean( required string value, array keys = [] ) {
 		arguments.value = trim(arguments.value);
 		
 		// Convert standard characters
@@ -26,10 +26,18 @@ component {
 		arguments.value = reReplace(arguments.value, '[~]{2,}', '~', 'all');
 		
 		// Check for path ending with a asterisk
-		if (( !structKeyExists(arguments.options, 'allowWildcards') || !arguments.options.allowWildcards)
-			&& len(arguments.value) > 1
-			&& right(arguments.value, 1) == '*') {
-			arguments.value = reReplace(arguments.value, '[*]+$', '');
+		if (arrayLen(arguments.keys)) {
+			local.last = listLast(arguments.value, '/');
+			local.length = listLen(arguments.value, '/');
+			
+			if(local.length) {
+				for(local.i = 1; local.i <= arrayLen(arguments.keys); local.i++) {
+					if(local.last == arguments.keys[local.i]) {
+						arguments.value = listDeleteAt(arguments.value, local.length, '/');
+						break;
+					}
+				}
+			}
 		}
 		
 		// Check for path ending with a slash
