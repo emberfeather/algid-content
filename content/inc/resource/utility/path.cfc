@@ -40,7 +40,7 @@ component {
 		return arguments.value;
 	}
 	
-	public string function createList( required string path, any keys = [] ) {
+	public string function createList( required string path, any keys = [''] ) {
 		var pathList = '';
 		var pathPart = '';
 		var i = '';
@@ -51,22 +51,22 @@ component {
 			arguments.keys = [ arguments.keys ];
 		}
 		
-		// If provided a key then prepend a slash so it can be added to the end of the pathPart
-		if(arrayLen(arguments.keys)) {
-			for( j = 1; j <= arrayLen(arguments.keys); j++ ) {
-				if(arguments.keys[j] != '') {
-					arguments.keys[j] = '/' & arguments.keys[j];
-					
-					// Add to the base path list
-					pathList = listAppend(pathList, arguments.keys[j]);
-				} else {
-					// Handle the root path possibility
-					pathList = listAppend(pathList, '/');
-				}
+		// Default to a blank key if it doesn't have a key already
+		if(!arrayLen(arguments.keys)) {
+			arguments.keys = [''];
+		}
+		
+		// Prepend a slash so it can be added to the end of the pathPart
+		for( j = 1; j <= arrayLen(arguments.keys); j++ ) {
+			if(arguments.keys[j] != '') {
+				arguments.keys[j] = '/' & arguments.keys[j];
+				
+				// Add to the base path list
+				pathList = listAppend(pathList, arguments.keys[j]);
+			} else {
+				// Handle the root path possibility
+				pathList = listAppend(pathList, '/');
 			}
-		} else {
-			// Handle the root path possibility
-			pathList = listAppend(pathList, '/');
 		}
 		
 		// Make the list from each part of the provided path
