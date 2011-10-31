@@ -280,6 +280,61 @@
 		<cfreturn results />
 	</cffunction>
 	
+	<cffunction name="getContentStats" access="public" returntype="struct" output="false">
+		<cfargument name="filter" type="struct" default="#{}#" />
+		
+		<cfset local.defaultDate = now() />
+		
+		<cfset arguments.filter = extend({
+			startOn = dateAdd("m", -1, local.defaultDate),
+			endOn = local.defaultDate
+		}, arguments.filter) />
+		
+		<cfset local.results = {} />
+		
+		<!--- New --->
+		<cfquery name="local.results.new" datasource="#variables.datasource.name#">
+			SELECT COUNT(c."contentID") AS total
+			FROM "#variables.datasource.prefix#content"."content" c
+			WHERE 1=1
+				AND c."archivedOn" IS NULL
+				AND c."createdOn" >= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.startOn#" />
+				AND c."createdOn" < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.endOn#" />
+		</cfquery>
+		
+		<!--- Updated --->
+		<cfquery name="local.results.updated" datasource="#variables.datasource.name#">
+			SELECT COUNT(c."contentID") AS total
+			FROM "#variables.datasource.prefix#content"."content" c
+			WHERE 1=1
+				AND c."archivedOn" IS NULL
+				AND c."updatedOn" >= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.startOn#" />
+				AND c."updatedOn" < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.endOn#" />
+		</cfquery>
+		
+		<!--- Expired --->
+		<cfquery name="local.results.expired" datasource="#variables.datasource.name#">
+			SELECT COUNT(c."contentID") AS total
+			FROM "#variables.datasource.prefix#content"."content" c
+			WHERE 1=1
+				AND c."archivedOn" IS NULL
+				AND c."expiresOn" >= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.startOn#" />
+				AND c."expiresOn" < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.endOn#" />
+		</cfquery>
+		
+		<!--- Archived --->
+		<cfquery name="local.results.archived" datasource="#variables.datasource.name#">
+			SELECT COUNT(c."contentID") AS total
+			FROM "#variables.datasource.prefix#content"."content" c
+			WHERE 1=1
+				AND c."archivedOn" IS NOT NULL
+				AND c."archivedOn" >= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.startOn#" />
+				AND c."archivedOn" < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.endOn#" />
+		</cfquery>
+		
+		<cfreturn local.results />
+	</cffunction>
+	
 	<cffunction name="publishContent" access="public" returntype="void" output="false">
 		<cfargument name="content" type="component" required="true" />
 		
