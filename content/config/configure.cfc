@@ -840,6 +840,79 @@
 			DROP TABLE "#variables.datasource.prefix#content"."type";
 		</cfquery>
 	</cffunction>
+	
+	<!---
+		Configures the database for v0.1.18
+	--->
+	<cffunction name="postgreSQL0_1_18" access="public" returntype="void" output="false">
+		<!---
+			Timestamps
+		--->
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."domain" ALTER "createdOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."domain" ALTER "archivedOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."theme" ALTER "archivedOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."content" ALTER "createdOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."content" ALTER "updatedOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."content" ALTER "expiresOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."content" ALTER "archivedOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."draft" ALTER "publishOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."draft" ALTER "createdOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."draft" ALTER "updatedOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."resource" ALTER "archivedOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."resource" ALTER "createdOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."resource" ALTER "deprecatedOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."bContent2Tag" ALTER "createdOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."bDomain2Tag2User" ALTER "createdOn" TYPE timestamp with time zone;
+		</cfquery>
+		
+		<cfquery datasource="#variables.datasource.name#">
+			ALTER TABLE "#variables.datasource.prefix#content"."bPath2Tag" ALTER "createdOn" TYPE timestamp with time zone;
+		</cfquery>
+	</cffunction>
 <cfscript>
 	public void function update( required struct plugin, string installedVersion = '' ) {
 		var versions = createObject('component', 'algid.inc.resource.utility.version').init();
@@ -885,11 +958,23 @@
 			}
 		}
 		
-		// 0.1.3
+		// 0.1.13
 		if (versions.compareVersions(arguments.installedVersion, '0.1.13') lt 0) {
 			switch (variables.datasource.type) {
 			case 'PostgreSQL':
 				postgreSQL0_1_13();
+				
+				break;
+			default:
+				throw(message="Database Type Not Supported", detail="The #variables.datasource.type# database type is not currently supported");
+			}
+		}
+		
+		// 0.1.18
+		if (versions.compareVersions(arguments.installedVersion, '0.1.18') lt 0) {
+			switch (variables.datasource.type) {
+			case 'PostgreSQL':
+				postgreSQL0_1_18();
 				
 				break;
 			default:
