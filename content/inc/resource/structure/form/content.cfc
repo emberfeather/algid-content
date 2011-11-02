@@ -14,7 +14,7 @@
 		
 		<cfset local.ele = {
 			type: 'textarea',
-			class: 'elastic',
+			class: 'expanding',
 			id: arguments.element.id & '-value',
 			name: arguments.element.name & '.value',
 			value: arguments.element.value.value
