@@ -101,8 +101,8 @@
 	</cfif>
 	
 	<!--- Add the main jquery scripts with fallbacks --->
-	<cfset template.addScript('//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js', { condition = '!window.jQuery', script = '/algid/script/jquery-min.js' }) />
-	<cfset template.addScript('//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js', { condition = '!window.jQuery.ui', script = '/algid/script/jquery-ui-min.js' }) />
+	<cfset template.addScript('//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js', { condition = '!window.jQuery', script = '/algid/script/jquery-min.js' }) />
+	<cfset template.addScript('//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js', { condition = '!window.jQuery.ui', script = '/algid/script/jquery-ui-min.js' }) />
 	
 	<!--- Store in the singletons --->
 	<cfset transport.theRequest.managers.singleton.setTemplate(template) />
