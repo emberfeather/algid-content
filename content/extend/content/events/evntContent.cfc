@@ -42,6 +42,7 @@ component extends="algid.inc.resource.base.event" {
 	public void function afterSave( required struct transport, required component content ) {
 		local.servDomain = getService(arguments.transport, 'content', 'domain');
 		local.servContent = getService(arguments.transport, 'content', 'content');
+		local.servPath = getService(arguments.transport, 'content', 'path');
 		local.plugin = arguments.transport.theApplication.managers.plugin.getContent();
 		
 		// Get the cache for the content
@@ -50,13 +51,16 @@ component extends="algid.inc.resource.base.event" {
 		
 		// Find the domain for the content
 		local.domain = local.servDomain.getDomain( arguments.content.getDomainID() );
+		local.hosts = local.domain.getHosts();
 		
 		// Get the paths from the content
-		local.paths = arguments.content.getPaths();
+		local.paths = local.servPath.getPaths({ contentID: arguments.content.getContentID() });
 		
 		// Clear the cache key for each path for the content, including removed paths
-		for( local.i = 1; local.i <= arrayLen(paths); local.i++ ) {
-			local.cache.delete( local.domain.getDomain() & local.paths[local.i].getPath() );
+		for( local.i = 1; local.i <= arrayLen(local.hosts); local.i++ ) {
+			for( local.j = 1; local.j <= local.paths.recordCount; local.j++ ) {
+				local.cache.delete( local.hosts[local.i].getHostName() & local.paths.path[local.j] );
+			}
 		}
 		
 		// Update the sitemap.xml for the domain
