@@ -198,7 +198,7 @@
 		
 		<cfset pathClean = variables.transport.theApplication.managers.singleton.getPathForContent() />
 		
-		<cfset cleaned = pathClean.clean(arguments.path.getPath()) />
+		<cfset cleaned = pathClean.clean(arguments.path.getPath(), ['*']) />
 		
 		<cfif cleaned NEQ '/'>
 			<cfset cleaned &= '/' />
