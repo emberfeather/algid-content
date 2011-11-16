@@ -8,6 +8,11 @@
 		<cfsilent>
 			<cfset user = transport.theSession.managers.singleton.getUser() />
 			
+			<cfset template.addScripts(
+				'//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js',
+				'//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js'
+			) />
+			
 			<!--- Include minified files for production --->
 			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
 				<cfset template.addStyles('/cf-compendium/style/cf-compendium-min.css') />
