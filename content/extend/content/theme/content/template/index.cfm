@@ -8,19 +8,13 @@
 		<cfsilent>
 			<cfset user = transport.theSession.managers.singleton.getUser() />
 			
-			<cfset template.addScripts(
-				'//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js',
-				'//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js'
-			) />
-			
 			<!--- Include minified files for production --->
 			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
 				<cfset template.addStyles('/cf-compendium/style/cf-compendium-min.css') />
-				<cfset template.addScripts('/cf-compendium/script/jquery.cf-compendium-min.js') />
 				<cfset midfix = '-min' />
 			<cfelse>
 				<cfset template.addStyles('/cf-compendium/style/base.css', '/cf-compendium/style/form.css', '/cf-compendium/style/list.css', '/cf-compendium/style/datagrid.css', '/cf-compendium/style/code.css') />
-				<cfset template.addScripts('/cf-compendium/script/jquery.base.js', '/cf-compendium/script/jquery.form.js', '/cf-compendium/script/jquery.list.js', '/cf-compendium/script/jquery.datagrid.js', '/cf-compendium/script/jquery.timeago.js', '/cf-compendium/script/jquery.cookie.js', '/cf-compendium/script/jquery-ui.timepicker-addon.js', '/cf-compendium/script/jquery.expanding.js') />
+				<cfset template.addScripts('/cf-compendium/script/form.js', '/cf-compendium/script/datagrid.js', '/cf-compendium/script/jquery.timeago.js', '/cf-compendium/script/jquery.cookie.js', '/cf-compendium/script/jquery-ui.timepicker-addon.js', '/cf-compendium/script/jquery.expanding.js') />
 				<cfset midfix = '' />
 			</cfif>
 			
@@ -130,6 +124,17 @@
 			</div>
 		</div>
 		
-		<cfoutput>#template.getScripts()#</cfoutput>
+		<cfoutput>
+			<script src="/algid/script/require-min.js"></script>
+			<script>
+				require.config({
+					paths: {
+						'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min',
+						'jqueryui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min'
+					}
+				});
+			</script>
+			#template.getScripts()#
+		</cfoutput>
 	</body>
 </html>
