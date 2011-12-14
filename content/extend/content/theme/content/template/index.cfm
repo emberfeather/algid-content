@@ -6,36 +6,48 @@
 		<title><cfoutput>#template.getHTMltitle()#</cfoutput></title>
 		
 		<cfsilent>
+			<cfset app = transport.theApplication.managers.singleton.getApplication() />
+			<cfset api = transport.theApplication.managers.plugin.getApi() />
+			<cfset isProduction = app.isProduction() />
+			<cfset minFix = isProduction ? '-min' : '' />
 			<cfset user = transport.theSession.managers.singleton.getUser() />
 			
-			<cfset template.addScripts(
-				'//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js',
-				'//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js'
-			) />
+			<cfsavecontent variable="settings">
+				<cfoutput>
+					require([
+						'jquery',
+						'plugins/api/script/api'
+					], function($) {
+						$.api.defaults.url = '#app.getPath()##api.getPath()#';
+					});
+				</cfoutput>
+			</cfsavecontent>
 			
-			<!--- Include minified files for production --->
-			<cfif transport.theApplication.managers.singleton.getApplication().isProduction()>
-				<cfset template.addStyles('/cf-compendium/style/cf-compendium-min.css') />
-				<cfset template.addScripts('/cf-compendium/script/jquery.cf-compendium-min.js') />
-				<cfset midfix = '-min' />
-			<cfelse>
-				<cfset template.addStyles('/cf-compendium/style/base.css', '/cf-compendium/style/form.css', '/cf-compendium/style/list.css', '/cf-compendium/style/datagrid.css', '/cf-compendium/style/code.css') />
-				<cfset template.addScripts('/cf-compendium/script/jquery.base.js', '/cf-compendium/script/jquery.form.js', '/cf-compendium/script/jquery.list.js', '/cf-compendium/script/jquery.datagrid.js', '/cf-compendium/script/jquery.timeago.js', '/cf-compendium/script/jquery.cookie.js', '/cf-compendium/script/jquery-ui.timepicker-addon.js', '/cf-compendium/script/jquery.expanding.js') />
-				<cfset midfix = '' />
-			</cfif>
-			
-			<cfset template.addStyles(
-				'/algid/style/960/reset#midfix#.css',
-				'/algid/style/960/960#midfix#.css',
-				transport.theRequest.webRoot & 'plugins/content/extend/content/theme/content/style/styles#midfix#.css'
-			) />
-			
-			<cfset template.addStyle(transport.theRequest.webRoot & 'plugins/content/extend/content/theme/content/style/print#midfix#.css', 'print') />
-			
-			<cfset template.addScripts(transport.theRequest.webRoot & 'plugins/content/extend/content/theme/content/script/content#midfix#.js') />
+			<cfset template.addScripts(settings) />
 		</cfsilent>
 		
-		<cfoutput>#template.getStyles()#</cfoutput>
+		<cfoutput>
+			<cfif isProduction>
+				<link rel="stylesheet" href="/cf-compendium/style/cf-compendium-min.css" />
+				<link rel="stylesheet" href="/algid/style/algid-min.css" />
+			<cfelse>
+				<link rel="stylesheet" href="/cf-compendium/style/base.css" />
+				<link rel="stylesheet" href="/cf-compendium/style/form.css" />
+				<link rel="stylesheet" href="/cf-compendium/style/datagrid.css" />
+				<link rel="stylesheet" href="/cf-compendium/style/detail.css" />
+				<link rel="stylesheet" href="/cf-compendium/style/code.css" />
+				<link rel="stylesheet" href="/algid/style/base.css" />
+			</cfif>
+			
+			<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1/themes/smoothness/jquery-ui.css" />
+			<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Philosopher&subset=latin" />
+			<link rel="stylesheet" href="/algid/style/960/reset-min.css" />
+			<link rel="stylesheet" href="/algid/style/960/960-min.css" />
+			<link rel="stylesheet" href="#transport.theRequest.webRoot#plugins/content/extend/content/theme/content/style/styles#minFix#.css" />
+			<link rel="stylesheet" href="#transport.theRequest.webRoot#plugins/content/extend/content/theme/content/style/print#minFix#.css" media="print" />
+			
+			#template.getStyles()#
+		</cfoutput>
 	</head>
 	<body>
 		<div class="container_12 respect-float">
@@ -130,6 +142,20 @@
 			</div>
 		</div>
 		
-		<cfoutput>#template.getScripts()#</cfoutput>
+		<cfoutput>
+			<script src="/cf-compendium/script/require-min.js"></script>
+			<script>
+				require.config({
+					baseUrl: '#transport.theRequest.webRoot#',
+					paths: {
+						'async': '/cf-compendium/script/plugin/async',
+						'goog': '/cf-compendium/script/plugin/goog',
+						'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min',
+						'jqueryui': '//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min'
+					}
+				});
+			</script>
+			#template.getScripts()#
+		</cfoutput>
 	</body>
 </html>
