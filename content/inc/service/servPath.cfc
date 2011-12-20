@@ -191,7 +191,7 @@
 				<!--- Match a specific path --->
 				AND LOWER(p."path") LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter.searchPath)#%" />
 			<cfelseif structKeyExists(arguments.filter, 'pathPrefix')>
-				<cfset cleaned = variables.path.clean(arguments.filter.pathPrefix) />
+				<cfset cleaned = variables.path.clean(arguments.filter.pathPrefix, ['*']) />
 				
 				<cfif cleaned NEQ '/'>
 					<cfset cleaned &= '/' />
@@ -226,7 +226,7 @@
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'notPath') and arguments.filter.notPath neq ''>
-				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath, { allowWildcards: true })#" />
+				AND p."path" <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.filter.notPath, ['*'])#" />
 			</cfif>
 			
 			<cfif structKeyExists(arguments.filter, 'contentID') and arguments.filter.contentID neq ''>

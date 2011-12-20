@@ -179,6 +179,41 @@
 		<cfreturn results />
 	</cffunction>
 	
+	<cffunction name="getDomainStats" access="public" returntype="struct" output="false">
+		<cfargument name="filter" type="struct" default="#{}#" />
+		
+		<cfset local.defaultDate = now() />
+		
+		<cfset arguments.filter = extend({
+			startOn = dateAdd("m", -1, local.defaultDate),
+			endOn = local.defaultDate
+		}, arguments.filter) />
+		
+		<cfset local.results = {} />
+		
+		<!--- New --->
+		<cfquery name="local.results.new" datasource="#variables.datasource.name#">
+			SELECT COUNT("domainID") AS total
+			FROM "#variables.datasource.prefix#content"."domain"
+			WHERE 1=1
+				AND "archivedOn" IS NULL
+				AND "createdOn" >= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.startOn#" />
+				AND "createdOn" < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.endOn#" />
+		</cfquery>
+		
+		<!--- Archived --->
+		<cfquery name="local.results.archived" datasource="#variables.datasource.name#">
+			SELECT COUNT("domainID") AS total
+			FROM "#variables.datasource.prefix#content"."domain"
+			WHERE 1=1
+				AND "archivedOn" IS NOT NULL
+				AND "archivedOn" >= <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.startOn#" />
+				AND "archivedOn" < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.filter.endOn#" />
+		</cfquery>
+		
+		<cfreturn local.results />
+	</cffunction>
+	
 	<cffunction name="getHost" access="public" returntype="component" output="false">
 		<cfargument name="hostID" type="string" required="true" />
 		

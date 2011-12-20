@@ -7,28 +7,28 @@
 		
 		<!--- Attribute ID --->
 		<cfset add__attribute(
-				attribute = 'attributeID'
-			) />
+			attribute = 'attributeID'
+		) />
 		
 		<!--- Theme ID --->
 		<cfset add__attribute(
-				attribute = 'themeID'
-			) />
+			attribute = 'themeID'
+		) />
 		
 		<!--- Attribute --->
 		<cfset add__attribute(
-				attribute = 'attribute'
-			) />
+			attribute = 'attribute'
+		) />
 		
 		<!--- Key --->
 		<cfset add__attribute(
-				attribute = 'key'
-			) />
+			attribute = 'key'
+		) />
 		
 		<!--- Has Custom --->
 		<cfset add__attribute(
-				attribute = 'hasCustom'
-			) />
+			attribute = 'hasCustom'
+		) />
 		
 		<!--- Set the bundle information for translation --->
 		<cfset add__bundle('plugins/content/i18n/inc/model', 'modAttribute') />

@@ -7,23 +7,12 @@
 		
 		<cfset variables.i18n = arguments.i18n />
 		<cfset variables.datasource = arguments.datasource />
+		<cfset variables.path = createObject('component', 'plugins.content.inc.resource.utility.path').init() />
 		
 		<!--- The default root is used when there is no base path given --->
 		<cfset variables.defaultRoot = '/' />
 		
 		<cfreturn this />
-	</cffunction>
-	
-	<cffunction name="cleanPath" access="private" returntype="string" output="false">
-		<cfargument name="path" type="string" required="true" />
-		
-		<cfset var pathLen = len(arguments.path) />
-		
-		<cfif pathLen gt 1 and right(arguments.path, 2) eq '/*'>
-			<cfset arguments.path = (pathLen gt 2 ? left(arguments.path, pathLen - 2) : '') />
-		</cfif>
-		
-		<cfreturn arguments.path />
 	</cffunction>
 	
 	<cffunction name="createUniqueNavigationKey" access="private" returntype="string" output="false">
@@ -97,7 +86,7 @@
 			WHERE 
 				n."level" = <cfqueryparam cfsqltype="cf_sql_integer" value="#arguments.level#" />
 				AND c."archivedOn" IS NULL
-				AND p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentPath#%" />
+				AND p."path" LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.path.clean(arguments.parentPath, ['*'])#%" />
 				AND n."navigation" = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.navPosition#" />
 			
 			<!--- TODO add in locale Support --->
@@ -159,7 +148,7 @@
 		
 		<cfloop query="locate">
 			<!--- Create the url --->
-			<cfset arguments.theURL.setCurrent('_base', cleanPath(locate.path)) />
+			<cfset arguments.theURL.setCurrent('_base', variables.path.clean(locate.path, ['*'])) />
 			
 			<!--- Add to the current page --->
 			<cfset currentPage.addLevel(locate.title, locate.navTitle, arguments.theURL.getCurrent(), locate.path) />

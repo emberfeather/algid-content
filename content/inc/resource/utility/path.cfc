@@ -5,7 +5,7 @@ component {
 		return this;
 	}
 	
-	public string function clean( required string value, struct options = {} ) {
+	public string function clean( required string value, array keys = [] ) {
 		arguments.value = trim(arguments.value);
 		
 		// Convert standard characters
@@ -26,10 +26,18 @@ component {
 		arguments.value = reReplace(arguments.value, '[~]{2,}', '~', 'all');
 		
 		// Check for path ending with a asterisk
-		if (( !structKeyExists(arguments.options, 'allowWildcards') || !arguments.options.allowWildcards)
-			&& len(arguments.value) > 1
-			&& right(arguments.value, 1) == '*') {
-			arguments.value = reReplace(arguments.value, '[*]+$', '');
+		if (arrayLen(arguments.keys)) {
+			local.last = listLast(arguments.value, '/');
+			local.length = listLen(arguments.value, '/');
+			
+			if(local.length) {
+				for(local.i = 1; local.i <= arrayLen(arguments.keys); local.i++) {
+					if(local.last == arguments.keys[local.i]) {
+						arguments.value = listDeleteAt(arguments.value, local.length, '/');
+						break;
+					}
+				}
+			}
 		}
 		
 		// Check for path ending with a slash
@@ -40,7 +48,7 @@ component {
 		return arguments.value;
 	}
 	
-	public string function createList( required string path, any keys = [] ) {
+	public string function createList( required string path, any keys = [''] ) {
 		var pathList = '';
 		var pathPart = '';
 		var i = '';
@@ -51,22 +59,22 @@ component {
 			arguments.keys = [ arguments.keys ];
 		}
 		
-		// If provided a key then prepend a slash so it can be added to the end of the pathPart
-		if(arrayLen(arguments.keys)) {
-			for( j = 1; j <= arrayLen(arguments.keys); j++ ) {
-				if(arguments.keys[j] != '') {
-					arguments.keys[j] = '/' & arguments.keys[j];
-					
-					// Add to the base path list
-					pathList = listAppend(pathList, arguments.keys[j]);
-				} else {
-					// Handle the root path possibility
-					pathList = listAppend(pathList, '/');
-				}
+		// Default to a blank key if it doesn't have a key already
+		if(!arrayLen(arguments.keys)) {
+			arguments.keys = [''];
+		}
+		
+		// Prepend a slash so it can be added to the end of the pathPart
+		for( j = 1; j <= arrayLen(arguments.keys); j++ ) {
+			if(arguments.keys[j] != '') {
+				arguments.keys[j] = '/' & arguments.keys[j];
+				
+				// Add to the base path list
+				pathList = listAppend(pathList, arguments.keys[j]);
+			} else {
+				// Handle the root path possibility
+				pathList = listAppend(pathList, '/');
 			}
-		} else {
-			// Handle the root path possibility
-			pathList = listAppend(pathList, '/');
 		}
 		
 		// Make the list from each part of the provided path

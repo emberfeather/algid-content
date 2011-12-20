@@ -198,7 +198,7 @@
 		
 		<cfset pathClean = variables.transport.theApplication.managers.singleton.getPathForContent() />
 		
-		<cfset cleaned = pathClean.clean(arguments.path.getPath()) />
+		<cfset cleaned = pathClean.clean(arguments.path.getPath(), ['*']) />
 		
 		<cfif cleaned NEQ '/'>
 			<cfset cleaned &= '/' />
@@ -272,6 +272,7 @@
 					<!--- Make sure we have not already tried to update/insert this position --->
 					<cfif not structKeyExists(saved[position.navigationID], position.paths[i].pathID.toString())>
 						<cfset saved[position.navigationID][position.paths[i].pathID] = 1 />
+						
 						<!--- Check if the path and navigation combo exist --->
 						<cfquery name="verify" dbtype="query">
 							SELECT pathID

@@ -16,8 +16,12 @@
 	
 	<cfif currentThemeID neq ''>
 		<cfset currentLevel = 1 />
+		
 		<cfif pathThemes.path neq currentPath.getPath()>
-			<cfset currentLevel += listLen('/' & right(currentPath.getPath(), len(currentPath.getPath()) - len(pathThemes.path)), '/') />
+			<cfset pathUtil = transport.theApplication.managers.singleton.getPathForContent() />
+			
+			<cfset cleaned = pathUtil.clean(currentPath.getPath(), ['*']) />
+			<cfset currentLevel += pathUtil.getLevel(cleaned) />
 		</cfif>
 		
 		<cfbreak />
